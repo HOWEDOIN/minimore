@@ -1,0 +1,47 @@
+/* Announcement Bar */
+.announcement-bar {
+  height: 40px;
+  z-index: 200;
+  /* Deep navy background for strong contrast and legibility */
+  background: var(--foreground);
+  color: #ffffff;
+  text-align: center;
+  padding: 0 1.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.announcement-bar::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 100%;
+  top: 0;
+  left: -200px;
+  /* Soft sky blue shimmer */
+  background: linear-gradient(to right, transparent, rgba(157, 196, 213, 0.15), transparent);
+  animation: shimmer 3.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0%   { left: -200px; }
+  100% { left: 110%; }
+}
+
+.announcement-bar a {
+  color: var(--accent);
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.announcement-bar a:hover {
+  color: #fff;
+}

@@ -1,34 +1,47 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* ── Minimore Brand Palette ───────────────────────────────
+     Colour-picked from the official logo:
+     Gradient: sky-teal #9DC4D5 → periwinkle-blue #B0B8D8
+     White logo on top. Gold used only as accent blush.
+  ───────────────────────────────────────────────────────── */
+  --background: #f0f5f9;           /* near-white sky blue */
+  --background-alt: #e4eef5;       /* soft sky blue */
+  --foreground: #1a2b3c;           /* deep navy — readable, not harsh */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  /* Brand blues — matched directly from logo gradient */
+  --brand-blue-light: #9DC4D5;     /* top-left logo colour */
+  --brand-blue-mid:   #A8BDD6;     /* mid gradient */
+  --brand-blue-periwinkle: #B0B8D8;/* right-side logo colour */
 
-html {
-  height: 100%;
-}
+  /* Primary = the mid brand blue for interactive elements */
+  --primary: #7AAEC4;
+  --primary-light: #dcedf5;        /* very light sky for card backgrounds */
+  --primary-lighter: #f0f5f9;      /* near-white page bg */
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+  /* Gold accent — used sparingly for highlights & price */
+  --accent: #C9A96E;               /* champagne gold */
+  --accent-light: #f5ede0;         /* soft gold blush for hover states */
+  --accent-dark: #8a6a3a;
 
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --text-secondary: #3d5a70;       /* blue-grey body text */
+  --text-muted: #8aafc4;           /* muted sky */
+  --border: #c8dde9;               /* pale blue border */
+  --border-light: #ddeaf3;         /* very soft blue */
+
+  /* Typography */
+  --font-sans: var(--font-nunito), 'Nunito', sans-serif;
+  --font-display: var(--font-fredoka), 'Fredoka', sans-serif;
+
+  /* Shadows & Effects */
+  --shadow-soft: 0 4px 24px rgba(157, 196, 213, 0.15);
+  --shadow-card: 0 2px 12px rgba(26, 43, 60, 0.05);
+  --shadow-hover: 0 12px 40px rgba(26, 43, 60, 0.08);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
 }
 
 * {
@@ -37,13 +50,182 @@ body {
   margin: 0;
 }
 
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-sans);
+}
+
+/* Utilities */
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Premium Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  color: var(--foreground);
+  padding: 0.875rem 2.25rem;
+  font-size: 0.875rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid #ffffff;
+  font-family: var(--font-display);
+  border-radius: var(--radius-pill);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 0.875rem 2.25rem;
+  font-size: 0.875rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  font-family: var(--font-display);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-pill);
+}
+
+.btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Product Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+}
+
+/* Product Card */
+.product-card {
+  cursor: pointer;
+  display: block;
+  group: true;
+}
+
+.product-image-container {
+  position: relative;
+  aspect-ratio: 1/1;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--background-alt) 100%);
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.product-image {
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.06);
+}
+
+.product-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 2;
+  color: var(--primary);
+  font-weight: 700;
+  font-family: var(--font-display);
+  border: 1px solid rgba(122, 174, 196, 0.2);
+  border-radius: var(--radius-pill);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0 0.125rem;
+}
+
+.brand {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+.product-name {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  line-height: 1.3;
+}
+
+.price {
+  font-size: 0.875rem;
+  color: var(--primary);
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }

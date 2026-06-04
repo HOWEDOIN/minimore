@@ -1,0 +1,301 @@
+/* ========================
+   HERO SECTION
+======================== */
+.page-wrapper {
+  overflow-x: hidden;
+}
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  /* Exactly the minimore logo gradient */
+  background: linear-gradient(135deg, #9DC4D5 0%, #A8BDD6 50%, #B0B8D8 100%);
+  overflow: hidden;
+}
+
+/* Soft decorative orb */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  top: -80px;
+  right: 60px;
+  pointer-events: none;
+}
+
+.hero-bg-logo {
+  position: absolute;
+  top: 50%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  width: 1000px;
+  height: auto;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+  filter: brightness(0) invert(1);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 520px;
+  padding: 10rem 0 6rem;
+  animation: fadeUp 0.9s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.hero-subtitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5vw, 5.5rem);
+  line-height: 1.05;
+  margin-bottom: 1.75rem;
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: -2px;
+}
+
+.hero-title em {
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.hero-desc {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2.5rem;
+  max-width: 420px;
+  font-weight: 300;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hero-image-wrapper {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 55%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-image-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Fade from the brand blue gradient into the photo */
+  background: linear-gradient(
+    to right,
+    #9DC4D5 0%,
+    rgba(157, 196, 213, 0.9) 15%,
+    rgba(168, 189, 214, 0.6) 35%,
+    rgba(176, 184, 216, 0.2) 55%,
+    transparent 75%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-image {
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+@media (max-width: 1024px) {
+  .hero-image-wrapper {
+    opacity: 0.2;
+    width: 100%;
+  }
+  .hero-image-wrapper::before {
+    display: none;
+  }
+  .hero-content {
+    max-width: 100%;
+  }
+}
+
+/* ========================
+   FEATURED PRODUCTS
+======================== */
+.featured {
+  padding: 7rem 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.section-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-weight: 600;
+  color: var(--foreground);
+  letter-spacing: -1px;
+}
+
+.section-header a {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+.section-header a::after {
+  content: '→';
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.section-header a:hover {
+  color: var(--primary);
+}
+
+.section-header a:hover::after {
+  transform: translateX(4px);
+}
+
+/* ========================
+   WHY MINIMORE SECTION
+======================== */
+.about-banner {
+  /* Same brand gradient as hero */
+  background: linear-gradient(135deg, #B0B8D8 0%, #A8BDD6 50%, #9DC4D5 100%);
+  padding: 7rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-banner::before {
+  content: '';
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  /* Subtle gold glow for blush accent */
+  background: radial-gradient(circle, rgba(201, 169, 110, 0.18) 0%, transparent 70%);
+  bottom: -80px;
+  left: -80px;
+  pointer-events: none;
+}
+
+.about-content {
+  text-align: center;
+}
+
+.about-content h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -1px;
+}
+
+.about-content .section-tagline {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  margin-bottom: 4rem;
+  font-weight: 300;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .features {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(168, 200, 220, 0.3);
+  padding: 2.5rem 2rem;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border-radius: var(--radius-lg);
+}
+
+.feature:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(26, 35, 50, 0.08);
+}
+
+.feature-icon {
+  font-size: 1.75rem;
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.feature h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin-bottom: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.feature p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 0.9rem;
+  font-weight: 300;
+}

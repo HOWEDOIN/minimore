@@ -1,0 +1,199 @@
+/* ========================
+   NAVBAR
+======================== */
+.navbar {
+  padding: 1.5rem 0;
+  position: fixed;
+  top: var(--announcement-height, 40px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: transparent;
+  transition: all 0.4s ease;
+}
+
+.navbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.navbar.static {
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid var(--border-light);
+  background-color: rgba(250, 248, 246, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 1.25rem 0;
+}
+
+.navbar.scrolled {
+  top: 0;
+  padding: 1.25rem 0;
+  background-color: rgba(250, 248, 246, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 4px 24px rgba(26, 43, 60, 0.05);
+}
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 2.2rem;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--foreground);
+}
+
+.logo-m {
+  display: none;
+}
+
+.nav-links {
+  display: none;
+  gap: 2.5rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+@media (min-width: 768px) {
+  .nav-links {
+    display: flex;
+  }
+}
+
+.nav-links a {
+  position: relative;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -4px;
+  left: 0;
+  background: linear-gradient(to right, var(--primary), var(--accent));
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--foreground);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+
+.nav-actions button {
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.nav-actions button:hover {
+  color: var(--foreground);
+}
+
+/* ========================
+   FOOTER
+======================== */
+.footer {
+  background: var(--foreground);
+  color: rgba(250, 248, 246, 0.8);
+  padding: 5rem 0 0;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+@media (min-width: 768px) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 2.5rem;
+  letter-spacing: -1px;
+  color: #fff;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.footer-brand p {
+  color: rgba(250, 248, 246, 0.5);
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 300;
+}
+
+.footer-links {
+  display: flex;
+  gap: 4rem;
+}
+
+.footer-links h4 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: rgba(250, 248, 246, 0.5);
+  font-weight: 600;
+}
+
+.footer-links a {
+  display: block;
+  color: rgba(250, 248, 246, 0.7);
+  margin-bottom: 0.875rem;
+  transition: color 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 300;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(250, 248, 246, 0.1);
+  padding: 1.75rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-bottom p {
+  color: rgba(250, 248, 246, 0.35);
+  font-size: 0.75rem;
+  font-weight: 300;
+}
