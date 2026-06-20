@@ -1,6 +1,63 @@
-import CMSPage from "@/components/CMSPage";
+import { notFound } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import "./page.css";
 
-export default async function DynamicPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params;
-  return <CMSPage slug={resolvedParams.slug} />;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const pages = await fetch(`http://minimore.local/wp-json/wp/v2/pages?slug=${slug}&_fields=title`).then(res => res.json());
+  if (!pages || pages.length === 0) return { title: "Page Not Found - Minimore" };
+  return { title: `${pages[0].title.rendered} - Minimore` };
 }
+
+export default async function StandardPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${slug}&_fields=title,content`, {
+    next: { revalidate: 60 }
+  });
+  const pages = await res.json();
+
+  if (!pages || pages.length === 0) {
+    notFound();
+  }
+
+  const page = pages[0];
+
+  // Map slugs to a friendly eyebrow label
+  const eyebrowMap: Record<string, string> = {
+    about: "The Minimore Story",
+    faq: "Got Questions?",
+    contact: "We'd Love to Hear From You",
+  };
+  const eyebrow = eyebrowMap[slug] || "Minimore";
+
+  return (
+    <div className="standard-page page-wrapper">
+      <Navbar isStatic />
+
+      {/* ── Page Hero ── */}
+      <section className="standard-page-hero">
+        <div className="container">
+          <span className="standard-page-eyebrow">{eyebrow}</span>
+          <h1
+            className="standard-page-title"
+            dangerouslySetInnerHTML={{ __html: page.title.rendered }}
+          />
+        </div>
+      </section>
+
+      {/* ── Page Content ── */}
+      <section className="standard-page-body">
+        <div className="container">
+          <div className="standard-page-content">
+            <div
+              className="wp-content"
+              dangerouslySetInnerHTML={{ __html: page.content.rendered }}
+            />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+

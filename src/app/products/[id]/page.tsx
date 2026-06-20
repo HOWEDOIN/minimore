@@ -3,36 +3,52 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import AddToCartButton from "@/components/AddToCartButton";
+import QuantitySelector from "@/components/QuantitySelector";
 import "./product-detail.css";
-import { sdk } from "@/lib/medusa";
+import { wooApi } from "@/lib/woocommerce";
 
 export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  const { product } = await sdk.store.product.retrieve(id).catch((err) => {
+  // Try fetching by slug first, otherwise by ID
+  let product = null;
+  try {
+    const { data: productsBySlug } = await wooApi.get("products", { slug: id });
+    if (productsBySlug && productsBySlug.length > 0) {
+      product = productsBySlug[0];
+    } else {
+      const { data: productById } = await wooApi.get(`products/${id}`);
+      product = productById;
+    }
+  } catch (err) {
     console.error("Error fetching product", err);
-    return { product: null };
-  });
+  }
 
   if (!product) {
     notFound();
   }
 
-  const price = product.variants?.[0]?.calculated_price?.calculated_amount 
-    || product.variants?.[0]?.prices?.[0]?.amount 
-    || 0;
+  const price = product.price || product.regular_price || 0;
   
-  const brand = product.collection?.title || "MINIMORE";
+  const brand = product.categories?.[0]?.name || "MINIMORE";
   
-  // Custom Metadata
-  const metadata = product.metadata || {};
-  const sizeMl = metadata.size_ml as string | undefined;
-  const condition = metadata.condition as string | undefined;
-  const expiryDate = metadata.expiry_date as string | undefined;
-  const gwpNotes = metadata.gwp_notes as string | undefined;
+  // Custom Metadata (In WooCommerce, this would use ACF or custom meta_data array)
+  const metaObj: any = {};
+  if (product.meta_data) {
+    product.meta_data.forEach((meta: any) => {
+      metaObj[meta.key] = meta.value;
+    });
+  }
+  
+  const sizeMl = metaObj.size_ml as string | undefined;
+  const condition = metaObj.condition as string | undefined;
+  const expiryDate = metaObj.expiry_date as string | undefined;
+  const gwpNotes = metaObj.gwp_notes as string | undefined;
 
-  const whatsappMessage = encodeURIComponent(`Hi Minimore! I'm interested in ordering: ${product.title}`);
-  const whatsappUrl = `https://wa.me/60123456789?text=${whatsappMessage}`;
+  // ⚠️ TODO: Replace with real WhatsApp number before going live
+  const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "60123456789";
+  const whatsappMessage = encodeURIComponent(`Hi Minimore! I'm interested in ordering: ${product.name}`);
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
 
   return (
     <div className="page-wrapper">
@@ -40,15 +56,15 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
       
       <main className="container product-detail-layout">
         <div className="breadcrumb">
-          <Link href="/">Home</Link> / <Link href="/products">Products</Link> / <span>{product.title}</span>
+          <Link href="/">Home</Link> / <Link href="/products">Products</Link> / <span>{product.name}</span>
         </div>
 
         <div className="product-showcase">
           <div className="product-image-section">
             <div className="main-image-container">
               <Image 
-                src={product.thumbnail || "/images/skincare.png"} 
-                alt={product.title} 
+                src={product.images?.[0]?.src || "/images/skincare.png"} 
+                alt={product.name} 
                 fill 
                 className="detail-image"
                 priority
@@ -58,10 +74,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
           <div className="product-info-section">
             <span className="brand-tag">{brand}</span>
-            <h1 className="product-title">{product.title}</h1>
+            <h1 className="product-title">{product.name}</h1>
             <div className="product-price">RM {price}</div>
             
-            <p className="product-desc">{product.description}</p>
+            <p className="product-desc" dangerouslySetInnerHTML={{ __html: product.description || product.short_description || "" }}></p>
             
             <ul className="product-bullets">
               {sizeMl && <li><strong>Size/Weight:</strong> {sizeMl}</li>}
@@ -72,13 +88,9 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             </ul>
 
             <div className="actions-group">
-              <div className="quantity-selector">
-                <button>-</button>
-                <span>1</span>
-                <button>+</button>
-              </div>
+              <QuantitySelector />
               <div className="dual-cta">
-                <AddToCartButton variantId={product.variants?.[0]?.id || ""} />
+                <AddToCartButton product={product} />
                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary whatsapp-btn" style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.8rem', border: '1px solid #c9a473', color: '#c9a473', borderRadius: '4px', textDecoration: 'none' }}>
                   Order via WhatsApp
                 </a>

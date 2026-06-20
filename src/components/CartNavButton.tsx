@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 
+import { ShoppingBag } from 'lucide-react';
+
 export default function CartNavButton() {
   const { cart, openCart, initCart } = useCartStore();
   const [mounted, setMounted] = useState(false);
@@ -12,7 +14,7 @@ export default function CartNavButton() {
     initCart();
   }, [initCart]);
 
-  const count = cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+  const count = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <button 

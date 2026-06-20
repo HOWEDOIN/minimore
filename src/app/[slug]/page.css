@@ -1,0 +1,157 @@
+/* ========================
+   STANDARD PAGE LAYOUT
+======================== */
+
+.standard-page {
+  min-height: 100vh;
+}
+
+/* ── Page Hero Banner ── */
+.standard-page-hero {
+  background: linear-gradient(135deg, #9DC4D5 0%, #A8BDD6 50%, #B0B8D8 100%);
+  padding: 7rem 0 5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.standard-page-hero::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+  top: -120px;
+  right: -80px;
+  pointer-events: none;
+}
+
+.standard-page-hero::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 169, 110, 0.12) 0%, transparent 70%);
+  bottom: -60px;
+  left: -40px;
+  pointer-events: none;
+}
+
+.standard-page-eyebrow {
+  display: inline-block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.standard-page-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Content Area ── */
+.standard-page-body {
+  padding: 5rem 0 7rem;
+}
+
+.standard-page-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── WordPress Content Typography ── */
+.wp-content {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+.wp-content h1,
+.wp-content h2,
+.wp-content h3,
+.wp-content h4 {
+  font-family: var(--font-display);
+  color: var(--foreground);
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.wp-content h2 {
+  font-size: clamp(1.6rem, 2.5vw, 2rem);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.wp-content h3 {
+  font-size: 1.25rem;
+}
+
+.wp-content p {
+  margin-bottom: 1.5rem;
+}
+
+.wp-content p:last-child {
+  margin-bottom: 0;
+}
+
+.wp-content strong,
+.wp-content b {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.wp-content ul,
+.wp-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.wp-content li {
+  margin-bottom: 0.5rem;
+}
+
+.wp-content a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.wp-content a:hover {
+  color: var(--accent);
+}
+
+.wp-content blockquote {
+  border-left: 3px solid var(--brand-blue-light);
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.wp-content img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  margin: 1.5rem 0;
+}
+
+.wp-content hr {
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: 2.5rem 0;
+}

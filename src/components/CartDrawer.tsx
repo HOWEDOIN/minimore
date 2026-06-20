@@ -15,11 +15,10 @@ export default function CartDrawer() {
 
   if (!isCartOpen) return null;
 
-  const items = cart?.items || [];
+  const items = cart || [];
   
-  // Calculate total from items since cart.total might not be updated immediately in all SDK flows
   const total = items.reduce((acc, item) => {
-    return acc + (item.unit_price * item.quantity);
+    return acc + (item.price * item.quantity);
   }, 0);
 
   return (
@@ -35,7 +34,7 @@ export default function CartDrawer() {
           {items.length === 0 ? (
             <div className="empty-cart">
               <p>Your cart is empty.</p>
-              <button className="btn-secondary" onClick={closeCart}>Continue Shopping</button>
+              <button className="btn-outline" onClick={closeCart}>Continue Shopping</button>
             </div>
           ) : (
             items.map((item) => (
@@ -50,7 +49,7 @@ export default function CartDrawer() {
                 </div>
                 <div className="cart-item-details">
                   <h4 className="item-title">{item.title}</h4>
-                  <p className="item-price">RM {item.unit_price}</p>
+                  <p className="item-price">RM {item.price}</p>
                   <div className="item-actions">
                     <span className="item-qty">Qty: {item.quantity}</span>
                     <button 
@@ -74,9 +73,9 @@ export default function CartDrawer() {
               <span>RM {total}</span>
             </div>
             <p className="cart-taxes">Taxes and shipping calculated at checkout</p>
-            <Link href="/checkout" className="btn-primary checkout-btn" onClick={closeCart}>
+            <button className="btn-primary checkout-btn" onClick={() => useCartStore.getState().checkout()}>
               Go to Checkout
-            </Link>
+            </button>
           </div>
         )}
       </div>

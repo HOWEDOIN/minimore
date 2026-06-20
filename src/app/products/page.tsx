@@ -2,28 +2,33 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import "./products.css";
-import { sdk } from "@/lib/medusa";
+import { wooApi } from "@/lib/woocommerce";
 
-export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category } = await searchParams;
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; search?: string }>;
+}) {
+  const { category, search } = await searchParams;
 
-  const { product_categories } = await sdk.store.category.list({
-    limit: 100
-  }).catch(() => ({ product_categories: [] }));
+  // 1. Fetch categories for the filter bar
+  const { data: product_categories } = await wooApi.get("products/categories", { hide_empty: true }).catch(() => ({ data: [] }));
 
-  let query: any = { limit: 20 };
-  
-  if (category) {
-    const selectedCategory = product_categories.find(c => c.handle === category);
+  // 2. Determine params
+  const query: any = { per_page: 50 };
+  if (search) {
+    query.search = search;
+  } else if (category) {
+    const selectedCategory = product_categories.find((c: any) => c.slug === category);
     if (selectedCategory) {
-      query.category_id = [selectedCategory.id];
+      query.category = selectedCategory.id.toString();
     }
   }
 
-  // Fetch real products from Medusa
-  const { products } = await sdk.store.product.list(query).catch((err) => {
+  // Fetch real products from WooCommerce
+  const { data: products } = await wooApi.get("products", query).catch((err: any) => {
     console.error("Failed to fetch products", err);
-    return { products: [] };
+    return { data: [] };
   });
 
   return (
@@ -35,9 +40,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
           <h3>Categories</h3>
           <ul className="category-list">
             <li><Link href="/products" className={!category ? "active" : ""}>All Products</Link></li>
-            {product_categories?.map((cat) => (
+            {product_categories?.map((cat: any) => (
               <li key={cat.id}>
-                <Link href={`/products?category=${cat.handle}`} className={category === cat.handle ? "active" : ""}>
+                <Link href={`/products?category=${cat.slug}`} className={category === cat.slug ? "active" : ""}>
                   {cat.name}
                 </Link>
               </li>
@@ -60,28 +65,26 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             {products.length === 0 ? (
               <p>No products found.</p>
             ) : (
-              products.map((product) => {
-                // Get lowest price or first variant price
-                const price = product.variants?.[0]?.calculated_price?.calculated_amount 
-                  || product.variants?.[0]?.prices?.[0]?.amount 
-                  || 0;
+              products.map((product: any) => {
+                const price = product.price || product.regular_price || 0;
                 
                 return (
-                  <Link href={`/products/${product.id}`} className="product-card" key={product.id}>
+                  <Link href={`/products/${product.slug || product.id}`} className="product-card" key={product.id}>
                     <div className="product-image-container">
                       <Image 
-                        src={product.thumbnail || "/images/skincare.png"} 
-                        alt={product.title} 
-                        fill 
-                        className="product-image" 
+                        src={product.images?.[0]?.src || "/images/skincare.png"} 
+                        alt={product.name} 
+                        fill
+                        className="product-image"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
-                      {product.metadata?.condition && (
-                        <div className="product-badge">{product.metadata.condition as string}</div>
+                      {product.on_sale && (
+                        <div className="product-badge">Sale</div>
                       )}
                     </div>
                     <div className="product-info">
-                      <span className="brand">{product.collection?.title || "MINIMORE"}</span>
-                      <h3 className="product-name">{product.title}</h3>
+                      <span className="brand">{product.categories?.[0]?.name || "Minimore"}</span>
+                      <h3 className="product-name">{product.name}</h3>
                       <span className="price">RM {price}</span>
                     </div>
                   </Link>

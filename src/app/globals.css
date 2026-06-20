@@ -1,46 +1,58 @@
 :root {
-  /* ── Minimore Brand Palette ───────────────────────────────
-     Colour-picked from the official logo:
-     Gradient: sky-teal #9DC4D5 → periwinkle-blue #B0B8D8
-     White logo on top. Gold used only as accent blush.
-  ───────────────────────────────────────────────────────── */
-  --background: #f0f5f9;           /* near-white sky blue */
-  --background-alt: #e4eef5;       /* soft sky blue */
-  --foreground: #1a2b3c;           /* deep navy — readable, not harsh */
+  /* ── Minimore Brand Palette (pixel-exact from logo) ──────────────────
+     Logo gradient: #a3cbd3 (teal-blue left) → #9bbeda (periwinkle right)
+     Reference brand: Lumi Beauty — clean, minimal, warm white, airy.
+  ──────────────────────────────────────────────────────────────── */
 
-  /* Brand blues — matched directly from logo gradient */
-  --brand-blue-light: #9DC4D5;     /* top-left logo colour */
-  --brand-blue-mid:   #A8BDD6;     /* mid gradient */
-  --brand-blue-periwinkle: #B0B8D8;/* right-side logo colour */
+  /* Backgrounds — warm white like Lumi */
+  --background: #ffffff;
+  --background-alt: #faf6f3;        /* Lumi-style warm cream section bg */
+  --background-surface: #f3ede8;
 
-  /* Primary = the mid brand blue for interactive elements */
-  --primary: #7AAEC4;
-  --primary-light: #dcedf5;        /* very light sky for card backgrounds */
-  --primary-lighter: #f0f5f9;      /* near-white page bg */
+  /* Foreground */
+  --foreground: #1c1c1c;            /* near-black, soft */
+  --foreground-dim: #6b7280;        /* medium grey */
+  --foreground-muted: #9ca3af;      /* light grey */
 
-  /* Gold accent — used sparingly for highlights & price */
-  --accent: #C9A96E;               /* champagne gold */
-  --accent-light: #f5ede0;         /* soft gold blush for hover states */
-  --accent-dark: #8a6a3a;
+  /* Primary: Exact logo blue #a3cbd3 → #9bbeda */
+  --primary: #7ab8cc;               /* mid-point of logo gradient, slightly deeper for readability */
+  --primary-light: #a3cbd3;         /* logo left edge — teal blue */
+  --primary-mid: #9fc4d7;           /* logo center */
+  --primary-dark: #5a9ab5;          /* darker for hover/text use */
+  --primary-glow: rgba(122, 184, 204, 0.15);
 
-  --text-secondary: #3d5a70;       /* blue-grey body text */
-  --text-muted: #8aafc4;           /* muted sky */
-  --border: #c8dde9;               /* pale blue border */
-  --border-light: #ddeaf3;         /* very soft blue */
+  /* Gradient matching the logo exactly */
+  --brand-gradient: linear-gradient(135deg, #a3cbd3 0%, #9fc4d7 50%, #9bbeda 100%);
 
-  /* Typography */
-  --font-sans: var(--font-nunito), 'Nunito', sans-serif;
-  --font-display: var(--font-fredoka), 'Fredoka', sans-serif;
+  /* Accent: Soft Lavender (right side of logo) */
+  --lavender: #9bbeda;
+  --lavender-light: #c5d8ed;
 
-  /* Shadows & Effects */
-  --shadow-soft: 0 4px 24px rgba(157, 196, 213, 0.15);
-  --shadow-card: 0 2px 12px rgba(26, 43, 60, 0.05);
-  --shadow-hover: 0 12px 40px rgba(26, 43, 60, 0.08);
+  /* Glass / Surfaces */
+  --surface-glass: rgba(255, 255, 255, 0.85);
+  --surface-card: #ffffff;
+  --surface-hover: #f8fcfd;
 
-  /* Border Radius */
-  --radius-sm: 8px;
+  /* Borders — very subtle like Lumi */
+  --border-subtle: rgba(122, 184, 204, 0.2);
+  --border-glow: rgba(122, 184, 204, 0.45);
+  --border-light: rgba(28, 28, 28, 0.08);
+
+  /* Typography — Nunito (round, matches brand wordmark) */
+  --font-sans: var(--font-sans), 'Nunito', sans-serif;
+  --font-display: var(--font-sans), 'Nunito', sans-serif;
+
+  /* Shadows — very light, Lumi-style */
+  --shadow-soft: 0 2px 20px rgba(28, 28, 28, 0.05);
+  --shadow-card: 0 4px 20px rgba(28, 28, 28, 0.06);
+  --shadow-hover: 0 12px 40px rgba(122, 184, 204, 0.2), 0 2px 8px rgba(28, 28, 28, 0.06);
+  --shadow-blue: 0 6px 24px rgba(122, 184, 204, 0.35);
+
+  /* Radius — rounded, cute */
+  --radius-sm: 10px;
   --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-lg: 22px;
+  --radius-xl: 30px;
   --radius-pill: 9999px;
 }
 
@@ -57,15 +69,16 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-weight: 300;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
 }
 
 a {
@@ -80,93 +93,130 @@ button {
   font-family: var(--font-sans);
 }
 
-/* Utilities */
+/* ── Layout ─────────────────────────────────── */
 .container {
-  max-width: 1240px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
-/* Premium Buttons */
+/* ── Glass Utility ───────────────────────────── */
+.glass-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-glow);
+}
+
+/* ── Text Gradient Utility ───────────────────── */
+.text-gradient {
+  background: linear-gradient(120deg, var(--primary) 0%, var(--primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Buttons ─────────────────────────────────── */
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: #ffffff;
-  color: var(--foreground);
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--brand-gradient);
+  color: #ffffff;
   padding: 0.875rem 2.25rem;
-  font-size: 0.875rem;
-  letter-spacing: 1px;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   font-weight: 700;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid #ffffff;
-  font-family: var(--font-display);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  font-family: var(--font-sans);
   border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-blue);
 }
 
 .btn-primary:hover {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(122, 184, 204, 0.45);
+  filter: brightness(1.05);
 }
 
 .btn-outline {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
+  justify-content: center;
+  gap: 0.6rem;
+  background-color: transparent;
+  color: var(--foreground);
   padding: 0.875rem 2.25rem;
-  font-size: 0.875rem;
-  letter-spacing: 1px;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   font-weight: 700;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  font-family: var(--font-display);
-  backdrop-filter: blur(8px);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1.5px solid var(--border-light);
+  font-family: var(--font-sans);
   border-radius: var(--radius-pill);
 }
 
 .btn-outline:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  background-color: var(--primary-glow);
   transform: translateY(-2px);
 }
 
-/* Product Grid */
+/* ── Product Grid ────────────────────────────── */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 @media (min-width: 640px) {
   .product-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .product-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2.5rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
   }
 }
 
-/* Product Card */
+/* ── Product Card ────────────────────────────── */
 .product-card {
   cursor: pointer;
   display: block;
-  group: true;
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1rem;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-glow);
 }
 
 .product-image-container {
   position: relative;
-  aspect-ratio: 1/1;
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--background-alt) 100%);
+  aspect-ratio: 4/5;
+  background: var(--background-alt);
   margin-bottom: 1.25rem;
   overflow: hidden;
   border-radius: var(--radius-lg);
@@ -174,58 +224,55 @@ button {
 
 .product-image {
   object-fit: cover;
-  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .product-card:hover .product-image {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
 .product-badge {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background-color: rgba(255,255,255,0.92);
-  backdrop-filter: blur(8px);
-  padding: 0.4rem 0.85rem;
-  font-size: 0.7rem;
+  top: 0.875rem;
+  left: 0.875rem;
+  background: var(--primary);
+  padding: 0.3rem 0.75rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   z-index: 2;
-  color: var(--primary);
+  color: #ffffff;
   font-weight: 700;
-  font-family: var(--font-display);
-  border: 1px solid rgba(122, 174, 196, 0.2);
+  font-family: var(--font-sans);
   border-radius: var(--radius-pill);
 }
 
 .product-info {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
-  padding: 0 0.125rem;
+  gap: 0.4rem;
+  padding: 0.25rem 0.5rem 0.5rem;
 }
 
 .brand {
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--text-muted);
-  font-weight: 700;
-  font-family: var(--font-display);
+  letter-spacing: 2.5px;
+  color: var(--primary);
+  font-weight: 600;
+  font-family: var(--font-sans);
 }
 
 .product-name {
-  font-family: var(--font-sans);
-  font-size: 1.125rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--foreground);
-  line-height: 1.3;
+  line-height: 1.2;
 }
 
 .price {
-  font-size: 0.875rem;
-  color: var(--primary);
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--foreground);
 }
