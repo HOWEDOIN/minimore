@@ -89,8 +89,9 @@ export const useCartStore = create<CartState>((set, get) => ({
       if (items.length === 0) return;
 
       const payload = btoa(JSON.stringify(items));
-      const storeUrl = process.env.NEXT_PUBLIC_WP_URL || "https://admin.minimore.my";
-      const checkoutUrl = `${storeUrl}/?minimore_checkout_sync=${payload}`;
+      // Use the current site's own origin so the proxy handles it transparently.
+      // This means customers see minimore.my/... instead of admin.minimore.my/...
+      const checkoutUrl = `${window.location.origin}/?minimore_checkout_sync=${payload}`;
 
       // Clear local cart and redirect
       set({ cart: [], isCartOpen: false });
