@@ -79,28 +79,8 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
   
   checkout: async () => {
-    set({ isLoading: true });
-    try {
-      const items = get().cart.map(item => ({
-        id: parseInt(item.variantId),
-        qty: item.quantity
-      }));
-      
-      if (items.length === 0) return;
-
-      const payload = btoa(JSON.stringify(items));
-      // Use the current site's own origin so the proxy handles it transparently.
-      // This means customers see minimore.my/... instead of admin.minimore.my/...
-      const checkoutUrl = `${window.location.origin}/?minimore_checkout_sync=${payload}`;
-
-      // Clear local cart and redirect
-      set({ cart: [], isCartOpen: false });
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert("Something went wrong during checkout.");
-    } finally {
-      set({ isLoading: false });
-    }
+    if (get().cart.length === 0) return;
+    // Redirect to our native Next.js checkout page — no WordPress proxy needed.
+    window.location.href = '/checkout';
   }
 }))
