@@ -26,6 +26,9 @@ function minimore_checkout_styles() {
     }
 }
 
+// Disable canonical redirects to prevent reverse proxy loops
+add_filter( 'redirect_canonical', '__return_false' );
+
 add_filter( 'woocommerce_return_to_shop_redirect', 'minimore_custom_return_shop_url' );
 function minimore_custom_return_shop_url() { return 'https://minimore.my/'; }
 """
