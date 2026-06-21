@@ -229,44 +229,75 @@
 
 @media (max-width: 1024px) {
   .hero {
-    min-height: 50vw !important; /* Forces the section into a 2:1 rectangle, making the 50% image a perfect square */
+    min-height: 50vw !important;
     height: auto !important;
     margin-top: 80px !important;
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    display: flex;
+    flex-direction: column;
+    padding-top: 0 !important;
+    padding-bottom: 3rem !important;
+    background: #fff; /* Solid white background for mobile to look clean */
+  }
+
+  .hero::before {
+    display: none; /* Hide the orb on mobile to reduce clutter */
+  }
+
+  .hero-image-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 100vw !important; /* Perfect square matching screen width */
+    order: -1; /* Move image to the TOP */
+    mask-image: none;
+    -webkit-mask-image: none;
+    border-radius: 0 0 24px 24px; /* Soft rounding at the bottom of the image */
   }
 
   .hero-content {
-    padding-top: 0 !important;
-  }
-
-  .hero-title {
-    font-size: 2.25rem !important;
-    margin-bottom: 1rem !important;
+    position: relative !important;
+    padding: 2rem 1.5rem !important;
+    order: 2; /* Text below image */
+    text-align: center; /* Center the text on mobile */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .hero-title, .hero-eyebrow, .hero-actions, .hero-desc {
-    max-width: 45% !important; /* Re-expand text safely since image is only 50% now */
-    margin-left: 1.5rem !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
   }
-  
-  .hero-image-wrapper {
-    width: 50% !important; /* Image strictly reaches the horizontal center */
-    right: 0 !important;
-    top: 0 !important;
+
+  .hero-eyebrow {
+    margin-bottom: 1rem;
   }
-  
-  .hero-desc {
-    font-size: 0.875rem !important;
-    margin-bottom: 1.5rem !important;
-  }
-  
+
   .hero-eyebrow::before {
     display: none !important;
   }
-  
+
   .hero-title {
-    font-size: clamp(2.5rem, 8vw, 4rem) !important;
+    font-size: clamp(2.5rem, 10vw, 3.5rem) !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-desc {
+    font-size: 0.95rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .hero-carousel-controls {
+    left: 50%;
+    bottom: 1rem;
+  }
+
+  .hero-carousel-shop-btn {
+    display: none; /* Hide the floating shop button on mobile since we have the main button below */
   }
 }
 
