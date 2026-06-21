@@ -257,8 +257,8 @@
   /* ── Square image goes SECOND (order 2), slightly shrunk and centered ── */
   .hero-image-wrapper {
     position: relative !important;
-    width: calc(100% - 6rem) !important; /* Shrunk image further */
-    height: calc(100vw - 6rem) !important; /* Maintain square ratio */
+    width: calc(100% - 8rem) !important; /* Shrunk image further (approx 20% less area) */
+    height: calc(100vw - 8rem) !important; /* Maintain square ratio */
     margin: 0 auto;
     order: 2;
     mask-image: none;
