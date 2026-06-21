@@ -4,7 +4,20 @@ import "./page.css";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const pages = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${slug}&_fields=title`).then(res => res.json());
+  if (slug === 'faq') {
+    return { title: "FAQ - Minimore" };
+  }
+
+  let pages = [];
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${slug}&_fields=title`);
+    if (res.ok) {
+      pages = await res.json();
+    }
+  } catch (e) {
+    console.error("Failed to fetch page metadata:", e);
+  }
+
   if (!pages || pages.length === 0) return { title: "Page Not Found - Minimore" };
   return { title: `${pages[0].title.rendered} - Minimore` };
 }
@@ -12,10 +25,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function StandardPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${slug}&_fields=title,content`, {
-    next: { revalidate: 60 }
-  });
-  const pages = await res.json();
+  let pages = [];
+  if (slug === 'faq') {
+    pages = [{
+      title: { rendered: "Frequently Asked Questions" },
+      content: { rendered: "" }
+    }];
+  } else {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${slug}&_fields=title,content`, {
+        next: { revalidate: 60 }
+      });
+      if (res.ok) {
+        pages = await res.json();
+      }
+    } catch (e) {
+      console.error("Failed to fetch page content:", e);
+    }
+  }
 
   if (!pages || pages.length === 0) {
     notFound();
