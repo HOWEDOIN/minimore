@@ -1,0 +1,54 @@
+.tabbed-products-container {
+  width: 100%;
+}
+
+.tabs-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  padding-bottom: 1rem;
+}
+
+.tabs-scroll-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.collection-tabs {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--foreground-dim);
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+  font-family: var(--font-family);
+}
+
+.tab-btn:hover {
+  color: var(--foreground);
+}
+
+.tab-btn.active {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+/* Update the global product-grid to ensure it works well with the new container */
+@media (max-width: 768px) {
+  .collection-tabs {
+    gap: 1.5rem;
+  }
+  .tab-btn {
+    font-size: 1.25rem;
+  }
+}

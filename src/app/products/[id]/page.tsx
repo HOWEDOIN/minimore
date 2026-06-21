@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import { getProductImage } from "@/utils/imageHelper";
 import AddToCartButton from "@/components/AddToCartButton";
 import QuantitySelector from "@/components/QuantitySelector";
 import "./product-detail.css";
@@ -63,7 +64,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           <div className="product-image-section">
             <div className="main-image-container">
               <Image 
-                src={product.images?.[0]?.src || "/images/skincare.png"} 
+                src={getProductImage(product)} 
                 alt={product.name} 
                 fill 
                 className="detail-image"

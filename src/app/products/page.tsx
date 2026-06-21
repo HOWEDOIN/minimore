@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import "./products.css";
 import { wooApi } from "@/lib/woocommerce";
+import { getProductImage } from "@/utils/imageHelper";
 
 export default async function ProductsPage({
   searchParams,
@@ -72,7 +73,7 @@ export default async function ProductsPage({
                   <Link href={`/products/${product.slug || product.id}`} className="product-card" key={product.id}>
                     <div className="product-image-container">
                       <Image 
-                        src={product.images?.[0]?.src || "/images/skincare.png"} 
+                        src={getProductImage(product)} 
                         alt={product.name} 
                         fill
                         className="product-image"

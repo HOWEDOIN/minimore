@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, Variants, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import TabbedProducts from "@/components/TabbedProducts";
 
-export default function HomePageClient({ products, homepageContent, sectionOrder }: { products: any, homepageContent: any, sectionOrder: string[] }) {
+export default function HomePageClient({ products, homepageContent, sectionOrder, collectionTabs }: { products: any, homepageContent: any, sectionOrder: string[], collectionTabs: string[] }) {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroImageY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
@@ -54,12 +55,14 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
           <motion.p variants={itemVariants} className="hero-desc">
             {homepageContent.hero_subtitle}
           </motion.p>
-          <motion.div variants={itemVariants} className="hero-actions">
+          <motion.div 
+            className="hero-actions"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+          >
             <Link href={homepageContent.hero_cta1_url || '/products'} className="btn-primary">
               {homepageContent.hero_cta1_label || 'Shop Collection'}
-            </Link>
-            <Link href={homepageContent.hero_cta2_url || '/about'} className="btn-outline">
-              {homepageContent.hero_cta2_label || 'Our Story'}
             </Link>
           </motion.div>
         </motion.div>
@@ -87,57 +90,71 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
 
     trending: (
       <section className="featured container" id="shop">
-        <motion.div
-          className="section-header"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <h2>Trending Miniatures</h2>
-          <Link href="/products">View All</Link>
-        </motion.div>
-
-        <motion.div
-          className="product-grid"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-        >
-          {products.length === 0 ? (
-            <p style={{ color: 'var(--foreground-dim)', fontWeight: 400 }}>No trending items right now.</p>
-          ) : (
-            products.map((product: any) => {
-              const price = product.price || product.regular_price || 0;
-              return (
-                <motion.div variants={itemVariants} key={product.id} whileHover={{ y: -8 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
-                  <Link href={`/products/${product.slug || product.id}`} className="product-card">
-                    <div className="product-image-container">
-                      <Image
-                        src={product.images?.[0]?.src || "/images/skincare.png"}
-                        alt={product.name}
-                        fill
-                        className="product-image"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                      />
-                      {product.on_sale && (
-                        <div className="product-badge">Sale</div>
-                      )}
-                    </div>
-                    <div className="product-info">
-                      <span className="brand">{product.categories?.[0]?.name || "Minimore"}</span>
-                      <h3 className="product-name">{product.name}</h3>
-                      <span className="price">RM {price}</span>
-                    </div>
-                  </Link>
-                </motion.div>
-              );
-            })
-          )}
-        </motion.div>
+        <TabbedProducts products={products} collectionTabs={collectionTabs} />
       </section>
     ),
+    contact_locate: (
+      <section className="contact-locate-section container">
+        <div className="contact-locate-grid">
+          <motion.div 
+            className="locate-card"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2>LOCATE US</h2>
+            <div className="map-container">
+              <iframe 
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(homepageContent.contact_map_query || 'Lalaport Bukit Bintang City Centre')}&t=&z=15&ie=UTF8&iwloc=&output=embed`} 
+                width="85%" 
+                height="160" 
+                style={{ border: 0, borderRadius: '12px', marginBottom: '1rem' }} 
+                allowFullScreen={false} 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+            <div className="address-text" style={{ whiteSpace: 'pre-line' }}>
+              {homepageContent.contact_address || 
+                "L1-53, 2, Jln Hang Tuah\nBukit Bintang, 55100 Kuala Lumpur\nWilayah Persekutuan Kuala Lumpur"
+              }
+            </div>
+          </motion.div>
+
+          <motion.div 
+            className="contact-card"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <h2>CONTACT US</h2>
+            <div className="contact-info-list">
+              <div className="contact-item">
+                <span className="contact-icon">✉️</span>
+                <div>
+                  <span className="contact-label">Email Us</span>
+                  <a href={`mailto:${homepageContent.contact_email || 'marketingminimore@gmail.com'}`} className="contact-link">
+                    {homepageContent.contact_email || 'marketingminimore@gmail.com'}
+                  </a>
+                </div>
+              </div>
+              
+              <div className="contact-item" style={{ marginTop: '2rem' }}>
+                <span className="contact-icon">💬</span>
+                <div>
+                  <span className="contact-label">WhatsApp Us</span>
+                  <a href={`https://wa.me/${homepageContent.contact_whatsapp || '60123456789'}`} className="contact-link">
+                    {homepageContent.contact_whatsapp_display || '+60 12-345 6789 (Placeholder)'}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    ),
+
 
     why: (
       <section className="about-banner">

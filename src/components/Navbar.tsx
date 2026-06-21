@@ -93,10 +93,11 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
           </div>
           
           <div className="nav-links">
-            <Link href="/products?category=cosmetics">Cosmetics</Link>
-            <Link href="/products?category=fragrances">Fragrances</Link>
             <Link href="/products">Shop All</Link>
-            <Link href="/about">About</Link>
+            <Link href="/products?category=cosmetics">Cosmetics</Link>
+            <Link href="/products?category=skincare">Skincare</Link>
+            <Link href="/products?category=make-up">Make Up</Link>
+            <Link href="/faq">FAQ</Link>
           </div>
           
           <div className="nav-actions">
@@ -115,11 +116,11 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
               />
             </form>
             
-            {mounted && (
+            {/* mounted && (
               <Link href={user ? "/account" : "/login"} className="nav-auth-link">
                 {user ? "My Account" : "Sign In"}
               </Link>
-            )}
+            ) */}
             
             <CartNavButton />
           </div>
@@ -149,15 +150,16 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
           </form>
 
           <div className="mobile-nav-links">
-            <Link href="/products?category=cosmetics" onClick={closeMobileMenu}>Cosmetics</Link>
-            <Link href="/products?category=fragrances" onClick={closeMobileMenu}>Fragrances</Link>
             <Link href="/products" onClick={closeMobileMenu}>Shop All</Link>
-            <Link href="/about" onClick={closeMobileMenu}>About</Link>
-            {mounted && (
+            <Link href="/products?category=cosmetics" onClick={closeMobileMenu}>Cosmetics</Link>
+            <Link href="/products?category=skincare" onClick={closeMobileMenu}>Skincare</Link>
+            <Link href="/products?category=make-up" onClick={closeMobileMenu}>Make Up</Link>
+            <Link href="/faq" onClick={closeMobileMenu}>FAQ</Link>
+            {/* mounted && (
               <Link href={user ? "/account" : "/login"} onClick={closeMobileMenu}>
                 {user ? "My Account" : "Sign In"}
               </Link>
-            )}
+            ) */}
           </div>
         </div>
       </div>
