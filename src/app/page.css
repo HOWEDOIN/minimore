@@ -43,7 +43,8 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 5%;
+  /* Use standard container padding to align with navbar logo */
+  padding: 0 2rem;
   padding-top: 100px;
 }
 
@@ -106,21 +107,111 @@
   align-items: center;
 }
 
-/* Image wrapper anchored to the right to keep text clear */
+/* Image wrapper anchored to the right half of the screen */
 .hero-image-wrapper {
   position: absolute;
   right: 0;
   top: 0;
   width: 55%;
   height: 100%;
-  z-index: 5;
-  mask-image: linear-gradient(to left, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+  z-index: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(to left, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
 }
 
 .hero-image {
   object-fit: cover;
-  object-position: center 30%; /* Shifted down slightly to show more perfume bottles */
+  object-position: center;
+}
+
+.hero-carousel-controls {
+  position: absolute;
+  bottom: 2rem;
+  left: 72.5%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.hero-carousel-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hero-carousel-shop-btn {
+  position: absolute;
+  left: 100%;
+  margin-left: 1.5rem;
+  background-color: transparent;
+  color: var(--foreground); /* black */
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hero-carousel-shop-btn:hover {
+  color: var(--primary);
+  text-shadow: 0 0 10px var(--primary-glow);
+  transform: translateX(3px);
+}
+
+.hero-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-carousel-dot:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.hero-carousel-dot.active {
+  background-color: var(--primary, #333);
+  transform: scale(1.2);
+}
+
+.hero-carousel-next {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: var(--foreground);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.hero-carousel-next:hover {
+  background-color: #fff;
+  transform: translateY(-50%) scale(1.05);
+}
+
+@media (max-width: 1024px) {
+  .hero-carousel-next {
+    display: none; /* Hide next button on mobile as per requirement "right button in the webview" */
+  }
 }
 
 @keyframes float {
@@ -138,75 +229,36 @@
 
 @media (max-width: 1024px) {
   .hero {
-    flex-direction: column-reverse !important; /* Image on top, text below */
-    justify-content: flex-end !important;
-    padding-top: 60px !important; /* Clear navbar */
-    background: var(--background) !important;
-    min-height: auto !important;
+    min-height: 50vw !important; /* Forces the section into a 2:1 rectangle, making the 50% image a perfect square */
     height: auto !important;
-  }
-  
-  .hero-image-wrapper {
-    position: relative !important;
-    width: 100% !important;
-    height: 30vh !important;
-    min-height: 240px !important;
-    mask-image: linear-gradient(to bottom, transparent 0%, black 10%) !important;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%) !important;
-    z-index: 1 !important;
-    margin-bottom: -1rem !important; /* Adjusted overlap for smaller image */
-  }
-  
-  .hero-image {
-    object-position: center 30% !important;
+    margin-top: 80px !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
   }
 
   .hero-content {
-    background: var(--background) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border: none !important;
-    border-radius: 0 !important;
-    padding: 3rem 1.5rem !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    box-shadow: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    position: relative !important;
-    z-index: 10 !important;
-    opacity: 1 !important;
-    transform: none !important;
+    padding-top: 0 !important;
+  }
+
+  .hero-title {
+    font-size: 2.25rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-title, .hero-eyebrow, .hero-actions, .hero-desc {
+    max-width: 45% !important; /* Re-expand text safely since image is only 50% now */
+    margin-left: 1.5rem !important;
   }
   
-  .hero-title, .hero-desc, .hero-eyebrow, .hero-actions {
-    max-width: 100% !important;
+  .hero-image-wrapper {
+    width: 50% !important; /* Image strictly reaches the horizontal center */
+    right: 0 !important;
+    top: 0 !important;
   }
   
   .hero-desc {
-    margin-bottom: 2rem !important;
-    padding: 0 1rem !important; /* Add some horizontal padding */
-    max-width: 90% !important; /* Prevent spanning whole screen */
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  
-  .hero-actions {
-    justify-content: center !important;
-    flex-direction: row !important; /* Side by side */
-    flex-wrap: wrap !important;
-    gap: 1rem !important;
-    width: 100% !important;
-  }
-  
-  .hero-actions .btn-primary, .hero-actions .btn-outline {
-    width: auto !important; /* Natural width */
-    justify-content: center !important;
-    padding-left: 1.5rem !important;
-    padding-right: 1.5rem !important;
+    font-size: 0.875rem !important;
+    margin-bottom: 1.5rem !important;
   }
   
   .hero-eyebrow::before {
@@ -222,7 +274,7 @@
    FEATURED PRODUCTS
 ======================== */
 .featured {
-  padding: 8rem 2rem; /* Keep horizontal padding to prevent edge bleeding */
+  padding: 4rem 2rem; /* Keep horizontal padding to prevent edge bleeding */
 }
 
 .section-header {
@@ -665,7 +717,7 @@
    CONTACT & LOCATE
 ======================== */
 .contact-locate-section {
-  padding: 6rem 2rem;
+  padding: 3rem 2rem;
   background: var(--background);
 }
 
@@ -730,4 +782,10 @@
 
 .contact-link:hover {
   color: var(--primary);
+}
+
+@media (max-width: 1024px) {
+  .hero-carousel-controls {
+    left: 50%;
+  }
 }

@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, Variants, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, Variants, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
 import TabbedProducts from "@/components/TabbedProducts";
 
 export default function HomePageClient({ products, homepageContent, sectionOrder, collectionTabs }: { products: any, homepageContent: any, sectionOrder: string[], collectionTabs: string[] }) {
@@ -12,6 +12,20 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
   const heroImageY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const heroContentY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const heroImages = homepageContent.hero_images || [homepageContent.hero_image || "/images/hero.png"];
+  const heroLinks = homepageContent.hero_links || [];
+  
+  const nextImage = useCallback(() => {
+    setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+  }, [heroImages.length]);
+
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    const interval = setInterval(nextImage, 5000);
+    return () => clearInterval(interval);
+  }, [nextImage, heroImages.length]);
 
   // Animation Variants
   const containerVariants: Variants = {
@@ -74,16 +88,76 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
           transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
           style={{ y: heroImageY }}
         >
-          <Image
-            src={homepageContent.hero_image || "/images/hero.png"}
-            alt="Minimore luxury cosmetics and fragrances"
-            fill
-            className="hero-image"
-            priority
-            sizes="55vw"
-          />
+          <AnimatePresence mode="popLayout">
+            {/* Image motion.div logic unchanged */}
+            <motion.div
+              key={currentImageIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              style={{ position: 'absolute', inset: 0 }}
+            >
+              {heroLinks[currentImageIndex] && heroLinks[currentImageIndex] !== '#' ? (
+                <Link href={heroLinks[currentImageIndex]} style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}>
+                  <Image
+                    src={heroImages[currentImageIndex]}
+                    alt="Minimore luxury cosmetics and fragrances"
+                    fill
+                    className="hero-image"
+                    priority
+                    sizes="55vw"
+                  />
+                </Link>
+              ) : (
+                <Image
+                  src={heroImages[currentImageIndex]}
+                  alt="Minimore luxury cosmetics and fragrances"
+                  fill
+                  className="hero-image"
+                  priority
+                  sizes="55vw"
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {heroImages.length > 1 && (
+            <>
+              {/* Next Button */}
+              <button 
+                className="hero-carousel-next" 
+                onClick={nextImage}
+                aria-label="Next image"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </>
+          )}
         </motion.div>
 
+        <div className="hero-carousel-controls">
+          {heroImages.length > 1 && (
+            <div className="hero-carousel-dots">
+              {heroImages.map((_: any, idx: number) => (
+                <button
+                  key={idx}
+                  className={`hero-carousel-dot ${idx === currentImageIndex ? "active" : ""}`}
+                  onClick={() => setCurrentImageIndex(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
+
+          {heroLinks[currentImageIndex] && heroLinks[currentImageIndex] !== '#' && (
+            <Link href={heroLinks[currentImageIndex]} className="hero-carousel-shop-btn">
+              &rarr; SHOP NOW
+            </Link>
+          )}
+        </div>
 
       </header>
     ),

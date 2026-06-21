@@ -22,12 +22,15 @@ export default async function AnnouncementBar() {
   }
 
   return (
-    <div className="announcement-bar">
-      {announcement.link ? (
-        <Link href={announcement.link}>{announcement.text}</Link>
-      ) : (
-        <span>{announcement.text}</span>
-      )}
-    </div>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: ':root { --announcement-height: 40px; }' }} />
+      <div className="announcement-bar">
+        {announcement.link ? (
+          <Link href={announcement.link}>{announcement.text}</Link>
+        ) : (
+          <span>{announcement.text}</span>
+        )}
+      </div>
+    </>
   );
 }

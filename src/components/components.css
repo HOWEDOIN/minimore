@@ -2,9 +2,9 @@
    NAVBAR
 ======================== */
 .navbar {
-  padding: 1.25rem 0;
+  padding: 20px 0;
   position: fixed;
-  top: var(--announcement-height, 40px);
+  top: var(--announcement-height, 0px);
   left: 0;
   right: 0;
   z-index: 100;
@@ -23,11 +23,14 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  height: 100%;
 }
 
 .nav-center-mobile {
   display: flex;
+  align-items: center;
   justify-content: center;
+  height: 100%;
 }
 
 .navbar.static {
@@ -200,6 +203,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 0;
+  margin: 0;
 }
 
 .hamburger span {
