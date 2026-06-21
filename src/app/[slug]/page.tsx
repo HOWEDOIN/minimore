@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import fs from "fs";
-import path from "path";
 import "./page.css";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
