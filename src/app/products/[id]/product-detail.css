@@ -150,3 +150,105 @@
   align-items: center;
   justify-content: center;
 }
+
+/* ── FOMO UI & Trust Badges ── */
+
+.product-badges-top {
+  margin-bottom: 1rem;
+}
+
+.sale-badge {
+  display: inline-block;
+  background-color: #ef4444; /* Bright red */
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.pricing-group {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.product-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ef4444; /* Matches competitor's red */
+  font-family: var(--font-sans);
+  margin-bottom: 0;
+}
+
+.product-regular-price {
+  font-size: 1rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.shipping-notice {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.shipping-notice u {
+  text-decoration-color: #9ca3af;
+}
+
+.stock-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #10b981; /* Green */
+  margin-bottom: 1.5rem;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.trust-badges {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.trust-badge svg {
+  color: var(--primary); /* Gold */
+}

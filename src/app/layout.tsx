@@ -26,7 +26,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={nunito.variable}>
         <AnnouncementBar />
-        {children}
+        <main className="main-content">
+          {children}
+        </main>
         <CartDrawer />
         <Footer />
       </body>
