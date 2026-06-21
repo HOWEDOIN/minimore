@@ -228,45 +228,69 @@
 ======================== */
 
 @media (max-width: 1024px) {
+  /* ── Kill the default 100svh min-height so no empty gap appears below button ── */
   .hero {
+    min-height: auto !important;
     display: flex;
     flex-direction: column;
     padding-top: 0 !important;
-    padding-bottom: 3rem !important;
-    background: #fff; /* Solid white background for mobile to look clean */
+    padding-bottom: 1.5rem !important;
+    background: #fff;
   }
 
   .hero::before {
-    display: none; /* Hide the orb on mobile to reduce clutter */
+    display: none;
   }
 
+  /* ── Square image fills full width, sits at very top ── */
   .hero-image-wrapper {
     position: relative !important;
     width: 100% !important;
-    height: 100vw !important; /* Perfect square matching screen width */
-    order: -1; /* Move image to the TOP */
+    height: 100vw !important;
+    order: -1;
     mask-image: none;
     -webkit-mask-image: none;
-    border-radius: 0 0 24px 24px; /* Soft rounding at the bottom of the image */
+    border-radius: 0 0 24px 24px;
+    flex-shrink: 0;
   }
 
+  /* ── Carousel dots: stick to the very bottom of the image ── */
+  .hero-carousel-controls {
+    position: absolute;
+    /* Image is 100vw tall. Place dots just inside the bottom edge of it. */
+    top: calc(100vw - 36px);
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: auto;
+  }
+
+  /* ── Bring back the "→ SHOP NOW" text, positioned right of the dots ── */
+  .hero-carousel-shop-btn {
+    display: inline-flex;
+    position: static;
+    margin-left: 1.25rem;
+    font-size: 0.75rem;
+  }
+
+  /* ── Text block: centered, compact, not edge-to-edge ── */
   .hero-content {
     position: relative !important;
-    padding: 2rem 1.5rem !important;
-    order: 2; /* Text below image */
-    text-align: center; /* Center the text on mobile */
+    padding: 1.5rem 2rem 0 !important;
+    order: 2;
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
   .hero-title, .hero-eyebrow, .hero-actions, .hero-desc {
-    max-width: 100% !important;
+    max-width: 520px !important;
     margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 
   .hero-eyebrow {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .hero-eyebrow::before {
@@ -274,22 +298,16 @@
   }
 
   .hero-title {
-    font-size: clamp(2.5rem, 10vw, 3.5rem) !important;
-    margin-bottom: 1rem !important;
+    font-size: clamp(2.2rem, 9vw, 3.2rem) !important;
+    margin-bottom: 0.75rem !important;
   }
 
+  /* ── Description: readable width, not full-bleed ── */
   .hero-desc {
-    font-size: 0.95rem !important;
-    margin-bottom: 2rem !important;
-  }
-
-  .hero-carousel-controls {
-    left: 50%;
-    bottom: 1rem;
-  }
-
-  .hero-carousel-shop-btn {
-    display: none; /* Hide the floating shop button on mobile since we have the main button below */
+    font-size: 0.875rem !important;
+    max-width: 340px !important;
+    margin-bottom: 1.5rem !important;
+    line-height: 1.65 !important;
   }
 }
 
