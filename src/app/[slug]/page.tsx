@@ -52,7 +52,7 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
           <div className="standard-page-content">
             <div
               className="wp-content"
-              dangerouslySetInnerHTML={{ __html: slug === 'faq' ? require('@/data/faq.json').map((p: any) => `<p><strong>${p.q}</strong><br />${p.a}</p>`).join('\n') : page.content.rendered }}
+              dangerouslySetInnerHTML={{ __html: slug === 'faq' ? require('@/data/faq.json').map((p: any) => `<p><strong>${p.q}</strong>${p.a}</p>`).join('\n') : page.content.rendered }}
             />
           </div>
         </div>
