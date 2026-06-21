@@ -234,7 +234,7 @@
     display: flex;
     flex-direction: column;
     padding-top: 0 !important;
-    padding-bottom: 1.5rem !important;
+    padding-bottom: 2rem !important;
     background: #fff;
   }
 
@@ -242,26 +242,42 @@
     display: none;
   }
 
-  /* ── Square image fills full width, sits at very top ── */
+  /* ── Text block goes FIRST (order 1) ── */
+  .hero-content {
+    position: relative !important;
+    padding: 3rem 2rem 2.5rem !important; /* Spacing below nav, and before image */
+    order: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Square image goes SECOND (order 2), slightly shrunk and centered ── */
   .hero-image-wrapper {
     position: relative !important;
-    width: 100% !important;
-    height: 100vw !important;
-    order: -1;
+    width: calc(100% - 3rem) !important;
+    height: calc(100vw - 3rem) !important;
+    margin: 0 auto; /* Center it */
+    order: 2;
     mask-image: none;
     -webkit-mask-image: none;
-    border-radius: 0 0 24px 24px;
+    border-radius: 24px; /* Rounded corners on all sides since it's floating */
     flex-shrink: 0;
   }
 
-  /* ── Carousel dots: stick to the very bottom of the image ── */
+  /* ── Carousel dots go THIRD (order 3), flowing naturally below the image ── */
   .hero-carousel-controls {
-    position: absolute;
-    /* Image is 100vw tall. Place dots just inside the bottom edge of it. */
-    top: calc(100vw - 36px);
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
+    order: 3;
+    top: auto;
+    left: auto;
     bottom: auto;
+    transform: none;
+    margin: 1.5rem auto 0; /* Space below the image, centered horizontally */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* ── Bring back the "→ SHOP NOW" text, positioned right of the dots ── */
@@ -270,17 +286,6 @@
     position: static;
     margin-left: 1.25rem;
     font-size: 0.75rem;
-  }
-
-  /* ── Text block: centered, compact, not edge-to-edge ── */
-  .hero-content {
-    position: relative !important;
-    padding: 1.5rem 2rem 0 !important;
-    order: 2;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   .hero-title, .hero-eyebrow, .hero-actions, .hero-desc {
