@@ -54,7 +54,7 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
           <div className="standard-page-content">
             <div
               className="wp-content"
-              dangerouslySetInnerHTML={{ __html: slug === 'faq' ? fs.readFileSync(path.join(process.cwd(), '../.gemini/antigravity/brain/3c87b1bd-006f-42f8-9ce4-b0f223461bc1/scratch/faq_html.txt'), 'utf8') : page.content.rendered }}
+              dangerouslySetInnerHTML={{ __html: slug === 'faq' ? fs.readFileSync('/Users/hauiilee/.gemini/antigravity/brain/3c87b1bd-006f-42f8-9ce4-b0f223461bc1/scratch/faq_html.txt', 'utf8') : page.content.rendered }}
             />
           </div>
         </div>
