@@ -50,7 +50,7 @@
 .cart-header h2 {
   font-family: var(--font-display);
   font-size: 1.3rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--foreground);
   margin: 0;
   letter-spacing: -0.02em;
@@ -136,7 +136,7 @@
 
 .item-title {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--foreground);
   margin: 0 0 0.25rem 0;
   line-height: 1.3;
@@ -198,7 +198,7 @@
 .cart-total {
   display: flex;
   justify-content: space-between;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
   color: var(--foreground);
@@ -219,7 +219,7 @@
   color: white;
   padding: 1.1rem;
   font-size: 0.9rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border: none;

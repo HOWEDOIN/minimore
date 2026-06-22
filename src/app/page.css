@@ -80,7 +80,7 @@
   line-height: 1.0;
   margin-bottom: 2rem;
   color: var(--foreground);
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -2px;
 }
 
@@ -147,7 +147,7 @@
   background-color: transparent;
   color: var(--foreground); /* black */
   font-size: 0.85rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   transition: all 0.3s ease;
@@ -818,14 +818,16 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 0.25rem;
+  font-family: var(--font-sans);
 }
 
 .contact-link {
   font-size: 1.25rem;
   color: var(--foreground);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 400;
   transition: color 0.3s;
+  font-family: var(--font-sans);
 }
 
 .contact-link:hover {

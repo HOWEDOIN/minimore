@@ -55,7 +55,7 @@ export default function FomoBanner({ targetDate }: FomoBannerProps) {
         </svg>
       </div>
       <div className="fomo-banner-text">
-        <strong>Limited Offer</strong>
+        <strong style={{ fontWeight: 600 }}>Limited Offer</strong>
         <span>Your product is reserved for</span>
       </div>
       <div className="fomo-banner-timer">

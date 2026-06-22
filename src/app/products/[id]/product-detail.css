@@ -163,7 +163,7 @@
   color: white;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
   border-radius: 4px;
 }
@@ -177,7 +177,7 @@
 
 .product-price {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #ef4444; /* Matches competitor's red */
   font-family: var(--font-sans);
   margin-bottom: 0;

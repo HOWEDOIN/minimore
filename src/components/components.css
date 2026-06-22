@@ -534,7 +534,7 @@
 
 .coming-soon-title {
   font-size: clamp(2rem, 5vw, 2.5rem);
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.03em;
   color: var(--foreground);
   margin-bottom: 1rem;

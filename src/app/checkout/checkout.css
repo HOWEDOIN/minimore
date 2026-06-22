@@ -26,7 +26,7 @@
 
 .checkout-logo {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.5px;
   color: var(--foreground, #1c1c1c);
   text-decoration: none;
@@ -48,7 +48,7 @@
 
 .checkout-section-title {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--foreground-dim, #6b7280);
@@ -132,7 +132,7 @@
 
 .checkout-payment-badge {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--primary-dark, #5a9ab5);
@@ -157,7 +157,7 @@
   border-radius: 12px;
   padding: 18px 32px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
@@ -193,7 +193,7 @@
 
 .checkout-summary-title {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--foreground-dim, #6b7280);
@@ -232,7 +232,7 @@
   background: var(--foreground, #1c1c1c);
   color: #fff;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   width: 18px;
   height: 18px;
   border-radius: 99px;
@@ -270,7 +270,7 @@
 
 .checkout-summary-total {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--foreground, #1c1c1c);
   border-top: 1px solid var(--border-light, rgba(28,28,28,0.08));
   margin-top: 8px;

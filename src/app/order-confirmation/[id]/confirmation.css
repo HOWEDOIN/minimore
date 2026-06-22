@@ -14,7 +14,7 @@
 
 .confirm-logo {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.5px;
   color: var(--foreground, #1c1c1c);
   text-decoration: none;
@@ -48,7 +48,7 @@
   background: linear-gradient(135deg, #a3cbd3, #9bbeda);
   color: #fff;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,7 +57,7 @@
 
 .confirm-title {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--foreground, #1c1c1c);
   margin: 0 0 12px;
 }
@@ -81,7 +81,7 @@
 
 .confirm-detail-row strong {
   color: var(--foreground, #1c1c1c);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .confirm-note {
@@ -102,7 +102,7 @@
   border-radius: 12px;
   padding: 16px 40px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   text-decoration: none;
   transition: background 0.2s, transform 0.1s;
   display: inline-block;
