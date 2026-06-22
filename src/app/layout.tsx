@@ -17,6 +17,7 @@ const openSans = localFont({
     },
   ],
   variable: "--font-sans",
+  weight: "300 800",
   display: "swap",
 });
 

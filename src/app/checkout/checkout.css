@@ -10,11 +10,15 @@
 /* ── Left Column ─────────────────────────────────────────────────────── */
 .checkout-left {
   flex: 1 1 55%;
+  display: flex;
+  justify-content: flex-end;
+  background: #fff;
+}
+
+.checkout-left-inner {
+  width: 100%;
   max-width: 680px;
   padding: 48px 60px 80px 60px;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
 }
 
 .checkout-header {
@@ -177,18 +181,20 @@
 
 /* ── Right Column ─────────────────────────────────────────────────────── */
 .checkout-right {
-  flex: 0 0 45%;
+  flex: 1 1 45%;
   background: #f7f4f1;
   border-left: 1px solid var(--border-light, rgba(28,28,28,0.08));
-  padding: 48px 48px 80px 48px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .checkout-summary-inner {
-  max-width: 400px;
+  width: 100%;
+  max-width: 480px;
+  padding: 48px 48px 80px 48px;
+  position: sticky;
+  top: 0;
+  height: max-content;
 }
 
 .checkout-summary-title {
@@ -280,8 +286,10 @@
 /* ── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .checkout-root { flex-direction: column; }
-  .checkout-left { max-width: 100%; padding: 32px 24px 40px; }
-  .checkout-right {
+  .checkout-left { padding: 0; justify-content: center; }
+  .checkout-left-inner { max-width: 100%; padding: 32px 24px 40px; }
+  .checkout-right { padding: 0; justify-content: center; border-left: none; }
+  .checkout-summary-inner { max-width: 100%; padding: 32px 24px 40px; }
     position: static;
     height: auto;
     flex: none;

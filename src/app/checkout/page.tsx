@@ -66,14 +66,15 @@ export default function CheckoutPage() {
     <div className="checkout-root">
       {/* Left Column */}
       <div className="checkout-left">
-        <header className="checkout-header">
-          <a href="/" className="checkout-logo">Minimore</a>
-          <a href="/cart" className="checkout-back">← Back to Cart</a>
-        </header>
+        <div className="checkout-left-inner">
+          <header className="checkout-header">
+            <a href="/" className="checkout-logo">Minimore</a>
+            <a href="/cart" className="checkout-back">← Back to Cart</a>
+          </header>
 
-        <form onSubmit={handleSubmit} className="checkout-form">
-          {/* Contact */}
-          <section className="checkout-section">
+          <form onSubmit={handleSubmit} className="checkout-form">
+            {/* Contact */}
+            <section className="checkout-section">
             <h2 className="checkout-section-title">Contact</h2>
             <div className="checkout-field-row">
               <div className="checkout-field">
@@ -165,6 +166,7 @@ export default function CheckoutPage() {
             {step === 'submitting' ? 'Placing Order…' : `Place Order · RM ${subtotal.toFixed(2)}`}
           </button>
         </form>
+        </div>
       </div>
 
       {/* Right Column — Order Summary */}
