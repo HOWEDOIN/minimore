@@ -77,14 +77,13 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
                 justifyContent: 'center'
               }}>
                 <img 
-                  src="/images/logo.png" 
+                  src="/logos/logo-primary.png" 
                   alt="minimore" 
                   style={{ 
                     height: '100%', 
                     width: '100%', 
                     objectFit: 'contain',
                     objectPosition: 'center',
-                    mixBlendMode: 'multiply',
                   }}
                 />
                 <span style={{ display: 'none' }}>minimore</span>

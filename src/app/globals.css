@@ -38,9 +38,9 @@
   --border-glow: rgba(122, 184, 204, 0.45);
   --border-light: rgba(28, 28, 28, 0.08);
 
-  /* Typography — Nunito (round, matches brand wordmark) */
-  --font-sans: var(--font-sans), 'Nunito', sans-serif;
-  --font-display: var(--font-sans), 'Nunito', sans-serif;
+  /* Typography — Custom Brand Fonts */
+  --font-sans: var(--font-sans), 'Open Sans', sans-serif;
+  --font-display: var(--font-display), 'Georgia', serif;
 
   /* Shadows — very light, Lumi-style */
   --shadow-soft: 0 2px 20px rgba(28, 28, 28, 0.05);

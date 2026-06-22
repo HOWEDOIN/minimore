@@ -53,7 +53,11 @@ export default async function Footer() {
         
         <div className="footer-bottom">
           <div className="footer-brand">
-            <span className="logo-text">minimore</span>
+            <img 
+              src="/logos/logo-white.png" 
+              alt="minimore" 
+              style={{ height: '35px', width: 'auto', objectFit: 'contain' }}
+            />
           </div>
           
           <div className="footer-legal">
