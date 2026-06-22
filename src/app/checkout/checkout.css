@@ -288,13 +288,15 @@
   .checkout-root { flex-direction: column; }
   .checkout-left { padding: 0; justify-content: center; }
   .checkout-left-inner { max-width: 100%; padding: 32px 24px 40px; }
-  .checkout-right { padding: 0; justify-content: center; border-left: none; }
-  .checkout-summary-inner { max-width: 100%; padding: 32px 24px 40px; }
+  .checkout-right { 
+    padding: 0; 
+    justify-content: center; 
+    border-left: none; 
     position: static;
     height: auto;
     flex: none;
-    padding: 32px 24px;
     order: -1;
   }
+  .checkout-summary-inner { max-width: 100%; padding: 32px 24px 40px; }
   .checkout-field-row { grid-template-columns: 1fr; }
 }

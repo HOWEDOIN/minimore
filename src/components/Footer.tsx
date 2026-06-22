@@ -78,11 +78,11 @@ export default async function Footer() {
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
               </svg>
             </span>
-            <span aria-label="TikTok" style={{ cursor: 'default' }}>
+            <a href="https://www.tiktok.com/@minimore_my?_r=1&_t=ZS-97QWYxweg7w" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
               </svg>
-            </span>
+            </a>
             <span aria-label="Telegram" style={{ cursor: 'default' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/>
