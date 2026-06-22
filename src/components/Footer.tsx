@@ -25,50 +25,48 @@ export default async function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <span className="logo-text">minimore</span>
-            <p>{footer.company || 'Minimore Sdn Bhd'}</p>
-            <p>{footer.tagline || ''}</p>
-          </div>
-          <div className="footer-links">
-            <div>
+        <div className="footer-top">
+          <div className="footer-links-grid">
+            <div className="footer-col">
               <h4>Shop & Info</h4>
               <Link href="/products">Shop All</Link>
               <Link href="/products?category=cosmetics">Cosmetics</Link>
               <Link href="/faq">FAQ</Link>
             </div>
-            <div style={{ maxWidth: '200px' }}>
+            <div className="footer-col">
               <h4>Locate Us</h4>
-              <p style={{ whiteSpace: 'pre-line', fontSize: '0.9rem', color: 'var(--foreground-dim)', lineHeight: 1.6 }}>
+              <p className="footer-text-block">
                 {sitewide.contact_address || "L1-53, 2, Jln Hang Tuah\nBukit Bintang, 55100 Kuala Lumpur\nWilayah Persekutuan Kuala Lumpur"}
               </p>
             </div>
-            <div>
+            <div className="footer-col">
               <h4>Contact Us</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <a href={`mailto:${sitewide.contact_email || 'marketingminimore@gmail.com'}`} style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>
-                  {sitewide.contact_email || 'marketingminimore@gmail.com'}
-                </a>
-                <a href={`https://wa.me/${sitewide.contact_whatsapp || '60123456789'}`} style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>
-                  {sitewide.contact_whatsapp_display || '+60 12-345 6789 (Placeholder)'}
-                </a>
-              </div>
-            </div>
-            <div>
-              <h4>Follow Us</h4>
-              <div className="social-links" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <a href="https://www.instagram.com/minimoremy/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>Instagram</a>
-                <span style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem', cursor: 'default' }}>Facebook</span>
-                <span style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem', cursor: 'default' }}>TikTok</span>
-                <span style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem', cursor: 'default' }}>Telegram</span>
-              </div>
+              <a href={`mailto:${sitewide.contact_email || 'marketingminimore@gmail.com'}`}>
+                {sitewide.contact_email || 'marketingminimore@gmail.com'}
+              </a>
+              <a href={`https://wa.me/${sitewide.contact_whatsapp || '60123456789'}`}>
+                {sitewide.contact_whatsapp_display || '+60 12-345 6789 (Placeholder)'}
+              </a>
             </div>
           </div>
         </div>
+        
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} {footer.company || 'Minimore Sdn Bhd'}. All rights reserved.</p>
-          <p>{footer.copyright || ''}</p>
+          <div className="footer-brand">
+            <span className="logo-text">minimore</span>
+          </div>
+          
+          <div className="footer-legal">
+            <p>© {new Date().getFullYear()} {footer.company || 'Minimore Sdn Bhd'}. All rights reserved.</p>
+            <p>{footer.copyright || ''}</p>
+          </div>
+
+          <div className="footer-socials">
+            <a href="https://www.instagram.com/minimoremy/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <span>Facebook</span>
+            <span>TikTok</span>
+            <span>Telegram</span>
+          </div>
         </div>
       </div>
     </footer>
