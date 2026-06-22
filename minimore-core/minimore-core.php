@@ -1,7 +1,4 @@
-import zipfile
-import os
-
-plugin_code = """<?php
+<?php
 /**
  * Plugin Name: Minimore Core Settings
  * Description: Manages Hero Carousel and Sitewide Settings (Socials, Contact).
@@ -173,13 +170,3 @@ function minimore_sitewide_api() {
         'social_telegram'  => get_option('minimore_social_telegram', '')
     ], 200);
 }
-"""
-
-os.makedirs('minimore-core', exist_ok=True)
-with open('minimore-core/minimore-core.php', 'w') as f:
-    f.write(plugin_code)
-
-with zipfile.ZipFile('minimore-core.zip', 'w') as zipf:
-    zipf.write('minimore-core/minimore-core.php', arcname='minimore-core/minimore-core.php')
-
-print("Created minimore-core.zip successfully!")

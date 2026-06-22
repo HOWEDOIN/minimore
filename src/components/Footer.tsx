@@ -58,13 +58,10 @@ export default async function Footer() {
             <div>
               <h4>Follow Us</h4>
               <div className="social-links" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {sitewide.social_instagram ? <a href={sitewide.social_instagram} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>Instagram</a> : null}
-                {sitewide.social_facebook ? <a href={sitewide.social_facebook} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>Facebook</a> : null}
-                {sitewide.social_tiktok ? <a href={sitewide.social_tiktok} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>TikTok</a> : null}
-                {sitewide.social_telegram ? <a href={sitewide.social_telegram} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>Telegram</a> : null}
-                {!sitewide.social_instagram && !sitewide.social_facebook && !sitewide.social_tiktok && !sitewide.social_telegram && (
-                  <span style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>Coming soon</span>
-                )}
+                <a href="https://www.instagram.com/minimoremy/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>Instagram</a>
+                <span style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem', cursor: 'default' }}>Facebook</span>
+                <span style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem', cursor: 'default' }}>TikTok</span>
+                <span style={{ color: 'var(--foreground-dim)', fontSize: '0.9rem', cursor: 'default' }}>Telegram</span>
               </div>
             </div>
           </div>
