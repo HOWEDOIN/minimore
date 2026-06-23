@@ -77,7 +77,7 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
                 justifyContent: 'center'
               }}>
                 <img 
-                  src="/logos/logo-primary.png" 
+                  src="/logos/logo-primary.png?v=2" 
                   alt="minimore" 
                   style={{ 
                     height: '100%', 
