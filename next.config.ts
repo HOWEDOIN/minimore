@@ -19,6 +19,15 @@ const nextConfig: NextConfig = {
     cpus: 1,
     workerThreads: false,
   },
+  async redirects() {
+    return [
+      {
+        source: '/cart',
+        destination: '/',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

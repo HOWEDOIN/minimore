@@ -69,7 +69,7 @@ export default function CheckoutPage() {
         <div className="checkout-left-inner">
           <header className="checkout-header">
             <a href="/" className="checkout-logo">Minimore</a>
-            <a href="/cart" className="checkout-back">← Back to Cart</a>
+            <a href="/" className="checkout-back">← Back to Store</a>
           </header>
 
           <form onSubmit={handleSubmit} className="checkout-form">
