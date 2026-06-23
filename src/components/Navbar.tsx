@@ -54,37 +54,17 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
       <nav className={`navbar ${isStatic ? 'static' : ''} ${scrolled ? 'scrolled' : ''}`}>
         <div className="navbar-inner container">
           
-          <div className="nav-mobile-left">
-            <button 
-              className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle Menu"
-            >
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
-          </div>
-
           <div className="nav-center-mobile">
             <Link href="/" className="nav-brand" onClick={closeMobileMenu}>
-              <div style={{ 
-                position: 'relative', 
-                width: '130px', 
-                height: '40px', 
-                display: 'flex', 
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
+              <div className="logo-wrapper">
                 <img 
                   src="/logos/logo-primary.png?v=2" 
                   alt="minimore" 
                   style={{ 
                     height: '100%', 
                     width: '100%', 
-                    objectFit: 'contain',
+                    objectFit: 'cover',
                     objectPosition: 'center',
-                    transform: 'scale(1.6)',
                   }}
                 />
                 <span style={{ display: 'none' }}>minimore</span>
@@ -116,13 +96,17 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
               />
             </form>
             
-            {/* mounted && (
-              <Link href={user ? "/account" : "/login"} className="nav-auth-link">
-                {user ? "My Account" : "Sign In"}
-              </Link>
-            ) */}
-            
             <CartNavButton />
+            
+            <button 
+              className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle Menu"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
           </div>
         </div>
       </nav>

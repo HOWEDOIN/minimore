@@ -41,11 +41,10 @@
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
   /* Use standard container padding to align with navbar logo */
   padding: 0 2rem;
-  padding-top: 100px;
+  padding-top: 140px;
 }
 
 .hero-title, .hero-desc, .hero-eyebrow, .hero-actions {
@@ -245,8 +244,8 @@
   /* ── Text block goes FIRST (order 1) ── */
   .hero-content {
     position: relative !important;
-    /* Pushed top padding down significantly (5rem) so it completely clears the navbar logo */
-    padding: 5rem 2rem 2rem !important; 
+    /* Pushed top padding down significantly (9rem) so it completely clears the navbar logo */
+    padding: 9rem 2rem 2rem !important; 
     order: 1;
     text-align: center;
     display: flex;
