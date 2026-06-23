@@ -84,6 +84,7 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
                     width: '100%', 
                     objectFit: 'contain',
                     objectPosition: 'center',
+                    transform: 'scale(1.6)',
                   }}
                 />
                 <span style={{ display: 'none' }}>minimore</span>
