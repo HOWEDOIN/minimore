@@ -58,9 +58,6 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
           variants={containerVariants}
           style={{ y: heroContentY, opacity: heroOpacity }}
         >
-          <motion.span variants={itemVariants} className="hero-eyebrow">
-            {homepageContent.hero_eyebrow || 'New Arrivals 2025'}
-          </motion.span>
           <motion.h1
             variants={itemVariants}
             className="hero-title"
