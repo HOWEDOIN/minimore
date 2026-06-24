@@ -32,12 +32,15 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: -40px;
-  background-color: rgba(250, 251, 255, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) calc(100% - 60px), rgba(0,0,0,0.8) calc(100% - 45px), rgba(0,0,0,0.3) calc(100% - 20px), rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) calc(100% - 60px), rgba(0,0,0,0.8) calc(100% - 45px), rgba(0,0,0,0.3) calc(100% - 20px), rgba(0,0,0,0) 100%);
+  bottom: 0;
+  background: linear-gradient(
+    to right, 
+    #a3cbd3 0%, 
+    #a3cbd3 calc(50% - 28px), 
+    #9fc4d7 50%,
+    #9bbeda calc(50% + 28px), 
+    #9bbeda 100%
+  );
   z-index: -1;
   pointer-events: none;
   opacity: 0;
@@ -48,7 +51,7 @@
   position: sticky;
   top: 0;
   border: none;
-  padding: 1rem 0;
+  padding: 20px 0;
 }
 
 .navbar.static::before {
@@ -57,7 +60,7 @@
 
 .navbar.scrolled {
   top: 0;
-  padding: 1rem 0;
+  padding: 20px 0;
   border: none;
 }
 
@@ -121,7 +124,7 @@
 .nav-links a {
   position: relative;
   color: var(--foreground-dim);
-  transition: color 0.3s ease;
+  transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-links a::after {
@@ -152,7 +155,7 @@
 
 .nav-actions a, .nav-actions button {
   color: var(--foreground-dim);
-  transition: color 0.3s ease;
+  transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-actions a:hover, .nav-actions button:hover {
@@ -245,7 +248,7 @@
   width: 100%;
   background: var(--foreground);
   border-radius: 2px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hamburger.open span:nth-child(1) {
@@ -594,4 +597,37 @@
   .coming-soon-actions a {
     flex: 1;
   }
+}
+
+/* Navbar text color transitions on scroll (for dark gradients) */
+.navbar.scrolled .nav-links a,
+.navbar.static .nav-links a,
+.navbar.scrolled .nav-actions a,
+.navbar.static .nav-actions a,
+.navbar.scrolled .nav-actions button,
+.navbar.static .nav-actions button,
+.navbar.scrolled .hamburger span,
+.navbar.static .hamburger span {
+  color: #ffffff;
+  background-color: transparent; /* fallback */
+}
+
+/* Specific to hamburger which uses background color for its lines */
+.navbar.scrolled .hamburger span,
+.navbar.static .hamburger span {
+  background-color: #ffffff;
+}
+
+.navbar.scrolled .nav-links a:hover,
+.navbar.static .nav-links a:hover,
+.navbar.scrolled .nav-actions a:hover,
+.navbar.static .nav-actions a:hover,
+.navbar.scrolled .nav-actions button:hover,
+.navbar.static .nav-actions button:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar.scrolled .nav-links a::after,
+.navbar.static .nav-links a::after {
+  background: #ffffff;
 }

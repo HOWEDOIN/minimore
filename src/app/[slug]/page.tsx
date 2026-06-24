@@ -28,7 +28,7 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
   let pages = [];
   if (slug === 'faq') {
     pages = [{
-      title: { rendered: "Frequently Asked Questions" },
+      title: { rendered: "FAQ" },
       content: { rendered: "" }
     }];
   } else {
@@ -77,10 +77,56 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
       <section className="standard-page-body">
         <div className="container">
           <div className="standard-page-content">
-            <div
-              className="wp-content"
-              dangerouslySetInnerHTML={{ __html: slug === 'faq' ? require('@/data/faq.json').map((p: any) => `<p><strong>${p.q}</strong>${p.a}</p>`).join('\n') : page.content.rendered }}
-            />
+            {slug === 'faq' ? (
+              <div className="faq-grid">
+                {(() => {
+                  const faqData = require('@/data/faq.json');
+                  const sectionA = faqData.filter((p: any) => p.q.startsWith('A'));
+                  const sectionB = faqData.filter((p: any) => p.q.startsWith('B'));
+                  const sectionC = faqData.filter((p: any) => p.q.startsWith('C'));
+                  
+                  return (
+                    <>
+                      <details className="faq-details" open>
+                        <summary className="faq-section-title">General Questions</summary>
+                        <div className="faq-details-content">
+                          {sectionA.map((p: any, i: number) => (
+                            <div className="faq-item" key={i}>
+                              <p><strong>{p.q.replace(/^[A-C]\d+\.\s*/, '')}</strong>{p.a}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                      <details className="faq-details" open>
+                        <summary className="faq-section-title">Shipping & Orders</summary>
+                        <div className="faq-details-content">
+                          {sectionB.map((p: any, i: number) => (
+                            <div className="faq-item" key={i}>
+                              <p><strong>{p.q.replace(/^[A-C]\d+\.\s*/, '')}</strong>{p.a}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                      <details className="faq-details" open>
+                        <summary className="faq-section-title">Support & Policies</summary>
+                        <div className="faq-details-content">
+                          {sectionC.map((p: any, i: number) => (
+                            <div className="faq-item" key={i}>
+                              <p><strong>{p.q.replace(/^[A-C]\d+\.\s*/, '')}</strong>{p.a}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    </>
+                  );
+                })()}
+              </div>
+            ) : (
+              <div 
+                className="wp-content"
+                dangerouslySetInnerHTML={{ __html: page.content.rendered }}
+              />
+            )}
           </div>
         </div>
       </section>

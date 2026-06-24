@@ -59,12 +59,29 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
               <div className="logo-wrapper">
                 <img 
                   src="/logos/logo-primary.png?v=2" 
-                  alt="minimore" 
+                  alt="minimore primary" 
                   style={{ 
+                    position: 'absolute',
                     height: '100%', 
                     width: '100%', 
                     objectFit: 'cover',
                     objectPosition: 'center',
+                    opacity: (scrolled || isStatic) ? 0 : 1,
+                    transition: 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
+                />
+                <img 
+                  src="/logos/logo-white.png" 
+                  alt="minimore white" 
+                  style={{ 
+                    position: 'absolute',
+                    height: '100%', 
+                    width: '100%', 
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    opacity: (scrolled || isStatic) ? 1 : 0,
+                    transform: 'scale(1.13)',
+                    transition: 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 />
                 <span style={{ display: 'none' }}>minimore</span>
