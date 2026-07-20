@@ -26,6 +26,11 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        source: '/product/:slug*',
+        destination: '/products/:slug*',
+        permanent: true,
+      },
     ];
   },
 };

@@ -8,6 +8,7 @@ import QuantitySelector from "@/components/QuantitySelector";
 import FomoBanner from "@/components/FomoBanner";
 import "./product-detail.css";
 import { wooApi } from "@/lib/woocommerce";
+import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 
 export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -140,6 +141,9 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             
           </div>
         </div>
+
+        {/* You May Also Like Section */}
+        <YouMayAlsoLike currentProductId={product.id} currentCategoryId={product.categories?.[0]?.id} />
       </main>
     </div>
   );
