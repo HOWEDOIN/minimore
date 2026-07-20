@@ -12,16 +12,39 @@ export default async function YouMayAlsoLike({
 }) {
   let relatedProducts = [];
   try {
-    const params: any = { per_page: 15 }; // Fetch enough to ensure we have 4 after filtering
+    // 1. Fetch newest items from the primary category
+    let primaryProducts = [];
     if (currentCategoryId) {
-      params.category = currentCategoryId;
+      const { data } = await wooApi.get("products", { 
+        category: currentCategoryId, 
+        per_page: 10,
+        orderby: 'date',
+        order: 'desc'
+      });
+      primaryProducts = data;
     }
     
-    const { data } = await wooApi.get("products", params);
-    
-    relatedProducts = data
-      .filter((p: any) => p.id !== currentProductId)
-      .slice(0, 4); // Display up to 4 items
+    // Filter out the current product
+    relatedProducts = primaryProducts.filter((p: any) => p.id !== currentProductId);
+
+    // 2. If we have fewer than 4 items, backfill with the newest items from ANY category
+    if (relatedProducts.length < 4) {
+      const { data: otherProducts } = await wooApi.get("products", {
+        per_page: 10,
+        orderby: 'date',
+        order: 'desc'
+      });
+      
+      // Track IDs we already have so we don't duplicate
+      const existingIds = new Set(relatedProducts.map((p: any) => p.id));
+      existingIds.add(currentProductId);
+
+      const fillProducts = otherProducts.filter((p: any) => !existingIds.has(p.id));
+      relatedProducts = [...relatedProducts, ...fillProducts];
+    }
+
+    // Finally, slice to strictly 4 items
+    relatedProducts = relatedProducts.slice(0, 4);
   } catch (err) {
     console.error("Error fetching related products", err);
     return null;
