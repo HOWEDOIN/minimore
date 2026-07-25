@@ -47,24 +47,41 @@ export async function POST(req: NextRequest) {
 }
 
 // ─── BROWSER REDIRECT (GET) ───────────────────────────────────────────────────
-// Billplz sends the user back here with query params after payment.
+// Billplz redirects users back here after payment (both success and cancel/fail).
+// Billplz appends:  billplz[id], billplz[paid], billplz[paid_at], billplz[x_signature]
+// Note: URL brackets get encoded as %5B %5D by some browsers, so we check both forms.
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
+  try {
+    const rawUrl = req.url;
+    const { searchParams } = new URL(rawUrl);
 
-  // Params we set on the redirect_url when creating the bill
-  const orderId = searchParams.get('order_id');
-  const number = searchParams.get('number');
-  const total = searchParams.get('total');
-  const method = searchParams.get('method') || 'billplz';
+    // Params we encoded into the redirect_url when creating the bill
+    const orderId = searchParams.get('order_id');
+    const number  = searchParams.get('number');
+    const total   = searchParams.get('total');
+    const method  = searchParams.get('method') || 'billplz';
 
-  // Billplz also appends: billplz[id], billplz[paid], billplz[paid_at], billplz[x_signature]
-  const paid = searchParams.get('billplz[paid]') ?? searchParams.get('paid') ?? 'false';
+    // Billplz appends billplz[paid] — handle both encoded (%5B%5D) and literal [] forms
+    const paid =
+      searchParams.get('billplz[paid]') ??      // literal brackets (some clients)
+      searchParams.get('billplz%5Bpaid%5D') ??  // URL-encoded brackets
+      searchParams.get('paid') ??               // our own fallback
+      'false';
 
-  if (orderId) {
-    const url = `/order-confirmation/${orderId}?number=${number}&total=${total}&method=${method}&paid=${paid}`;
-    return NextResponse.redirect(new URL(url, SITE_URL));
+    if (orderId) {
+      const confirmUrl = new URL(
+        `/order-confirmation/${orderId}?number=${encodeURIComponent(number ?? '')}&total=${encodeURIComponent(total ?? '0')}&method=${method}&paid=${paid}`,
+        SITE_URL
+      );
+      return NextResponse.redirect(confirmUrl);
+    }
+
+    // If somehow order_id is missing (e.g. Billplz stripped params on cancel),
+    // redirect to the homepage with a cancelled notice instead of a blank 404.
+    return NextResponse.redirect(new URL('/?payment=cancelled', SITE_URL));
+  } catch (err) {
+    console.error('Order callback GET error:', err);
+    // Never show a raw 404 — always redirect somewhere sensible
+    return NextResponse.redirect(new URL('/?payment=error', SITE_URL));
   }
-
-  // Fallback
-  return NextResponse.redirect(new URL('/', SITE_URL));
 }
