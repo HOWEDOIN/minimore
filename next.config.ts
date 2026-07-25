@@ -31,6 +31,17 @@ const nextConfig: NextConfig = {
         destination: '/products/:slug*',
         permanent: true,
       },
+      // WooCommerce redirects users here after payment — route to our confirmation page
+      {
+        source: '/checkout/order-received/:id/',
+        destination: '/order-confirmation/:id',
+        permanent: false,
+      },
+      {
+        source: '/checkout/order-received/:id',
+        destination: '/order-confirmation/:id',
+        permanent: false,
+      },
     ];
   },
 };
