@@ -36,8 +36,8 @@ export default function OrderConfirmationPage({ params }: { params: { id: string
               <h1 className="confirm-title">Order confirmed!</h1>
               <p className="confirm-sub">
                 {isBillplz
-                  ? 'Your payment was successful. We've received your order and will begin processing it shortly.'
-                  : 'Thank you for your order. We've received it and will begin processing it shortly.'}
+                  ? "Your payment was successful. We&apos;ve received your order and will begin processing it shortly."
+                  : "Thank you for your order. We&apos;ve received it and will begin processing it shortly."}
               </p>
             </>
           ) : (
@@ -45,7 +45,7 @@ export default function OrderConfirmationPage({ params }: { params: { id: string
               <div className="confirm-icon" style={{ background: 'var(--confirm-warn, #f59e0b)' }}>!</div>
               <h1 className="confirm-title">Payment incomplete</h1>
               <p className="confirm-sub">
-                It looks like your payment wasn't completed. Your order has been saved — you can try paying again or contact us if you need help.
+                It looks like your payment wasn&apos;t completed. Your order has been saved — you can try paying again or contact us if you need help.
               </p>
             </>
           )}
@@ -72,7 +72,7 @@ export default function OrderConfirmationPage({ params }: { params: { id: string
           <p className="confirm-note">
             {isPaid
               ? <>A confirmation email will be sent to you shortly. If you have any questions, feel free to{' '}<a href="mailto:hello@minimore.my">contact us</a>.</>
-              : <>Need help? Feel free to{' '}<a href="mailto:hello@minimore.my">contact us</a> and we'll sort it out.</>
+              : <>Need help? Feel free to{' '}<a href="mailto:hello@minimore.my">contact us</a> and we&apos;ll sort it out.</>
             }
           </p>
 
