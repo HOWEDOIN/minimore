@@ -75,13 +75,18 @@ export async function POST(req: NextRequest) {
 
     const order = await wcRes.json();
 
+    let paymentUrl = order.payment_url || null;
+    if (paymentUrl && paymentUrl.includes('minimore.my') && !paymentUrl.includes('admin.minimore.my')) {
+      paymentUrl = paymentUrl.replace('minimore.my', 'admin.minimore.my');
+    }
+
     return NextResponse.json({
       orderId: order.id,
       orderKey: order.order_key,
       orderNumber: order.number,
       total: order.total,
       currency: order.currency,
-      paymentUrl: order.payment_url || null,
+      paymentUrl: paymentUrl,
     });
   } catch (err) {
     console.error('Checkout API error:', err);
