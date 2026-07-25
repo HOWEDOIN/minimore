@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const WP_URL = process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://minimore.my';
 const CONSUMER_KEY = process.env.MINIMORE_CONSUMER_KEY || '';
 const CONSUMER_SECRET = process.env.MINIMORE_SECRET || '';
 
@@ -75,9 +76,18 @@ export async function POST(req: NextRequest) {
 
     const order = await wcRes.json();
 
+    // Build the redirect URL that Billplz will send the user to after payment
+    const callbackBase = `${SITE_URL}/api/order-callback`;
+    const callbackUrl = `${callbackBase}?order_id=${order.id}&number=${order.number}&total=${order.total}&method=billplz`;
+
     let paymentUrl = order.payment_url || null;
-    if (paymentUrl && paymentUrl.includes('minimore.my') && !paymentUrl.includes('admin.minimore.my')) {
-      paymentUrl = paymentUrl.replace('minimore.my', 'admin.minimore.my');
+    if (paymentUrl) {
+      // Fix domain: WooCommerce uses the frontend domain but the payment page lives on the backend
+      if (paymentUrl.includes('minimore.my') && !paymentUrl.includes('admin.minimore.my')) {
+        paymentUrl = paymentUrl.replace('minimore.my', 'admin.minimore.my');
+      }
+      // Append our Next.js callback as the redirect_url so Billplz sends users back here
+      paymentUrl = `${paymentUrl}&redirect_url=${encodeURIComponent(callbackUrl)}`;
     }
 
     return NextResponse.json({
@@ -87,6 +97,8 @@ export async function POST(req: NextRequest) {
       total: order.total,
       currency: order.currency,
       paymentUrl: paymentUrl,
+      // For COD: go straight to confirmation with method label
+      confirmUrl: `/order-confirmation/${order.id}?number=${order.number}&total=${order.total}&method=cod`,
     });
   } catch (err) {
     console.error('Checkout API error:', err);

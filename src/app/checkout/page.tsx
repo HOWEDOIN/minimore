@@ -53,15 +53,14 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Something went wrong.');
       }
 
-      // Clear cart
-      useCartStore.setState({ cart: [], isCartOpen: false });
-      
-      // If Billplz and payment URL exists, redirect to it
       if (paymentMethod === 'billplz' && data.paymentUrl) {
+        // For Billplz: don't clear cart yet — user might cancel on the payment page.
+        // Cart will be cleared when they return via the /api/order-callback route.
         window.location.href = data.paymentUrl;
       } else {
-        // Otherwise go to order confirmation directly
-        router.push(`/order-confirmation/${data.orderId}?key=${data.orderKey}&number=${data.orderNumber}&total=${data.total}`);
+        // For COD: clear cart immediately and go to our confirmation page
+        useCartStore.setState({ cart: [], isCartOpen: false });
+        router.push(data.confirmUrl || `/order-confirmation/${data.orderId}?number=${data.orderNumber}&total=${data.total}&method=cod`);
       }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
