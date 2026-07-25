@@ -25,7 +25,7 @@ export default function CheckoutPage() {
     firstName: '', lastName: '', address1: '', address2: '',
     city: '', state: 'Selangor', postcode: '', country: 'MY',
   });
-  const [paymentMethod] = useState('cod');
+  const [paymentMethod, setPaymentMethod] = useState('billplz');
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -53,9 +53,16 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Something went wrong.');
       }
 
-      // Clear cart and go to confirmation
+      // Clear cart
       useCartStore.setState({ cart: [], isCartOpen: false });
-      router.push(`/order-confirmation/${data.orderId}?key=${data.orderKey}&number=${data.orderNumber}&total=${data.total}`);
+      
+      // If Billplz and payment URL exists, redirect to it
+      if (paymentMethod === 'billplz' && data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else {
+        // Otherwise go to order confirmation directly
+        router.push(`/order-confirmation/${data.orderId}?key=${data.orderKey}&number=${data.orderNumber}&total=${data.total}`);
+      }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
       setStep('info');
@@ -150,9 +157,36 @@ export default function CheckoutPage() {
           {/* Payment */}
           <section className="checkout-section">
             <h2 className="checkout-section-title">Payment</h2>
-            <div className="checkout-payment-option checkout-payment-selected">
-              <span>💵 Cash on Delivery</span>
-              <span className="checkout-payment-badge">Selected</span>
+            <div className="checkout-payment-options">
+              <label className={`checkout-payment-option ${paymentMethod === 'billplz' ? 'checkout-payment-selected' : ''}`}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="billplz" 
+                    checked={paymentMethod === 'billplz'}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    style={{ margin: 0 }}
+                  />
+                  <span>💳 Billplz (Online Banking / FPX)</span>
+                </div>
+                {paymentMethod === 'billplz' && <span className="checkout-payment-badge">Selected</span>}
+              </label>
+              
+              <label className={`checkout-payment-option ${paymentMethod === 'cod' ? 'checkout-payment-selected' : ''}`} style={{ marginTop: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="cod" 
+                    checked={paymentMethod === 'cod'}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    style={{ margin: 0 }}
+                  />
+                  <span>💵 Cash on Delivery</span>
+                </div>
+                {paymentMethod === 'cod' && <span className="checkout-payment-badge">Selected</span>}
+              </label>
             </div>
           </section>
 
