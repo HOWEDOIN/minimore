@@ -63,16 +63,18 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
             className="hero-title"
             dangerouslySetInnerHTML={{ __html: homepageContent.hero_title }}
           />
-          <motion.p variants={itemVariants} className="hero-desc">
-            {homepageContent.hero_subtitle}
-          </motion.p>
+          <motion.div
+            variants={itemVariants}
+            className="hero-desc"
+            dangerouslySetInnerHTML={{ __html: homepageContent.hero_subtitle }}
+          />
           <motion.div 
             className="hero-actions"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8 }}
           >
-            <Link href={homepageContent.hero_cta1_url || '/products'} className="btn-primary">
+            <Link href={homepageContent.hero_cta1_url || '/products'} className="btn-primary hero-btn">
               {homepageContent.hero_cta1_label || 'Shop Collection'}
             </Link>
           </motion.div>

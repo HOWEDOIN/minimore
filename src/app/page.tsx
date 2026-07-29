@@ -8,8 +8,8 @@ export default async function Home() {
   const { data: products } = await wooApi.get("products", { per_page: 100 }).catch(() => ({ data: [] }));
 
   let homepageContent: any = {
-    hero_title: "<em class='text-gradient'>More</em> at the price of <em class='text-gradient'>mini.</em>",
-    hero_subtitle: "Discover our curated collection of authentic premium cosmetic and fragrance miniatures — perfect for gifting, travel, or simply treating yourself.",
+    hero_title: `<span class="hero-line-1"><span class="hero-word-more">More</span> <span class="hero-word-at">at</span></span><span class="hero-line-2">the price of</span><span class="hero-line-3">Mini</span>`,
+    hero_subtitle: `<div class="hero-subtitle-main">Authentic Mini Luxury</div><div class="hero-subtitle-categories"><span>Cosmetic</span><span>Beauty</span><span>Skincare</span><span>Perfume</span></div>`,
     hero_images: ["/images/hero.png"],
     hero_image: "/images/hero.png",
     is_coming_soon: false
@@ -56,6 +56,10 @@ export default async function Home() {
   } catch (err) {
     console.error("Failed to fetch homepage content:", err);
   }
+
+  // Ensure the hero section matches the redesigned screenshot layout
+  homepageContent.hero_title = `<span class="hero-line-1"><span class="hero-word-more">More</span> <span class="hero-word-at">at</span></span><span class="hero-line-2">the price of</span><span class="hero-line-3">Mini</span>`;
+  homepageContent.hero_subtitle = `<div class="hero-subtitle-main">Authentic Mini Luxury</div><div class="hero-subtitle-categories"><span>Cosmetic</span><span>Beauty</span><span>Skincare</span><span>Perfume</span></div>`;
 
   const sectionOrder: string[] = homepageContent.section_order?.map((s: string) => s === 'why' ? 'contact_locate' : s) || ['hero', 'trending', 'contact_locate'];
   const collectionTabs: string[] = ['Miniature', 'Vials', 'Make Up & Cosmetics', 'Gift Sets', 'Limited Editions'];

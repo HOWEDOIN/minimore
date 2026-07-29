@@ -41,6 +41,8 @@
   /* Typography — Custom Brand Fonts */
   --font-sans: var(--font-sans), 'Open Sans', sans-serif;
   --font-display: var(--font-display), 'Georgia', serif;
+  --font-neue: var(--font-neue), 'Helvetica Neue', 'Open Sans', sans-serif;
+  --font-quincy: var(--font-quincy), 'Georgia', serif;
 
   /* Shadows — very light, Lumi-style */
   --shadow-soft: 0 2px 20px rgba(28, 28, 28, 0.05);
