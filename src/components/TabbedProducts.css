@@ -67,3 +67,44 @@
     font-size: 1.25rem;
   }
 }
+
+/* ── See More Button ────────────────────────────── */
+.see-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.see-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2.25rem;
+  border-radius: 9999px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-light);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.see-more-btn:hover {
+  background-color: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.see-more-arrow {
+  transition: transform 0.3s ease;
+}
+
+.see-more-btn:hover .see-more-arrow {
+  transform: translateY(3px);
+}
