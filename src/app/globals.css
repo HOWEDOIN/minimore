@@ -86,7 +86,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.03em;
   color: var(--foreground);
 }
@@ -276,7 +276,7 @@ button {
 .product-name {
   font-family: var(--font-display);
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--foreground);
   line-height: 1.2;
 }
