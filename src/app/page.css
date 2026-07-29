@@ -100,6 +100,8 @@
   font-family: var(--font-quincy), var(--font-display);
   font-style: italic;
   font-weight: 400;
+  font-size: 1.18em;
+  line-height: 0.9;
   color: #6998c9;
   letter-spacing: -1px;
 }
