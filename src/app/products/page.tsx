@@ -17,10 +17,23 @@ export default async function ProductsPage({
 
   // 2. Determine params
   const query: any = { per_page: 50 };
+  let selectedCategory: any = null;
+
   if (search) {
     query.search = search;
   } else if (category) {
-    const selectedCategory = product_categories.find((c: any) => c.slug === category);
+    selectedCategory = product_categories.find((c: any) => {
+      const target = category.toLowerCase().replace(/-/g, ' ').replace(/&/g, 'and').trim();
+      const catSlug = (c.slug || '').toLowerCase().replace(/-/g, ' ').replace(/&/g, 'and').trim();
+      const catName = (c.name || '').toLowerCase().replace(/-/g, ' ').replace(/&/g, 'and').trim();
+      return (
+        (c.slug || '').toLowerCase() === category.toLowerCase() ||
+        catSlug === target ||
+        catName === target ||
+        catName.includes(target) ||
+        target.includes(catName)
+      );
+    });
     if (selectedCategory) {
       query.category = selectedCategory.id.toString();
     }
@@ -43,7 +56,7 @@ export default async function ProductsPage({
             <li><Link href="/products" className={!category ? "active" : ""}>All Products</Link></li>
             {product_categories?.map((cat: any) => (
               <li key={cat.id}>
-                <Link href={`/products?category=${cat.slug}`} className={category === cat.slug ? "active" : ""}>
+                <Link href={`/products?category=${cat.slug}`} className={category === cat.slug || selectedCategory?.id === cat.id ? "active" : ""}>
                   {cat.name}
                 </Link>
               </li>
@@ -53,7 +66,7 @@ export default async function ProductsPage({
 
         <section className="shop-content">
           <div className="shop-header">
-            <h1>Shop All Miniatures</h1>
+            <h1>{selectedCategory ? `Shop ${selectedCategory.name}` : "Shop All Miniatures"}</h1>
             <select className="sort-select">
               <option>Sort by: Featured</option>
               <option>Price: Low to High</option>
