@@ -17,6 +17,12 @@ export default function TabbedProducts({ products, collectionTabs }: { products:
   ];
   
   const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [visibleCount, setVisibleCount] = useState(8);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setVisibleCount(8);
+  };
 
   // Filter products by category name that matches the active tab
   // If the category doesn't exactly match but contains the word, we can be slightly fuzzy
@@ -34,6 +40,8 @@ export default function TabbedProducts({ products, collectionTabs }: { products:
     });
   });
 
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+
   return (
     <div className="tabbed-products-container">
       <div className="tabs-scroll-wrapper">
@@ -42,7 +50,7 @@ export default function TabbedProducts({ products, collectionTabs }: { products:
             <li key={tab}>
               <button
                 className={`tab-btn ${activeTab === tab ? "active" : ""}`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => handleTabChange(tab)}
               >
                 {tab}
               </button>
@@ -67,7 +75,7 @@ export default function TabbedProducts({ products, collectionTabs }: { products:
               No products found in this collection.
             </motion.p>
           ) : (
-            filteredProducts.map((product: any) => {
+            visibleProducts.map((product: any) => {
               const price = product.price || product.regular_price || 0;
               const isOnSale = product.on_sale || (product.regular_price && product.price && product.regular_price !== product.price);
               const savings = isOnSale ? (parseFloat(product.regular_price) - parseFloat(product.price)).toFixed(2) : 0;
@@ -120,6 +128,35 @@ export default function TabbedProducts({ products, collectionTabs }: { products:
           )}
         </AnimatePresence>
       </motion.div>
+
+      {filteredProducts.length > visibleCount && (
+        <motion.div 
+          className="see-more-container"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <button 
+            className="see-more-btn"
+            onClick={() => setVisibleCount(prev => prev + 4)}
+          >
+            <span>See More</span>
+            <svg 
+              width="18" 
+              height="18" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="see-more-arrow"
+            >
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </motion.div>
+      )}
     </div>
   );
 }
