@@ -70,7 +70,7 @@
 
 .nav-brand {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 2rem;
   letter-spacing: -1px;
   display: flex;
@@ -478,7 +478,7 @@
 
 .footer-brand .logo-text {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 2rem;
   letter-spacing: -0.5px;
   color: #fff;
