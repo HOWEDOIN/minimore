@@ -56,39 +56,125 @@ export default function TabbedProducts({ products }: { products: any[], collecti
     }
   };
 
-  const matchCategory = (product: any, tab: string) => {
-    if (!product.categories || product.categories.length === 0) return false;
-    const normalizedTab = tab.toLowerCase().trim();
-    return product.categories.some((cat: any) => {
-      const catName = (cat.name || '').toLowerCase().replace(/&/g, 'and').trim();
-      const catSlug = (cat.slug || '').toLowerCase().replace(/&/g, 'and').trim();
-      
-      if (catName.includes(normalizedTab) || normalizedTab.includes(catName)) return true;
-      if (catSlug.includes(normalizedTab) || normalizedTab.includes(catSlug)) return true;
-
-      if (normalizedTab === "cosmetic" || normalizedTab === "cosmetics") {
-        if (catName.includes("cosmetic") || catName.includes("makeup") || catName.includes("make up") || catName.includes("beauty") || catName.includes("miniature")) return true;
-      }
-      if (normalizedTab === "skin care" || normalizedTab === "skincare") {
-        if (catName.includes("skin") || catName.includes("care") || catName.includes("serum") || catName.includes("lotion") || catName.includes("cream") || catName.includes("vial")) return true;
-      }
-      if (normalizedTab === "perfume" || normalizedTab === "fragrance") {
-        if (catName.includes("perfume") || catName.includes("fragrance") || catName.includes("scent") || catName.includes("vial") || catName.includes("cologne")) return true;
-      }
-      if (normalizedTab === "gift set" || normalizedTab === "gift sets") {
-        if (catName.includes("gift") || catName.includes("set")) return true;
-      }
-      if (normalizedTab === "limited edition" || normalizedTab === "limited editions") {
-        if (catName.includes("limited") || catName.includes("edition")) return true;
-      }
-      return false;
-    });
-  };
-
   const getProductsForTab = (tab: string) => {
-    const matches = products.filter(p => matchCategory(p, tab));
-    if (matches.length > 0) return matches;
-    return products.slice(0, 8);
+    const norm = tab.toLowerCase().trim();
+    const scored = products.map((p) => {
+      let score = 0;
+      const title = (p.name || p.title || '').toLowerCase();
+      const cats = (p.categories || [])
+        .map((c: any) => (c.name || '').toLowerCase() + ' ' + (c.slug || '').toLowerCase())
+        .join(' ');
+
+      if (norm === 'cosmetic' || norm === 'cosmetics' || norm === 'makeup' || norm === 'make up') {
+        if (cats.includes('cosmetic') || cats.includes('makeup') || cats.includes('make up') || cats.includes('beauty')) {
+          score += 100;
+        }
+        if (
+          title.includes('lipstick') ||
+          title.includes('lip liner') ||
+          title.includes('blush') ||
+          title.includes('foundation') ||
+          title.includes('mascara') ||
+          title.includes('eyeliner') ||
+          title.includes('powder') ||
+          title.includes('primer') ||
+          title.includes('shadow') ||
+          title.includes('tint') ||
+          title.includes('gloss') ||
+          title.includes('concealer')
+        ) {
+          score += 80;
+        }
+        if (title.includes('lip ')) score += 40;
+      } else if (norm === 'skin care' || norm === 'skincare') {
+        if (cats.includes('skin') || cats.includes('care')) {
+          score += 100;
+        }
+        if (
+          title.includes('serum') ||
+          title.includes('cream') ||
+          title.includes('lotion') ||
+          title.includes('cleanser') ||
+          title.includes('mask') ||
+          title.includes('masque') ||
+          title.includes('balm') ||
+          title.includes('essence') ||
+          title.includes('concentrate') ||
+          title.includes('gel') ||
+          title.includes('oil') ||
+          title.includes('toner') ||
+          title.includes('moisturizer') ||
+          title.includes('eye')
+        ) {
+          score += 80;
+        }
+        if (title.includes('lip balm') || title.includes('perfumed')) score -= 50;
+      } else if (norm === 'perfume' || norm === 'fragrance' || norm === 'perfumes') {
+        if (cats.includes('perfume') || cats.includes('fragrance') || cats.includes('scent') || cats.includes('cologne')) {
+          score += 100;
+        }
+        if (
+          title.includes('eau de') ||
+          title.includes('parfum') ||
+          title.includes('cologne') ||
+          title.includes('edt') ||
+          title.includes('edp')
+        ) {
+          score += 100;
+        }
+        if (title.includes('perfume') || title.includes('fragrance') || title.includes('scent') || title.includes('aroma')) {
+          score += 80;
+        }
+        if (title.includes('lotion') || title.includes('body balm')) score -= 50;
+      } else if (norm === 'gift set' || norm === 'gift sets') {
+        if (cats.includes('gift') || cats.includes('set')) {
+          score += 100;
+        }
+        if (
+          title.includes('set') ||
+          title.includes('gift') ||
+          title.includes('duo') ||
+          title.includes('trio') ||
+          title.includes('kit') ||
+          title.includes('collection') ||
+          title.includes('box') ||
+          title.includes('pack')
+        ) {
+          score += 80;
+        }
+      } else if (norm === 'limited edition' || norm === 'limited editions') {
+        if (cats.includes('limited') || cats.includes('edition') || cats.includes('exclusive')) {
+          score += 100;
+        }
+        if (
+          title.includes('limited') ||
+          title.includes('edition') ||
+          title.includes('gold') ||
+          title.includes('privé') ||
+          title.includes('couture') ||
+          title.includes('absolue') ||
+          title.includes('intense') ||
+          title.includes('rare') ||
+          title.includes('supreme') ||
+          title.includes('exclusive') ||
+          title.includes('luxury')
+        ) {
+          score += 80;
+        }
+      }
+
+      return { ...p, _score: score };
+    });
+
+    const matches = scored.filter((p) => p._score > 0).sort((a, b) => b._score - a._score);
+    if (matches.length >= 8) {
+      return matches;
+    }
+
+    // If fewer than 8 matches, append unique fallback products from the store so the carousel is always full
+    const existingIds = new Set(matches.map((p) => p.id));
+    const extras = products.filter((p) => !existingIds.has(p.id));
+    return [...matches, ...extras].slice(0, 16);
   };
 
   const row1Products = getProductsForTab(row1Tab);
