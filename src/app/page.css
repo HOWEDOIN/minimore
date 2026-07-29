@@ -75,7 +75,7 @@
 
 .hero-title {
   font-size: clamp(3.2rem, 5.5vw, 5.8rem);
-  line-height: 1.02;
+  line-height: 0.88;
   margin-bottom: 2.25rem;
   font-weight: 400;
   letter-spacing: -1.5px;
@@ -84,7 +84,7 @@
 
 .hero-title .hero-line-1 {
   display: block;
-  margin-bottom: 0.15rem;
+  margin-bottom: -0.05em;
 }
 
 .hero-title .hero-line-2 {
@@ -92,7 +92,7 @@
   font-family: var(--font-neue), var(--font-sans);
   font-weight: 400;
   color: var(--foreground);
-  margin-bottom: 0.15rem;
+  margin-bottom: -0.05em;
 }
 
 .hero-title .hero-line-3 {
@@ -112,11 +112,11 @@
 }
 
 .hero-title .hero-word-at {
-  font-family: var(--font-quincy), var(--font-display);
-  font-style: italic;
+  font-family: var(--font-neue), var(--font-sans);
+  font-style: normal;
   font-weight: 400;
   color: var(--foreground);
-  margin-left: 0.4rem;
+  margin-left: 0.35rem;
 }
 
 .hero-desc {
