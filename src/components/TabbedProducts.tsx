@@ -9,12 +9,11 @@ import { getProductImage } from "@/utils/imageHelper";
 
 export default function TabbedProducts({ products, collectionTabs }: { products: any[], collectionTabs?: string[] }) {
   const tabs = collectionTabs && collectionTabs.length > 0 ? collectionTabs : [
-    "Limited Editions",
-    "Merchandise",
     "Miniature",
     "Vials",
+    "Make Up & Cosmetics",
     "Gift Sets",
-    "Make Up & Cosmetics"
+    "Limited Editions"
   ];
   
   const [activeTab, setActiveTab] = useState(tabs[0]);
@@ -23,10 +22,16 @@ export default function TabbedProducts({ products, collectionTabs }: { products:
   // If the category doesn't exactly match but contains the word, we can be slightly fuzzy
   const filteredProducts = products.filter(product => {
     if (!product.categories) return false;
-    return product.categories.some((cat: any) => 
-      cat.name.toLowerCase().includes(activeTab.toLowerCase()) ||
-      activeTab.toLowerCase().includes(cat.name.toLowerCase())
-    );
+    return product.categories.some((cat: any) => {
+      const catName = cat.name.toLowerCase().replace(/&/g, 'and');
+      const tabName = activeTab.toLowerCase().replace(/&/g, 'and');
+      return (
+        catName.includes(tabName) ||
+        tabName.includes(catName) ||
+        cat.name.toLowerCase().includes(activeTab.toLowerCase()) ||
+        activeTab.toLowerCase().includes(cat.name.toLowerCase())
+      );
+    });
   });
 
   return (

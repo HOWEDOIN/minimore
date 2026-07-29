@@ -58,7 +58,7 @@ export default async function Home() {
   }
 
   const sectionOrder: string[] = homepageContent.section_order?.map((s: string) => s === 'why' ? 'contact_locate' : s) || ['hero', 'trending', 'contact_locate'];
-  const collectionTabs: string[] = homepageContent.collection_tabs ? homepageContent.collection_tabs.split(',').map((t: string) => t.trim()) : ['Limited Editions', 'Merchandise', 'Miniature', 'Vials', 'Gift Sets', 'Make Up & Cosmetics'];
+  const collectionTabs: string[] = ['Miniature', 'Vials', 'Make Up & Cosmetics', 'Gift Sets', 'Limited Editions'];
 
   return (
     <div className="page-wrapper">
