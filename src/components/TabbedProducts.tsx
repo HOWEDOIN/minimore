@@ -167,14 +167,11 @@ export default function TabbedProducts({ products }: { products: any[], collecti
     });
 
     const matches = scored.filter((p) => p._score > 0).sort((a, b) => b._score - a._score);
-    if (matches.length >= 8) {
+    if (matches.length > 0) {
       return matches;
     }
 
-    // If fewer than 8 matches, append unique fallback products from the store so the carousel is always full
-    const existingIds = new Set(matches.map((p) => p.id));
-    const extras = products.filter((p) => !existingIds.has(p.id));
-    return [...matches, ...extras].slice(0, 16);
+    return products.slice(0, 16);
   };
 
   const row1Products = getProductsForTab(row1Tab);

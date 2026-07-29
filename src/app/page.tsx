@@ -4,6 +4,8 @@ import { wooApi } from "@/lib/woocommerce";
 import HomePageClient from "./HomePageClient";
 import ComingSoonOverlay from "@/components/ComingSoonOverlay";
 
+export const revalidate = 60; // Revalidate products from WooCommerce every 60 seconds
+
 export default async function Home() {
   const { data: products } = await wooApi.get("products", { per_page: 100 }).catch(() => ({ data: [] }));
 
