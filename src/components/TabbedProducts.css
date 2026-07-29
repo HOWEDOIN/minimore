@@ -58,7 +58,115 @@
   width: 100%;
 }
 
-/* Update the global product-grid to ensure it works well with the new container */
+/* ── Product Horizontal Slider (1 Row Left-Slideable) ── */
+.slider-container-wrapper {
+  position: relative;
+  margin-top: 2rem;
+}
+
+.product-horizontal-slider {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 1.5rem;
+  padding: 0.5rem 0.25rem 1.5rem 0.25rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-light) transparent;
+  scroll-behavior: smooth;
+}
+
+.product-horizontal-slider::-webkit-scrollbar {
+  height: 6px;
+}
+
+.product-horizontal-slider::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.product-horizontal-slider::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 9999px;
+}
+
+.product-horizontal-slider::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground-dim);
+}
+
+.slider-card-wrapper {
+  flex: 0 0 calc((100% - 4.5rem) / 4);
+  width: calc((100% - 4.5rem) / 4);
+  min-width: 250px;
+  scroll-snap-align: start;
+  height: auto;
+  display: flex;
+}
+
+.slider-card-wrapper .product-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Slider Navigation Buttons */
+.slider-nav-btn {
+  position: absolute;
+  top: calc(50% - 1.5rem);
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+  opacity: 0.85;
+}
+
+.slider-nav-btn:hover {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+  transform: scale(1.08);
+  opacity: 1;
+}
+
+.slider-nav-prev {
+  left: -1.25rem;
+}
+
+.slider-nav-next {
+  right: -1.25rem;
+}
+
+/* Responsive Slider Widths */
+@media (max-width: 1024px) {
+  .slider-card-wrapper {
+    flex: 0 0 calc((100% - 3rem) / 3);
+    width: calc((100% - 3rem) / 3);
+    min-width: 220px;
+  }
+  .slider-nav-btn {
+    display: none; /* Swipe on tablet/mobile */
+  }
+}
+
+@media (max-width: 640px) {
+  .slider-card-wrapper {
+    flex: 0 0 calc((100% - 1.2rem) / 2.15);
+    width: calc((100% - 1.2rem) / 2.15);
+    min-width: 155px;
+  }
+}
+
 @media (max-width: 768px) {
   .collection-tabs {
     gap: 1.5rem;
