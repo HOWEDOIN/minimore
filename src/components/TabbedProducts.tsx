@@ -77,34 +77,33 @@ export default function TabbedProducts({ products, collectionTabs }: { products:
                   transition={{ duration: 0.3 }}
                   whileHover={{ y: -8 }}
                 >
-                  <Link href={`/products/${product.slug || product.id}`} className="product-card" style={{ background: '#f5f5f5', padding: '1rem', borderRadius: '12px', display: 'block' }}>
-                    <div className="product-image-container" style={{ aspectRatio: '1/1', marginBottom: '1rem', borderRadius: '8px', overflow: 'hidden' }}>
+                  <Link href={`/products/${product.slug || product.id}`} className="product-card">
+                    <div className="product-image-container">
                       <Image
                         src={getProductImage(product)}
                         alt={product.name}
                         fill
                         className="product-image"
                         sizes="(max-width: 768px) 100vw, 33vw"
-                        style={{ objectFit: 'contain' }}
                       />
                       {isOnSale && Number(savings) > 0 && (
-                        <div className="product-badge" style={{ background: '#d32f2f', color: '#fff', padding: '4px 8px', borderRadius: '4px', position: 'absolute', top: '8px', left: '8px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                          Save RM{savings} MYR
+                        <div className="product-badge">
+                          Sale
                         </div>
                       )}
                     </div>
                     <div className="product-info">
-                      <span className="brand" style={{ color: 'var(--foreground-dim)', fontSize: '0.85rem' }}>
-                        {product.categories?.[0]?.name || "Merchandise"}
+                      <span className="brand">
+                        {product.categories?.[0]?.name || "Minimore"}
                       </span>
-                      <h3 className="product-name" style={{ fontSize: '1.1rem', marginTop: '0.5rem', marginBottom: '0.5rem', fontWeight: '500' }}>
+                      <h3 className="product-name">
                         {product.name}
                       </h3>
                       <div className="price-container" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <span className="price" style={{ color: '#d32f2f', fontWeight: 600 }}>RM{price} MYR</span>
-                        {isOnSale && (
-                          <span className="original-price" style={{ textDecoration: 'line-through', color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>
-                            RM{product.regular_price} MYR
+                        <span className="price">RM {price}</span>
+                        {isOnSale && product.regular_price && product.regular_price !== product.price && (
+                          <span style={{ textDecoration: 'line-through', color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>
+                            RM {product.regular_price}
                           </span>
                         )}
                       </div>
