@@ -56,10 +56,11 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(rawUrl);
 
     // Params we encoded into the redirect_url when creating the bill
-    const orderId = searchParams.get('order_id');
-    const number  = searchParams.get('number');
-    const total   = searchParams.get('total');
-    const method  = searchParams.get('method') || 'billplz';
+    const orderId  = searchParams.get('order_id');
+    const number   = searchParams.get('number');
+    const total    = searchParams.get('total');
+    const method   = searchParams.get('method') || 'billplz';
+    const billplzId = searchParams.get('billplz[id]') ?? searchParams.get('billplz%5Bid%5D') ?? null;
 
     // Billplz appends billplz[paid] — handle both encoded (%5B%5D) and literal [] forms
     const paid =
@@ -67,6 +68,25 @@ export async function GET(req: NextRequest) {
       searchParams.get('billplz%5Bpaid%5D') ??  // URL-encoded brackets
       searchParams.get('paid') ??               // our own fallback
       'false';
+
+    // ── Mark WooCommerce order as paid immediately on successful return ──────────
+    // Don't rely only on the POST webhook (which can be delayed / fail silently).
+    if (orderId && paid === 'true') {
+      try {
+        await fetch(`${WP_URL}/wp-json/wc/v3/orders/${orderId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: wcAuth() },
+          body: JSON.stringify({
+            status: 'processing',
+            set_paid: true,
+            ...(billplzId ? { transaction_id: billplzId } : {}),
+          }),
+        });
+      } catch (wcErr) {
+        // Non-fatal — still redirect the user; POST webhook will retry
+        console.error('WC order update failed on GET callback:', wcErr);
+      }
+    }
 
     if (orderId) {
       const confirmUrl = new URL(
