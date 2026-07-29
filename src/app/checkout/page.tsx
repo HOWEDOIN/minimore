@@ -19,6 +19,20 @@ export default function CheckoutPage() {
   const [step, setStep] = useState<'info' | 'submitting'>('info');
   const [error, setError] = useState<string | null>(null);
   const [sameBilling, setSameBilling] = useState(true);
+  const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(
+    process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== 'false'
+  );
+
+  React.useEffect(() => {
+    fetch('https://admin.minimore.my/wp-json/minimore/v1/sitewide')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && typeof data.disable_checkout !== 'undefined') {
+          setIsCheckoutDisabled(Boolean(data.disable_checkout));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const [contact, setContact] = useState({ email: '', phone: '' });
   const [shipping, setShipping] = useState({
@@ -31,6 +45,10 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isCheckoutDisabled) {
+      setError('Purchases are temporarily disabled at the moment. Please check back soon!');
+      return;
+    }
     setError(null);
     setStep('submitting');
 
@@ -194,9 +212,14 @@ export default function CheckoutPage() {
           <button
             type="submit"
             className="checkout-submit-btn"
-            disabled={step === 'submitting' || cart.length === 0}
+            disabled={step === 'submitting' || cart.length === 0 || isCheckoutDisabled}
+            style={isCheckoutDisabled ? {
+              backgroundColor: '#94a3b8',
+              cursor: 'not-allowed',
+              opacity: 0.75
+            } : {}}
           >
-            {step === 'submitting' ? 'Placing Order…' : `Place Order · RM ${subtotal.toFixed(2)}`}
+            {isCheckoutDisabled ? 'Checkout Temporarily Disabled' : step === 'submitting' ? 'Placing Order…' : `Place Order · RM ${subtotal.toFixed(2)}`}
           </button>
         </form>
         </div>

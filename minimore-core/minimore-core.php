@@ -49,6 +49,7 @@ function minimore_core_settings() {
     register_setting('minimore_sitewide_group', 'minimore_social_facebook');
     register_setting('minimore_sitewide_group', 'minimore_social_tiktok');
     register_setting('minimore_sitewide_group', 'minimore_social_telegram');
+    register_setting('minimore_sitewide_group', 'minimore_disable_checkout');
 }
 
 // Render the Carousel page
@@ -104,6 +105,20 @@ function minimore_sitewide_page() {
         <h1>Sitewide Settings</h1>
         <form method="post" action="options.php">
             <?php settings_fields('minimore_sitewide_group'); ?>
+            <h2>Store Operation Settings</h2>
+            <p>Control checkout availability on your store.</p>
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row">Disable Checkout Button</th>
+                    <td>
+                        <label>
+                            <input type="checkbox" name="minimore_disable_checkout" value="1" <?php checked('1', get_option('minimore_disable_checkout', '1')); ?> />
+                            Temporarily grey out "Go to Checkout" button and disable purchases on the store
+                        </label>
+                    </td>
+                </tr>
+            </table>
+            <hr />
             <h2>Social Media Links</h2>
             <p>Paste the full URL to your social media profiles. Leave blank to hide.</p>
             <table class="form-table">
@@ -167,6 +182,7 @@ function minimore_sitewide_api() {
         'social_instagram' => get_option('minimore_social_instagram', ''),
         'social_facebook'  => get_option('minimore_social_facebook', ''),
         'social_tiktok'    => get_option('minimore_social_tiktok', ''),
-        'social_telegram'  => get_option('minimore_social_telegram', '')
+        'social_telegram'  => get_option('minimore_social_telegram', ''),
+        'disable_checkout' => get_option('minimore_disable_checkout', '1') == '1'
     ], 200);
 }
