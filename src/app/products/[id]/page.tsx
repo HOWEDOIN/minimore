@@ -9,6 +9,7 @@ import FomoBanner from "@/components/FomoBanner";
 import "./product-detail.css";
 import { wooApi } from "@/lib/woocommerce";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
+import { getDisplayCategory } from "@/lib/categoryUtils";
 
 export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -35,7 +36,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
   const regularPrice = parseFloat(product.regular_price || product.price || "0");
   const salePrice = parseFloat(product.sale_price || "0");
   
-  const brand = product.categories?.[0]?.name || "MINIMORE";
+  const brand = getDisplayCategory(product);
   
   // Custom Metadata (In WooCommerce, this would use ACF or custom meta_data array)
   const metaObj: any = {};
