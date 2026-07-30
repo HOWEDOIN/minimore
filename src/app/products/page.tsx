@@ -5,13 +5,14 @@ import "./products.css";
 import { wooApi } from "@/lib/woocommerce";
 import { getProductImage } from "@/utils/imageHelper";
 import { getDisplayCategory } from "@/lib/categoryUtils";
+import ProductSortSelect from "@/components/ProductSortSelect";
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; search?: string }>;
+  searchParams: Promise<{ category?: string; search?: string; sort?: string }>;
 }) {
-  const { category, search } = await searchParams;
+  const { category, search, sort } = await searchParams;
 
   // 1. Fetch categories for the filter bar
   const { data: product_categories } = await wooApi.get("products/categories", { hide_empty: true }).catch(() => ({ data: [] }));
@@ -46,6 +47,35 @@ export default async function ProductsPage({
     return { data: [] };
   });
 
+  // Sort products based on sort searchParam
+  if (Array.isArray(products)) {
+    if (sort === "price-low-high") {
+      products.sort((a: any, b: any) => {
+        const pA = parseFloat(a.price || a.regular_price || "0");
+        const pB = parseFloat(b.price || b.regular_price || "0");
+        return pA - pB;
+      });
+    } else if (sort === "price-high-low") {
+      products.sort((a: any, b: any) => {
+        const pA = parseFloat(a.price || a.regular_price || "0");
+        const pB = parseFloat(b.price || b.regular_price || "0");
+        return pB - pA;
+      });
+    } else if (sort === "newest") {
+      products.sort((a: any, b: any) => {
+        const dateA = new Date(a.date_created || a.date_created_gmt || 0).getTime();
+        const dateB = new Date(b.date_created || b.date_created_gmt || 0).getTime();
+        return dateB - dateA;
+      });
+    } else {
+      products.sort((a: any, b: any) => {
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return 0;
+      });
+    }
+  }
+
   return (
     <div className="page-wrapper">
       <Navbar isStatic={true} />
@@ -68,12 +98,7 @@ export default async function ProductsPage({
         <section className="shop-content">
           <div className="shop-header">
             <h1>{selectedCategory ? `Shop ${selectedCategory.name}` : "Shop All Miniatures"}</h1>
-            <select className="sort-select">
-              <option>Sort by: Featured</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-              <option>Newest Arrivals</option>
-            </select>
+            <ProductSortSelect />
           </div>
 
           <div className="product-grid">
