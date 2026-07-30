@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import "./products.css";
 import { wooApi } from "@/lib/woocommerce";
 import { getProductImage } from "@/utils/imageHelper";
+import { getDisplayCategory } from "@/lib/categoryUtils";
 
 export default async function ProductsPage({
   searchParams,
@@ -97,7 +98,7 @@ export default async function ProductsPage({
                       )}
                     </div>
                     <div className="product-info">
-                      <span className="brand">{product.categories?.[0]?.name || "Minimore"}</span>
+                      <span className="brand">{getDisplayCategory(product, category)}</span>
                       <h3 className="product-name">{product.name}</h3>
                       <span className="price">RM {price}</span>
                     </div>

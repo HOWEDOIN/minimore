@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import "./TabbedProducts.css";
 import { getProductImage } from "@/utils/imageHelper";
+import { getDisplayCategory } from "@/lib/categoryUtils";
 
 export default function TabbedProducts({ products }: { products: any[], collectionTabs?: string[] }) {
   const [row1Tab, setRow1Tab] = useState("Cosmetic");
@@ -181,6 +182,7 @@ export default function TabbedProducts({ products }: { products: any[], collecti
     const price = product.price || product.regular_price || 0;
     const isOnSale = product.on_sale || (product.regular_price && product.price && product.regular_price !== product.price);
     const savings = isOnSale ? (parseFloat(product.regular_price) - parseFloat(product.price)).toFixed(2) : 0;
+    const activeTab = keyPrefix === "row1" ? row1Tab : keyPrefix === "row2" ? row2Tab : undefined;
     
     return (
       <motion.div 
@@ -210,7 +212,7 @@ export default function TabbedProducts({ products }: { products: any[], collecti
           </div>
           <div className="product-info">
             <span className="brand">
-              {product.categories?.[0]?.name || "Minimore"}
+              {getDisplayCategory(product, activeTab)}
             </span>
             <h3 className="product-name">
               {product.name}

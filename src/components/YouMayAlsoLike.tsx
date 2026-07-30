@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getProductImage } from "@/utils/imageHelper";
 import { wooApi } from "@/lib/woocommerce";
+import { getDisplayCategory } from "@/lib/categoryUtils";
 
 export default async function YouMayAlsoLike({ 
   currentProductId, 
@@ -81,7 +82,7 @@ export default async function YouMayAlsoLike({
               </div>
               <div className="product-info">
                 <span className="brand" style={{ color: 'var(--foreground-dim)', fontSize: '0.85rem' }}>
-                  {product.categories?.[0]?.name || "Merchandise"}
+                  {getDisplayCategory(product)}
                 </span>
                 <h3 className="product-name" style={{ fontSize: '1.1rem', marginTop: '0.5rem', marginBottom: '0.5rem', fontWeight: '500', color: 'var(--foreground)' }}>
                   {product.name}
