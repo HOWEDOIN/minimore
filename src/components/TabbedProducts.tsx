@@ -8,7 +8,7 @@ import "./TabbedProducts.css";
 import { getProductImage } from "@/utils/imageHelper";
 import { getDisplayCategory } from "@/lib/categoryUtils";
 
-export default function TabbedProducts({ products }: { products: any[], collectionTabs?: string[] }) {
+export default function TabbedProducts({ products, hidePrices = false }: { products: any[], collectionTabs?: string[], hidePrices?: boolean }) {
   const [row1Tab, setRow1Tab] = useState("Cosmetic");
   const [row2Tab, setRow2Tab] = useState("Gift Set");
   
@@ -217,14 +217,16 @@ export default function TabbedProducts({ products }: { products: any[], collecti
             <h3 className="product-name">
               {product.name}
             </h3>
-            <div className="price-container" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <span className="price">RM {price}</span>
-              {isOnSale && product.regular_price && product.regular_price !== product.price && (
-                <span style={{ textDecoration: 'line-through', color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>
-                  RM {product.regular_price}
-                </span>
-              )}
-            </div>
+            {!hidePrices && (
+              <div className="price-container" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <span className="price">RM {price}</span>
+                {isOnSale && product.regular_price && product.regular_price !== product.price && (
+                  <span style={{ textDecoration: 'line-through', color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>
+                    RM {product.regular_price}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </Link>
       </motion.div>

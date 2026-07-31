@@ -6,6 +6,7 @@ import { wooApi } from "@/lib/woocommerce";
 import { getProductImage } from "@/utils/imageHelper";
 import { getDisplayCategory } from "@/lib/categoryUtils";
 import ProductSortSelect from "@/components/ProductSortSelect";
+import { getSitewideSettings } from "@/lib/sitewideSettings";
 
 export default async function ProductsPage({
   searchParams,
@@ -14,8 +15,12 @@ export default async function ProductsPage({
 }) {
   const { category, search, sort } = await searchParams;
 
-  // 1. Fetch categories for the filter bar
-  const { data: product_categories } = await wooApi.get("products/categories", { hide_empty: true }).catch(() => ({ data: [] }));
+  // 1. Fetch categories and sitewide settings in parallel
+  const [{ data: product_categories }, sitewide] = await Promise.all([
+    wooApi.get("products/categories", { hide_empty: true }).catch(() => ({ data: [] })),
+    getSitewideSettings(),
+  ]);
+  const hidePrices = sitewide.hide_prices;
 
   // 2. Determine params
   const query: any = { per_page: 50 };
@@ -125,7 +130,7 @@ export default async function ProductsPage({
                     <div className="product-info">
                       <span className="brand">{getDisplayCategory(product, category)}</span>
                       <h3 className="product-name">{product.name}</h3>
-                      <span className="price">RM {price}</span>
+                      {!hidePrices && <span className="price">RM {price}</span>}
                     </div>
                   </Link>
                 );

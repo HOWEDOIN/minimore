@@ -6,7 +6,7 @@ import { motion, Variants, useScroll, useTransform, AnimatePresence } from "fram
 import { useRef, useState, useEffect, useCallback } from "react";
 import TabbedProducts from "@/components/TabbedProducts";
 
-export default function HomePageClient({ products, homepageContent, sectionOrder, collectionTabs }: { products: any, homepageContent: any, sectionOrder: string[], collectionTabs: string[] }) {
+export default function HomePageClient({ products, homepageContent, sectionOrder, collectionTabs, hidePrices = false }: { products: any, homepageContent: any, sectionOrder: string[], collectionTabs: string[], hidePrices?: boolean }) {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroImageY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
@@ -163,7 +163,7 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
 
     trending: (
       <section className="featured container" id="shop">
-        <TabbedProducts products={products} collectionTabs={collectionTabs} />
+        <TabbedProducts products={products} collectionTabs={collectionTabs} hidePrices={hidePrices} />
       </section>
     ),
     contact_locate: (

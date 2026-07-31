@@ -10,23 +10,32 @@ import "./product-detail.css";
 import { wooApi } from "@/lib/woocommerce";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 import { getDisplayCategory } from "@/lib/categoryUtils";
+import { getSitewideSettings } from "@/lib/sitewideSettings";
 
 export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  // Try fetching by slug first, otherwise by ID
+  // Fetch product and sitewide settings in parallel
   let product = null;
+  let sitewide;
   try {
-    const { data: productsBySlug } = await wooApi.get("products", { slug: id });
-    if (productsBySlug && productsBySlug.length > 0) {
-      product = productsBySlug[0];
-    } else {
+    [{ data: [product] }, sitewide] = await Promise.all([
+      wooApi.get("products", { slug: id }).catch(async () => {
+        const { data } = await wooApi.get(`products/${id}`);
+        return { data: [data] };
+      }),
+      getSitewideSettings(),
+    ]);
+    // If slug lookup returned empty, fallback to ID lookup
+    if (!product) {
       const { data: productById } = await wooApi.get(`products/${id}`);
       product = productById;
     }
   } catch (err) {
     console.error("Error fetching product", err);
   }
+
+  const hidePrices = sitewide?.hide_prices ?? false;
 
   if (!product) {
     notFound();
@@ -85,7 +94,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
           <div className="product-info-section">
             <div className="product-badges-top">
-              {salePrice > 0 && salePrice < regularPrice && (
+              {!hidePrices && salePrice > 0 && salePrice < regularPrice && (
                 <span className="sale-badge">Save {Math.round(((regularPrice - salePrice) / regularPrice) * 100)}%</span>
               )}
             </div>
@@ -94,11 +103,15 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             <h1 className="product-title">{product.name}</h1>
             
             <div className="pricing-group">
-              <span className="product-price">
-                RM {salePrice > 0 ? salePrice.toFixed(2) : regularPrice > 0 ? regularPrice.toFixed(2) : price} MYR
-              </span>
-              {salePrice > 0 && salePrice < regularPrice && (
-                <span className="product-regular-price">RM {regularPrice.toFixed(2)} MYR</span>
+              {!hidePrices && (
+                <>
+                  <span className="product-price">
+                    RM {salePrice > 0 ? salePrice.toFixed(2) : regularPrice > 0 ? regularPrice.toFixed(2) : price} MYR
+                  </span>
+                  {salePrice > 0 && salePrice < regularPrice && (
+                    <span className="product-regular-price">RM {regularPrice.toFixed(2)} MYR</span>
+                  )}
+                </>
               )}
             </div>
             <p className="shipping-notice"><u>Shipping</u> calculated at checkout.</p>
@@ -144,7 +157,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
         </div>
 
         {/* You May Also Like Section */}
-        <YouMayAlsoLike currentProductId={product.id} currentCategoryId={product.categories?.[0]?.id} />
+        <YouMayAlsoLike currentProductId={product.id} currentCategoryId={product.categories?.[0]?.id} hidePrices={hidePrices} />
       </main>
     </div>
   );
