@@ -6,10 +6,12 @@ import { getDisplayCategory } from "@/lib/categoryUtils";
 
 export default async function YouMayAlsoLike({ 
   currentProductId, 
-  currentCategoryId 
+  currentCategoryId,
+  hidePrices = false
 }: { 
   currentProductId: number, 
-  currentCategoryId?: number 
+  currentCategoryId?: number,
+  hidePrices?: boolean
 }) {
   let relatedProducts = [];
   try {
@@ -74,7 +76,7 @@ export default async function YouMayAlsoLike({
                   sizes="(max-width: 768px) 100vw, 25vw"
                   style={{ objectFit: 'contain' }}
                 />
-                {isOnSale && Number(savings) > 0 && (
+                {!hidePrices && isOnSale && Number(savings) > 0 && (
                   <div className="product-badge" style={{ background: '#d32f2f', color: '#fff', padding: '4px 8px', borderRadius: '4px', position: 'absolute', top: '8px', left: '8px', fontSize: '0.75rem', fontWeight: 'bold' }}>
                     Save RM{savings} MYR
                   </div>
@@ -87,14 +89,16 @@ export default async function YouMayAlsoLike({
                 <h3 className="product-name" style={{ fontSize: '1.1rem', marginTop: '0.5rem', marginBottom: '0.5rem', fontWeight: '500', color: 'var(--foreground)' }}>
                   {product.name}
                 </h3>
-                <div className="price-container" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                  <span className="price" style={{ color: '#d32f2f', fontWeight: 600 }}>RM{price} MYR</span>
-                  {isOnSale && (
-                    <span className="original-price" style={{ textDecoration: 'line-through', color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>
-                      RM{product.regular_price} MYR
-                    </span>
-                  )}
-                </div>
+                {!hidePrices && (
+                  <div className="price-container" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <span className="price" style={{ color: '#d32f2f', fontWeight: 600 }}>RM{price} MYR</span>
+                    {isOnSale && (
+                      <span className="original-price" style={{ textDecoration: 'line-through', color: 'var(--foreground-dim)', fontSize: '0.9rem' }}>
+                        RM{product.regular_price} MYR
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </Link>
           );

@@ -50,6 +50,7 @@ function minimore_core_settings() {
     register_setting('minimore_sitewide_group', 'minimore_social_tiktok');
     register_setting('minimore_sitewide_group', 'minimore_social_telegram');
     register_setting('minimore_sitewide_group', 'minimore_disable_checkout');
+    register_setting('minimore_sitewide_group', 'minimore_hide_prices');
 }
 
 // Render the Carousel page
@@ -106,7 +107,7 @@ function minimore_sitewide_page() {
         <form method="post" action="options.php">
             <?php settings_fields('minimore_sitewide_group'); ?>
             <h2>Store Operation Settings</h2>
-            <p>Control checkout availability on your store.</p>
+            <p>Control checkout availability and pricing visibility on your store.</p>
             <table class="form-table">
                 <tr valign="top">
                     <th scope="row">Disable Checkout Button</th>
@@ -115,6 +116,16 @@ function minimore_sitewide_page() {
                             <input type="checkbox" name="minimore_disable_checkout" value="1" <?php checked('1', get_option('minimore_disable_checkout', '1')); ?> />
                             Temporarily grey out "Go to Checkout" button and disable purchases on the store
                         </label>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row">Hide Prices</th>
+                    <td>
+                        <label>
+                            <input type="checkbox" name="minimore_hide_prices" value="1" <?php checked('1', get_option('minimore_hide_prices', '0')); ?> />
+                            Hide all product prices across the storefront (product cards, product detail pages, related products)
+                        </label>
+                        <p class="description">Useful when you want to showcase products without revealing prices publicly.</p>
                     </td>
                 </tr>
             </table>
@@ -183,6 +194,7 @@ function minimore_sitewide_api() {
         'social_facebook'  => get_option('minimore_social_facebook', ''),
         'social_tiktok'    => get_option('minimore_social_tiktok', ''),
         'social_telegram'  => get_option('minimore_social_telegram', ''),
-        'disable_checkout' => get_option('minimore_disable_checkout', '1') == '1'
+        'disable_checkout' => get_option('minimore_disable_checkout', '1') == '1',
+        'hide_prices'      => get_option('minimore_hide_prices', '0') == '1'
     ], 200);
 }

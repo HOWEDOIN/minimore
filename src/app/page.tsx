@@ -3,11 +3,16 @@ import "./page.css";
 import { wooApi } from "@/lib/woocommerce";
 import HomePageClient from "./HomePageClient";
 import ComingSoonOverlay from "@/components/ComingSoonOverlay";
+import { getSitewideSettings } from "@/lib/sitewideSettings";
 
 export const revalidate = 60; // Revalidate products from WooCommerce every 60 seconds
 
 export default async function Home() {
-  const { data: products } = await wooApi.get("products", { per_page: 100 }).catch(() => ({ data: [] }));
+  const [{ data: products }, sitewide] = await Promise.all([
+    wooApi.get("products", { per_page: 100 }).catch(() => ({ data: [] })),
+    getSitewideSettings(),
+  ]);
+  const hidePrices = sitewide.hide_prices;
 
   let homepageContent: any = {
     hero_title: `<span class="hero-line-1"><span class="hero-word-more">More</span> <span class="hero-word-at">at</span></span><span class="hero-line-2">the price of</span><span class="hero-line-3">Mini</span>`,
@@ -74,6 +79,7 @@ export default async function Home() {
         homepageContent={homepageContent}
         sectionOrder={sectionOrder}
         collectionTabs={collectionTabs}
+        hidePrices={hidePrices}
       />
       {homepageContent.is_coming_soon && <ComingSoonOverlay />}
     </div>
