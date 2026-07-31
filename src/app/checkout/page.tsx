@@ -22,6 +22,7 @@ export default function CheckoutPage() {
   const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(
     process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== 'false'
   );
+  const [hidePrices, setHidePrices] = useState(true);
 
   React.useEffect(() => {
     fetch('https://admin.minimore.my/wp-json/minimore/v1/sitewide')
@@ -29,6 +30,9 @@ export default function CheckoutPage() {
       .then((data) => {
         if (data && typeof data.disable_checkout !== 'undefined') {
           setIsCheckoutDisabled(Boolean(data.disable_checkout));
+        }
+        if (data && typeof data.hide_prices !== 'undefined') {
+          setHidePrices(Boolean(data.hide_prices) || true);
         }
       })
       .catch(() => {});
@@ -237,19 +241,23 @@ export default function CheckoutPage() {
                   <span className="checkout-item-qty">{item.quantity}</span>
                 </div>
                 <span className="checkout-item-name">{item.title}</span>
-                <span className="checkout-item-price">RM {(item.price * item.quantity).toFixed(2)}</span>
+                {!hidePrices && <span className="checkout-item-price">RM {(item.price * item.quantity).toFixed(2)}</span>}
               </div>
             ))}
           </div>
-          <div className="checkout-summary-line">
-            <span>Subtotal</span><span>RM {subtotal.toFixed(2)}</span>
-          </div>
-          <div className="checkout-summary-line">
-            <span>Shipping</span><span className="checkout-free">Free</span>
-          </div>
-          <div className="checkout-summary-line checkout-summary-total">
-            <span>Total</span><span>RM {subtotal.toFixed(2)}</span>
-          </div>
+          {!hidePrices && (
+            <>
+              <div className="checkout-summary-line">
+                <span>Subtotal</span><span>RM {subtotal.toFixed(2)}</span>
+              </div>
+              <div className="checkout-summary-line">
+                <span>Shipping</span><span className="checkout-free">Free</span>
+              </div>
+              <div className="checkout-summary-line checkout-summary-total">
+                <span>Total</span><span>RM {subtotal.toFixed(2)}</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import "./TabbedProducts.css";
 import { getProductImage } from "@/utils/imageHelper";
 import { getDisplayCategory } from "@/lib/categoryUtils";
 
-export default function TabbedProducts({ products, hidePrices = false }: { products: any[], collectionTabs?: string[], hidePrices?: boolean }) {
+export default function TabbedProducts({ products, hidePrices = true }: { products: any[], collectionTabs?: string[], hidePrices?: boolean }) {
   const [row1Tab, setRow1Tab] = useState("Cosmetic");
   const [row2Tab, setRow2Tab] = useState("Gift Set");
   

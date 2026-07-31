@@ -35,7 +35,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
     console.error("Error fetching product", err);
   }
 
-  const hidePrices = sitewide?.hide_prices ?? false;
+  const hidePrices = sitewide?.hide_prices ?? true;
 
   if (!product) {
     notFound();
@@ -114,7 +114,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
                 </>
               )}
             </div>
-            <p className="shipping-notice"><u>Shipping</u> calculated at checkout.</p>
+            {!hidePrices && <p className="shipping-notice"><u>Shipping</u> calculated at checkout.</p>}
 
             <div className="stock-indicator">
               <span className="pulse-dot"></span>

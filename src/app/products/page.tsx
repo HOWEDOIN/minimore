@@ -103,7 +103,7 @@ export default async function ProductsPage({
         <section className="shop-content">
           <div className="shop-header">
             <h1>{selectedCategory ? `Shop ${selectedCategory.name}` : "Shop All Miniatures"}</h1>
-            <ProductSortSelect />
+            <ProductSortSelect hidePrices={hidePrices} />
           </div>
 
           <div className="product-grid">
