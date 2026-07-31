@@ -1,5 +1,4 @@
 const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://admin.minimore.my";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://minimore.my";
 
 export interface SitewideSettings {
   hide_prices: boolean;
@@ -15,32 +14,37 @@ export interface SitewideSettings {
   social_telegram?: string;
 }
 
+let _cached: { data: SitewideSettings; fetchedAt: number } | null = null;
+const CACHE_TTL_MS = 60_000; // 1 minute cache
+
 export async function getSitewideSettings(): Promise<SitewideSettings> {
-  // Fetch our own admin settings and WP sitewide in parallel
-  const [adminRes, wpRes] = await Promise.allSettled([
-    fetch(`${SITE_URL}/api/admin/settings`, { next: { revalidate: 30 } }),
-    fetch(`${WP_URL}/wp-json/minimore/v1/sitewide`, { next: { revalidate: 60 } }),
-  ]);
-
-  let adminSettings: Partial<SitewideSettings> = {};
-  if (adminRes.status === "fulfilled" && adminRes.value.ok) {
-    try { adminSettings = await adminRes.value.json(); } catch {}
+  const now = Date.now();
+  if (_cached && now - _cached.fetchedAt < CACHE_TTL_MS) {
+    return _cached.data;
   }
 
-  let wpSettings: Partial<SitewideSettings> = {};
-  if (wpRes.status === "fulfilled" && wpRes.value.ok) {
-    try { wpSettings = await wpRes.value.json(); } catch {}
+  try {
+    const res = await fetch(`${WP_URL}/wp-json/minimore/v1/sitewide`, {
+      next: { revalidate: 60 },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const settings: SitewideSettings = {
+        hide_prices: Boolean(data.hide_prices),
+        disable_checkout: Boolean(data.disable_checkout),
+        announcement: data.announcement,
+        social_instagram: data.social_instagram,
+        social_facebook: data.social_facebook,
+        social_tiktok: data.social_tiktok,
+        social_telegram: data.social_telegram,
+      };
+      _cached = { data: settings, fetchedAt: now };
+      return settings;
+    }
+  } catch (e) {
+    // Silently fall through to defaults on network error
   }
 
-  // Our own admin settings take priority for toggles; WP provides social links & announcement
-  return {
-    hide_prices: adminSettings.hide_prices ?? wpSettings.hide_prices ?? false,
-    disable_checkout: adminSettings.disable_checkout ?? wpSettings.disable_checkout ?? true,
-    announcement: wpSettings.announcement,
-    social_instagram: wpSettings.social_instagram,
-    social_facebook: wpSettings.social_facebook,
-    social_tiktok: wpSettings.social_tiktok,
-    social_telegram: wpSettings.social_telegram,
-  };
+  // Default: show prices, disable checkout (safe defaults)
+  return { hide_prices: false, disable_checkout: true };
 }
-
