@@ -87,12 +87,17 @@
   outline: none;
 }
 
-/* ── More Products Blush / Blur Section ────────────────────────────── */
+/* ── More Products Blush / Blur Section (Full Width, Brand Colors) ── */
 .more-products-blush-section {
+  width: 100vw;
   position: relative;
-  margin-top: -110px;
-  padding-top: 70px;
-  min-height: 48vh;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-top: -240px;
+  padding-top: 100px;
+  min-height: 65vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -105,21 +110,25 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
-  opacity: 0.4;
+  opacity: 0.38;
   filter: blur(2px);
   pointer-events: none;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
 }
 
 @media (min-width: 640px) {
   .incoming-products-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .incoming-products-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 2rem;
   }
 }
@@ -135,7 +144,7 @@
 
 .incoming-card-img-placeholder {
   aspect-ratio: 1 / 1.05;
-  background: linear-gradient(145deg, #f8f6f4 0%, #ede7e0 100%);
+  background: linear-gradient(145deg, #f4f8fa 0%, #e8f0f4 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,7 +155,7 @@
   width: 32%;
   height: 55%;
   border-radius: 999px 999px 12px 12px;
-  background: linear-gradient(180deg, rgba(205, 185, 175, 0.4) 0%, rgba(180, 155, 145, 0.6) 100%);
+  background: linear-gradient(180deg, rgba(163, 203, 211, 0.45) 0%, rgba(155, 190, 218, 0.65) 100%);
   box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.7);
 }
 
@@ -161,56 +170,18 @@
   padding: 3rem 1.5rem 2rem;
   z-index: 10;
   background: 
-    radial-gradient(ellipse at center 80%, rgba(250, 226, 218, 0.88) 0%, rgba(255, 238, 232, 0.5) 45%, rgba(255, 255, 255, 0) 85%),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 253, 250, 0.55) 25%, rgba(255, 252, 248, 0.92) 65%, rgba(255, 255, 255, 0.99) 90%, #ffffff 100%);
+    radial-gradient(ellipse at 35% 85%, rgba(163, 203, 211, 0.65) 0%, rgba(163, 203, 211, 0.25) 45%, transparent 75%),
+    radial-gradient(ellipse at 65% 85%, rgba(155, 190, 218, 0.65) 0%, rgba(155, 190, 218, 0.25) 45%, transparent 75%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 20%, rgba(250, 253, 254, 0.9) 60%, rgba(248, 251, 253, 0.98) 85%, #f2f7fa 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 18%, black 45%, black 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 18%, black 45%, black 100%);
-}
-
-.blush-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 1.15rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(225, 195, 185, 0.75);
-  color: #a34830;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 1.25rem;
-  box-shadow: 0 4px 14px rgba(225, 195, 185, 0.25);
-  pointer-events: auto;
-}
-
-.blush-pulse-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: #d96b43;
-  display: inline-block;
-  box-shadow: 0 0 8px rgba(217, 107, 67, 0.8);
-  animation: blushPulse 2s infinite;
-}
-
-@keyframes blushPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.35);
-    opacity: 0.55;
-  }
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.65) 15%, black 40%, black 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.65) 15%, black 40%, black 100%);
 }
 
 .blush-title {
   font-family: var(--font-display, Georgia, serif);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: clamp(1.85rem, 4.5vw, 2.75rem);
   font-weight: 500;
   color: #1a1a1a;
   margin-bottom: 0.85rem;
@@ -221,9 +192,9 @@
 
 .blush-subtitle {
   font-family: var(--font-sans, system-ui, sans-serif);
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #555555;
-  max-width: 520px;
+  max-width: 560px;
   line-height: 1.6;
   margin: 0 auto;
   pointer-events: auto;

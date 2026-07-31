@@ -137,41 +137,39 @@ export default async function ProductsPage({
               })
             )}
           </div>
-
-          {/* ── More Products Blush / Blur Section ────────────────── */}
-          <div className="more-products-blush-section">
-            <div className="incoming-products-grid" aria-hidden="true">
-              {[
-                { category: 'COSMETICS', title: 'Tom Ford Soleil Neige Lip Balm 2g' },
-                { category: 'SKINCARE', title: 'La Mer Crème de la Mer Moisturizer 7ml' },
-                { category: 'PERFUME', title: 'Dior Sauvage Eau de Parfum Miniature 10ml' },
-                { category: 'COSMETICS', title: 'Chanel Les Beiges Water-Fresh Tint 5ml' },
-              ].map((item, index) => (
-                <div key={index} className="incoming-product-card">
-                  <div className="incoming-card-img-placeholder">
-                    <div className="incoming-bottle-silhouette"></div>
-                  </div>
-                  <div className="product-info">
-                    <span className="brand">{item.category}</span>
-                    <h3 className="product-name">{item.title}</h3>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="blush-blur-overlay">
-              <div className="blush-badge">
-                <span className="blush-pulse-dot"></span>
-                NEW DROPS INBOUND
-              </div>
-              <h2 className="blush-title">More Products Coming Online Soon</h2>
-              <p className="blush-subtitle">
-                We are constantly expanding our authentic miniature cosmetic &amp; perfume vault. Check back soon for our latest arrivals.
-              </p>
-            </div>
-          </div>
         </section>
       </main>
+
+      {/* ── More Products Blush / Blur Section (Full Width) ────────────────── */}
+      <div className="more-products-blush-section">
+        <div className="incoming-products-grid" aria-hidden="true">
+          {[
+            { category: 'COSMETICS', title: 'Tom Ford Soleil Neige Lip Balm 2g' },
+            { category: 'SKINCARE', title: 'La Mer Crème de la Mer Moisturizer 7ml' },
+            { category: 'PERFUME', title: 'Dior Sauvage Eau de Parfum Miniature 10ml' },
+            { category: 'COSMETICS', title: 'Chanel Les Beiges Water-Fresh Tint 5ml' },
+            { category: 'PERFUME', title: 'YSL Libre Eau de Parfum Miniature 7.5ml' },
+            { category: 'SKINCARE', title: 'SK-II Facial Treatment Essence 30ml' },
+          ].map((item, index) => (
+            <div key={index} className="incoming-product-card">
+              <div className="incoming-card-img-placeholder">
+                <div className="incoming-bottle-silhouette"></div>
+              </div>
+              <div className="product-info">
+                <span className="brand">{item.category}</span>
+                <h3 className="product-name">{item.title}</h3>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="blush-blur-overlay">
+          <h2 className="blush-title">More Products Coming Online Soon</h2>
+          <p className="blush-subtitle">
+            We are constantly expanding our authentic miniature cosmetic &amp; perfume vault. Check back soon for our latest arrivals.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
