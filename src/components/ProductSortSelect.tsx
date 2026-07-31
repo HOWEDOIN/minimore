@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import React from "react";
 
-export default function ProductSortSelect() {
+export default function ProductSortSelect({ hidePrices = true }: { hidePrices?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -28,8 +28,8 @@ export default function ProductSortSelect() {
       aria-label="Sort products"
     >
       <option value="featured">Sort by: Featured</option>
-      <option value="price-low-high">Price: Low to High</option>
-      <option value="price-high-low">Price: High to Low</option>
+      {!hidePrices && <option value="price-low-high">Price: Low to High</option>}
+      {!hidePrices && <option value="price-high-low">Price: High to Low</option>}
       <option value="newest">Newest Arrivals</option>
     </select>
   );

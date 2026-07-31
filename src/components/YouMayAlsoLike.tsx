@@ -7,7 +7,7 @@ import { getDisplayCategory } from "@/lib/categoryUtils";
 export default async function YouMayAlsoLike({ 
   currentProductId, 
   currentCategoryId,
-  hidePrices = false
+  hidePrices = true
 }: { 
   currentProductId: number, 
   currentCategoryId?: number,

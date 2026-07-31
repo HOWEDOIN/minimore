@@ -11,6 +11,7 @@ export default function CartDrawer() {
   const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(
     process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== "false"
   );
+  const [hidePrices, setHidePrices] = useState(true);
 
   useEffect(() => {
     initCart();
@@ -19,6 +20,9 @@ export default function CartDrawer() {
       .then((data) => {
         if (data && typeof data.disable_checkout !== "undefined") {
           setIsCheckoutDisabled(Boolean(data.disable_checkout));
+        }
+        if (data && typeof data.hide_prices !== "undefined") {
+          setHidePrices(Boolean(data.hide_prices) || true);
         }
       })
       .catch(() => {});
@@ -60,7 +64,7 @@ export default function CartDrawer() {
                 </div>
                 <div className="cart-item-details">
                   <h4 className="item-title">{item.title}</h4>
-                  <p className="item-price">RM {item.price}</p>
+                  {!hidePrices && <p className="item-price">RM {item.price}</p>}
                   <div className="item-actions">
                     <span className="item-qty">Qty: {item.quantity}</span>
                     <button 
@@ -79,10 +83,12 @@ export default function CartDrawer() {
 
         {items.length > 0 && (
           <div className="cart-footer">
-            <div className="cart-total">
-              <span>Subtotal</span>
-              <span>RM {total}</span>
-            </div>
+            {!hidePrices && (
+              <div className="cart-total">
+                <span>Subtotal</span>
+                <span>RM {total}</span>
+              </div>
+            )}
             <p className="cart-taxes">
               {isCheckoutDisabled 
                 ? "Purchases are temporarily disabled." 
