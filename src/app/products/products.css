@@ -199,3 +199,117 @@
   margin: 0 auto;
   pointer-events: auto;
 }
+
+/* ── Mobile View Responsiveness (/products page) ────────────────── */
+@media (max-width: 767px) {
+  .shop-layout {
+    gap: 1.5rem;
+    padding-top: 1.75rem;
+    padding-bottom: 4rem;
+  }
+
+  .shop-sidebar {
+    width: 100%;
+    padding-right: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Hide the large 'CATEGORIES' heading on mobile */
+  .shop-sidebar h3 {
+    display: none;
+  }
+
+  /* Convert vertical categories list into a sleek horizontal scrollable pill bar */
+  .category-list {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .category-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-list li {
+    flex-shrink: 0;
+  }
+
+  .category-list a {
+    display: inline-block;
+    padding: 0.5rem 1.15rem;
+    border-radius: 9999px;
+    background: var(--surface-card, #ffffff);
+    border: 1px solid var(--border-light, #e5e7eb);
+    font-size: 0.82rem;
+    color: #4b5563;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .category-list a.active,
+  .category-list a:hover {
+    background: var(--primary, #7ab8cc);
+    color: #ffffff;
+    border-color: var(--primary, #7ab8cc);
+    font-weight: 500;
+    box-shadow: 0 3px 10px rgba(122, 184, 204, 0.35);
+  }
+
+  /* Compact header on mobile */
+  .shop-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 0.75rem;
+  }
+
+  .shop-header h1 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .sort-select {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+
+  /* Mobile adjustments for the More Products Blush/Blur section */
+  .more-products-blush-section {
+    margin-top: -130px;
+    padding-top: 45px;
+    min-height: 52vh;
+  }
+
+  .incoming-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    padding: 0 1rem;
+  }
+
+  .blush-blur-overlay {
+    padding: 2rem 1.25rem 1.5rem;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.65) 25%, black 50%, black 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.65) 25%, black 50%, black 100%);
+  }
+
+  .blush-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.25;
+  }
+
+  .blush-subtitle {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-width: 92%;
+  }
+}
