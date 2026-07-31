@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Minimore Hero Carousel
- * Description: Adds a settings page to manage multiple hero carousel images and their respective hyperlinks.
- * Version: 1.4
+ * Description: Adds a settings page to manage multiple hero carousel images, their hyperlinks, and store pricing visibility.
+ * Version: 1.5
  * Author: Minimore AI
  */
 
@@ -54,6 +54,7 @@ add_action('admin_init', 'minimore_carousel_settings');
 function minimore_carousel_settings() {
     register_setting('minimore_carousel_group', 'minimore_hero_images');
     register_setting('minimore_carousel_group', 'minimore_hero_links');
+    register_setting('minimore_carousel_group', 'minimore_hide_prices');
 }
 
 // Render the settings page
@@ -61,7 +62,7 @@ function minimore_carousel_page() {
     wp_enqueue_media();
     ?>
     <div class="wrap">
-        <h1>Hero Carousel Configuration</h1>
+        <h1>Hero Carousel &amp; Store Configuration</h1>
         <form method="post" action="options.php">
             <?php settings_fields('minimore_carousel_group'); ?>
             <?php do_settings_sections('minimore_carousel_group'); ?>
@@ -80,6 +81,16 @@ function minimore_carousel_page() {
                     <td>
                         <textarea id="minimore_hero_links" name="minimore_hero_links" rows="6" cols="60" class="large-text code"><?php echo esc_textarea(get_option('minimore_hero_links', '')); ?></textarea>
                         <p class="description">Enter the destination URLs for the images above, separated by commas. <b>Make sure the order matches the images exactly!</b><br>If an image doesn't need a link, use a hashtag (<code>#</code>).</p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row" style="padding-top: 20px;">Store Pricing</th>
+                    <td style="padding-top: 20px;">
+                        <label style="font-size: 14px; font-weight: 600; cursor: pointer;">
+                            <input type="checkbox" name="minimore_hide_prices" value="1" <?php checked('1', get_option('minimore_hide_prices', '0')); ?> style="margin-right: 8px;" />
+                            Hide all product prices across the storefront
+                        </label>
+                        <p class="description" style="margin-top: 6px;">When checked, prices are hidden on homepage product cards, shop page, product detail pages, and related products.</p>
                     </td>
                 </tr>
             </table>
@@ -112,7 +123,7 @@ function minimore_carousel_page() {
     <?php
 }
 
-// Register REST API Endpoint
+// Register REST API Endpoints & Filters
 add_action('rest_api_init', function () {
     register_rest_route('minimore/v1', '/carousel', array(
         'methods' => 'GET',
@@ -145,3 +156,17 @@ function minimore_carousel_api() {
         'hero_links' => $hero_links
     ], 200);
 }
+
+// Automatically inject hide_prices into /wp-json/minimore/v1/sitewide API responses
+add_filter('rest_post_dispatch', function($response, $server, $request) {
+    if (strpos($request->get_route(), '/minimore/v1/sitewide') !== false) {
+        if (is_a($response, 'WP_REST_Response')) {
+            $data = $response->get_data();
+            if (is_array($data)) {
+                $data['hide_prices'] = get_option('minimore_hide_prices', '0') == '1';
+                $response->set_data($data);
+            }
+        }
+    }
+    return $response;
+}, 10, 3);
