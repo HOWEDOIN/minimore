@@ -217,7 +217,7 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
                 <span className="contact-icon">💬</span>
                 <div>
                   <span className="contact-label">WhatsApp Us</span>
-                  <a href={`https://wa.me/${homepageContent.contact_whatsapp || '60123456789'}`} className="contact-link">
+                  <a href={`https://wa.me/${homepageContent.contact_whatsapp || '60174222999'}`} className="contact-link">
                     {homepageContent.contact_whatsapp_display || '+60 12-345 6789 (Placeholder)'}
                   </a>
                 </div>
