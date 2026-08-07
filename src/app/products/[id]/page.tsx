@@ -66,7 +66,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
   const countdownDate = customLimitedOffer || dateOnSaleTo;
 
   // ⚠️ TODO: Replace with real WhatsApp number before going live
-  const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "60123456789";
+  const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "60174222999";
   const whatsappMessage = encodeURIComponent(`Hi Minimore! I'm interested in ordering: ${product.name}`);
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
 
