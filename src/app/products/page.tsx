@@ -23,7 +23,7 @@ export default async function ProductsPage({
   const hidePrices = sitewide.hide_prices;
 
   // 2. Determine params
-  const query: any = { per_page: 50 };
+  const query: any = { per_page: 50, stock_status: "instock" };
   let selectedCategory: any = null;
 
   if (search) {
@@ -47,10 +47,14 @@ export default async function ProductsPage({
   }
 
   // Fetch real products from WooCommerce
-  const { data: products } = await wooApi.get("products", query).catch((err: any) => {
+  const { data: rawProducts } = await wooApi.get("products", query).catch((err: any) => {
     console.error("Failed to fetch products", err);
     return { data: [] };
   });
+
+  const products = Array.isArray(rawProducts)
+    ? rawProducts.filter((p: any) => p.stock_status === "instock" || (p.manage_stock && p.stock_quantity > 0))
+    : [];
 
   // Sort products based on sort searchParam
   if (Array.isArray(products)) {
