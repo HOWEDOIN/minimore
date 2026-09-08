@@ -22,7 +22,8 @@ export default async function YouMayAlsoLike({
         category: currentCategoryId, 
         per_page: 10,
         orderby: 'date',
-        order: 'desc'
+        order: 'desc',
+        stock_status: 'instock',
       });
       primaryProducts = data;
     }
@@ -35,7 +36,8 @@ export default async function YouMayAlsoLike({
       const { data: otherProducts } = await wooApi.get("products", {
         per_page: 10,
         orderby: 'date',
-        order: 'desc'
+        order: 'desc',
+        stock_status: 'instock',
       });
       
       // Track IDs we already have so we don't duplicate

@@ -8,11 +8,14 @@ import { getSitewideSettings } from "@/lib/sitewideSettings";
 export const revalidate = 60; // Revalidate products from WooCommerce every 60 seconds
 
 export default async function Home() {
-  const [{ data: products }, sitewide] = await Promise.all([
-    wooApi.get("products", { per_page: 100 }).catch(() => ({ data: [] })),
+  const [{ data: rawProducts }, sitewide] = await Promise.all([
+    wooApi.get("products", { per_page: 100, stock_status: "instock" }).catch(() => ({ data: [] })),
     getSitewideSettings(),
   ]);
   const hidePrices = sitewide.hide_prices;
+  const products = Array.isArray(rawProducts)
+    ? rawProducts.filter((p: any) => p.stock_status === "instock" || (p.manage_stock && p.stock_quantity > 0))
+    : [];
 
   let homepageContent: any = {
     hero_title: `<span class="hero-line-1"><span class="hero-word-more">More</span> <span class="hero-word-at">at</span></span><span class="hero-line-2">the price of</span><span class="hero-line-3">Mini</span>`,
