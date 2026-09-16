@@ -4,6 +4,7 @@ import { wooApi } from "@/lib/woocommerce";
 import HomePageClient from "./HomePageClient";
 import ComingSoonOverlay from "@/components/ComingSoonOverlay";
 import { getSitewideSettings } from "@/lib/sitewideSettings";
+import { hasRealImage } from "@/utils/imageHelper";
 
 export const revalidate = 60; // Revalidate products from WooCommerce every 60 seconds
 
@@ -14,7 +15,10 @@ export default async function Home() {
   ]);
   const hidePrices = sitewide.hide_prices;
   const products = Array.isArray(rawProducts)
-    ? rawProducts.filter((p: any) => p.stock_status === "instock" || (p.manage_stock && p.stock_quantity > 0))
+    ? rawProducts.filter((p: any) =>
+        (p.stock_status === "instock" || (p.manage_stock && p.stock_quantity > 0)) &&
+        hasRealImage(p)
+      )
     : [];
 
   let homepageContent: any = {
