@@ -48,7 +48,7 @@ class MSI_StoreHub_Inventory_Sync {
         if ( ! as_has_scheduled_action( 'msi_inventory_sync' ) ) {
             $interval = (int) get_option( 'msi_sync_interval', 3600 );
             if ( $interval < 60 ) {
-                $interval = 3600;
+                $interval = 60; // minimum 1 minute
             }
             as_schedule_recurring_action( time() + 60, $interval, 'msi_inventory_sync', array(), self::ACTION_GROUP );
         }
