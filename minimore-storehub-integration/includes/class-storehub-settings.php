@@ -54,6 +54,8 @@ class MSI_StoreHub_Settings {
 
     private static function get_settings(): array {
         $interval_options = array(
+            '60'    => __( 'Every 1 minute', 'msi' ),
+            '300'   => __( 'Every 5 minutes', 'msi' ),
             '900'   => __( 'Every 15 minutes', 'msi' ),
             '1800'  => __( 'Every 30 minutes', 'msi' ),
             '3600'  => __( 'Hourly', 'msi' ),

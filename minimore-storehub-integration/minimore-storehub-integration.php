@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Minimore StoreHub Integration
  * Description: Integrates WooCommerce with StoreHub BackOffice. Syncs inventory from a dedicated Online Store, pushes orders as transactions, and retries failed pushes automatically.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Minimore AI
  * Requires Plugins: woocommerce
  */
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
-define( 'MSI_VERSION',     '1.1.0' );
+define( 'MSI_VERSION',     '1.2.0' );
 define( 'MSI_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'MSI_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
 define( 'MSI_PLUGIN_FILE', __FILE__ );
