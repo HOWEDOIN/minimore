@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getProductImage } from "@/utils/imageHelper";
+import { getProductImage, hasRealImage } from "@/utils/imageHelper";
 import { wooApi } from "@/lib/woocommerce";
 import { getDisplayCategory } from "@/lib/categoryUtils";
 
@@ -28,8 +28,8 @@ export default async function YouMayAlsoLike({
       primaryProducts = data;
     }
     
-    // Filter out the current product
-    relatedProducts = primaryProducts.filter((p: any) => p.id !== currentProductId);
+    // Filter out the current product and any without a real image
+    relatedProducts = primaryProducts.filter((p: any) => p.id !== currentProductId && hasRealImage(p));
 
     // 2. If we have fewer than 4 items, backfill with the newest items from ANY category
     if (relatedProducts.length < 4) {
@@ -44,7 +44,7 @@ export default async function YouMayAlsoLike({
       const existingIds = new Set(relatedProducts.map((p: any) => p.id));
       existingIds.add(currentProductId);
 
-      const fillProducts = otherProducts.filter((p: any) => !existingIds.has(p.id));
+      const fillProducts = otherProducts.filter((p: any) => !existingIds.has(p.id) && hasRealImage(p));
       relatedProducts = [...relatedProducts, ...fillProducts];
     }
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import "./products.css";
 import { wooApi } from "@/lib/woocommerce";
-import { getProductImage } from "@/utils/imageHelper";
+import { getProductImage, hasRealImage } from "@/utils/imageHelper";
 import { getDisplayCategory } from "@/lib/categoryUtils";
 import ProductSortSelect from "@/components/ProductSortSelect";
 import { getSitewideSettings } from "@/lib/sitewideSettings";
@@ -53,7 +53,10 @@ export default async function ProductsPage({
   });
 
   const products = Array.isArray(rawProducts)
-    ? rawProducts.filter((p: any) => p.stock_status === "instock" || (p.manage_stock && p.stock_quantity > 0))
+    ? rawProducts.filter((p: any) =>
+        (p.stock_status === "instock" || (p.manage_stock && p.stock_quantity > 0)) &&
+        hasRealImage(p)
+      )
     : [];
 
   // Sort products based on sort searchParam

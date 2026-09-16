@@ -1,3 +1,15 @@
+const DUMMY_IMAGE_MARKERS = ['picsum.photos', '/800', 'woocommerce_product_image_upload_error'];
+
+/**
+ * Returns true if a product has a real image uploaded in WooCommerce
+ * (i.e. not missing and not a dummy/placeholder image).
+ */
+export function hasRealImage(product: any): boolean {
+  const src = product.images?.[0]?.src;
+  if (!src) return false;
+  return !DUMMY_IMAGE_MARKERS.some((marker) => src.includes(marker));
+}
+
 export function getProductImage(product: any) {
   const originalSrc = product.images?.[0]?.src;
   if (!originalSrc) return "/images/skincare.png";
