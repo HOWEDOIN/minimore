@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Update Minimore CMS (1-Click Updater)
- * Description: Installs/Updates the Minimore CMS Must-Use plugin (mu-plugins/minimore-core.php) with Store Checkout and Store Pricing toggles.
- * Version: 2.2
+ * Description: Installs/Updates the Minimore CMS Must-Use plugin (mu-plugins/minimore-core.php).
+ * Version: 2.3
  * Author: Minimore AI
  */
 
@@ -26,7 +26,7 @@ function minimore_cms_updater_notice() {
         if ($copied) {
             echo '<div class="notice notice-success is-dismissible" style="border-left-color: #d4a853; padding: 12px 16px;">';
             echo '<p style="font-size: 15px; margin: 0 0 6px;"><strong>⚡ Minimore CMS Updated Successfully!</strong></p>';
-            echo '<p style="margin: 0;">The new <b>Store Checkout (Disable Checkout)</b> and <b>Store Pricing</b> toggles have been installed into your dashboard. Go to <b>Minimore &rarr; Global Settings</b> in your left menu to use them. <i>(You may now deactivate and delete this 1-Click Updater plugin from your Plugins list.)</i></p>';
+            echo '<p style="margin: 0;">The Minimore CMS plugin has been installed. The public WordPress frontend now redirects to <b>/wp-admin</b>; storefront REST APIs and media remain available. <i>You may now deactivate and delete this updater.</i></p>';
             echo '</div>';
         } else {
             echo '<div class="notice notice-error"><p><strong>❌ Minimore CMS Update Failed:</strong> Could not write to <code>' . esc_html($target) . '</code>. Please check folder permissions.</p></div>';

@@ -13,7 +13,7 @@ export const revalidate = 60; // Revalidate products from WooCommerce every 60 s
 
 export default async function Home() {
   const [{ data: rawProducts }, sitewide] = await Promise.all([
-    wooApi.get("products", { per_page: 100, stock_status: "instock" }).catch(() => ({ data: [] })),
+    wooApi.get("products", { per_page: 100, status: "publish", stock_status: "instock" }).catch(() => ({ data: [] })),
     getSitewideSettings(),
   ]);
   const hidePrices = sitewide.hide_prices;

@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
     const billRes = await fetch("https://www.billplz.com/api/v3/bills", { method: "POST", headers: { Authorization: `Basic ${Buffer.from(`${BILLPLZ_API_KEY}:`).toString("base64")}`, "Content-Type": "application/x-www-form-urlencoded" }, body: billParams.toString() });
     if (!billRes.ok) {
       console.error("Billplz bill creation failed:", await billRes.text());
+      await fetch(`${WP_URL}/wp-json/wc/v3/orders/${order.id}`, { method: "PUT", headers: { "Content-Type": "application/json", Authorization: authHeader }, body: JSON.stringify({ status: "cancelled" }) });
       return NextResponse.json({ error: "Failed to create payment bill. Please try again." }, { status: 502 });
     }
     const bill = await billRes.json();

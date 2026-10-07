@@ -926,9 +926,6 @@ function minimore_get_sitewide_data() {
     );
 }
 
-// ---------------------------------------------------------
-// 2.5 Auto-Create Standard Pages
-// ---------------------------------------------------------
 add_action('rest_api_init', function () {
     register_rest_route('minimore/v1', '/sitewide', array(
         'methods'             => 'GET',
@@ -937,92 +934,12 @@ add_action('rest_api_init', function () {
     ));
 });
 
-add_action('init', 'minimore_create_default_pages');
-function minimore_create_default_pages() {
-    $pages_to_create = array(
-        'about'   => array('title' => 'Our Story',                    'content' => '<h2>About Minimore</h2><p>Welcome to Minimore, your destination for luxury miniatures.</p>'),
-        'faq'     => array('title' => 'Frequently Asked Questions',   'content' => '<h2>FAQ</h2><p><strong>Do you ship internationally?</strong><br/>Yes we do!</p>'),
-        'contact' => array('title' => 'Contact Us',                   'content' => '<h2>Get in Touch</h2><p>Email us at support@minimore.local</p>')
-    );
-    foreach ($pages_to_create as $slug => $page) {
-        $page_check = get_page_by_path($slug);
-        if (!isset($page_check->ID)) {
-            wp_insert_post(array(
-                'post_title'   => $page['title'],
-                'post_content' => $page['content'],
-                'post_status'  => 'publish',
-                'post_type'    => 'page',
-                'post_name'    => $slug
-            ));
-        }
+// Keep WordPress as the private CMS: public pages go to the protected admin area.
+// REST endpoints and uploaded media remain available to the storefront.
+add_action('template_redirect', function () {
+    if (!(defined('REST_REQUEST') && REST_REQUEST) && !wp_doing_ajax()) {
+        nocache_headers();
+        wp_safe_redirect(admin_url(), 302);
+        exit;
     }
-}
-
-// ---------------------------------------------------------
-// 3. Custom Authentication Endpoints
-// ---------------------------------------------------------
-add_action('rest_api_init', function () {
-    register_rest_route('minimore/v1', '/login', array(
-        'methods' => 'POST',
-        'callback' => 'minimore_api_login',
-        'permission_callback' => '__return_true'
-    ));
-    register_rest_route('minimore/v1', '/register', array(
-        'methods' => 'POST',
-        'callback' => 'minimore_api_register',
-        'permission_callback' => '__return_true'
-    ));
 });
-
-function minimore_api_register(WP_REST_Request $request) {
-    $email      = $request->get_param('email');
-    $password   = $request->get_param('password');
-    $first_name = $request->get_param('first_name');
-    $last_name  = $request->get_param('last_name');
-    if (email_exists($email)) {
-        return new WP_Error('email_exists', 'An account with this email already exists.', array('status' => 400));
-    }
-    $user_id = wp_create_user($email, $password, $email);
-    if (is_wp_error($user_id)) {
-        return new WP_Error('registration_failed', $user_id->get_error_message(), array('status' => 500));
-    }
-    wp_update_user(array('ID' => $user_id, 'first_name' => $first_name, 'last_name' => $last_name, 'role' => 'customer'));
-    return minimore_api_login($request);
-}
-
-function minimore_api_login(WP_REST_Request $request) {
-    $email    = $request->get_param('email');
-    $password = $request->get_param('password');
-    $user     = wp_authenticate($email, $password);
-    if (is_wp_error($user)) {
-        return new WP_Error('invalid_credentials', 'Invalid email or password.', array('status' => 401));
-    }
-    return array(
-        'customer_id' => $user->ID,
-        'first_name'  => $user->first_name,
-        'last_name'   => $user->last_name,
-        'email'       => $user->user_email
-    );
-}
-
-// ---------------------------------------------------------
-// 4. Headless Checkout Sync
-// ---------------------------------------------------------
-add_action('wp_loaded', 'minimore_checkout_sync_handler');
-function minimore_checkout_sync_handler() {
-    if (isset($_GET['minimore_checkout_sync']) && !empty($_GET['minimore_checkout_sync'])) {
-        $payload = base64_decode(stripslashes($_GET['minimore_checkout_sync']));
-        $items   = json_decode($payload, true);
-        if (is_array($items)) {
-            if (is_null(WC()->cart)) { wc_load_cart(); }
-            WC()->cart->empty_cart();
-            foreach ($items as $item) {
-                if (isset($item['id']) && isset($item['qty'])) {
-                    WC()->cart->add_to_cart($item['id'], $item['qty']);
-                }
-            }
-            wp_safe_redirect(wc_get_checkout_url());
-            exit;
-        }
-    }
-}

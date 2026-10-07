@@ -107,9 +107,11 @@ export default function CheckoutPage() {
                 />
               </div>
               <div className="checkout-field">
-                <label htmlFor="checkout-phone">Phone (optional)</label>
+                <label htmlFor="checkout-phone">Phone (optional — Malaysian mobile)</label>
                 <input
-                  id="checkout-phone" name="phone" type="tel" autoComplete="tel" placeholder="+60 12 345 6789"
+                  id="checkout-phone" name="phone" type="tel" autoComplete="tel" placeholder="0123456789 or +60123456789"
+                  pattern="(?:\+60|0)1[0-9]{8,9}"
+                  title="Enter a Malaysian mobile number such as +60123456789, or leave this blank"
                   value={contact.phone}
                   onChange={e => setContact(p => ({ ...p, phone: e.target.value }))}
                 />
@@ -123,18 +125,18 @@ export default function CheckoutPage() {
             <div className="checkout-field-row">
               <div className="checkout-field">
                 <label htmlFor="shipping-first-name">First name</label>
-                <input id="shipping-first-name" name="given-name" autoComplete="shipping given-name" required value={shipping.firstName}
+                <input id="shipping-first-name" name="given-name" autoComplete="shipping given-name" required placeholder="e.g. Aina" value={shipping.firstName}
                   onChange={e => setShipping(p => ({ ...p, firstName: e.target.value }))} />
               </div>
               <div className="checkout-field">
                 <label htmlFor="shipping-last-name">Last name</label>
-                <input id="shipping-last-name" name="family-name" autoComplete="shipping family-name" required value={shipping.lastName}
+                <input id="shipping-last-name" name="family-name" autoComplete="shipping family-name" required placeholder="e.g. Rahman" value={shipping.lastName}
                   onChange={e => setShipping(p => ({ ...p, lastName: e.target.value }))} />
               </div>
             </div>
             <div className="checkout-field">
               <label htmlFor="shipping-address">Address</label>
-              <input id="shipping-address" name="address-line1" autoComplete="shipping address-line1" required placeholder="Street address" value={shipping.address1}
+              <input id="shipping-address" name="address-line1" autoComplete="shipping address-line1" required placeholder="e.g. 12 Jalan Ampang" value={shipping.address1}
                 onChange={e => setShipping(p => ({ ...p, address1: e.target.value }))} />
             </div>
             <div className="checkout-field">
@@ -145,7 +147,7 @@ export default function CheckoutPage() {
             <div className="checkout-field-row">
               <div className="checkout-field">
                 <label htmlFor="shipping-city">City</label>
-                <input id="shipping-city" name="address-level2" autoComplete="shipping address-level2" required value={shipping.city}
+                <input id="shipping-city" name="address-level2" autoComplete="shipping address-level2" required placeholder="e.g. Kuala Lumpur" value={shipping.city}
                   onChange={e => setShipping(p => ({ ...p, city: e.target.value }))} />
               </div>
               <div className="checkout-field">
@@ -157,7 +159,7 @@ export default function CheckoutPage() {
               </div>
               <div className="checkout-field">
                 <label htmlFor="shipping-postcode">Postcode</label>
-                <input id="shipping-postcode" name="postal-code" autoComplete="shipping postal-code" inputMode="numeric" pattern="[0-9]{5}" required maxLength={5} value={shipping.postcode}
+                <input id="shipping-postcode" name="postal-code" autoComplete="shipping postal-code" inputMode="numeric" pattern="[0-9]{5}" required maxLength={5} placeholder="e.g. 50000" title="Enter a 5-digit Malaysian postcode" value={shipping.postcode}
                   onChange={e => setShipping(p => ({ ...p, postcode: e.target.value }))} />
               </div>
             </div>

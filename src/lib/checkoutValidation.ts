@@ -6,6 +6,7 @@ export const MALAYSIAN_STATES = [
 const EAST_MALAYSIA = new Set(["Sabah", "Sarawak", "Labuan"]);
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const POSTCODE = /^\d{5}$/;
+const PHONE = /^(?:\+60|0)1\d{8,9}$/;
 
 type Address = { firstName: string; lastName: string; address1: string; address2?: string; city: string; state: string; postcode: string; country: string };
 type CheckoutBody = { contact: { email: string; phone?: string }; shipping: Address; billing?: Address | null; paymentMethod: string; cartItems: Array<{ variantId: string; quantity: number }> };
@@ -26,9 +27,12 @@ export function validateCheckoutBody(value: unknown): CheckoutBody | null {
       (body.billing != null && !validAddress(body.billing)) || !Array.isArray(body.cartItems) ||
       body.cartItems.length < 1 || body.cartItems.length > 50) return null;
 
+  const phone = body.contact.phone?.replace(/[\s()-]/g, "") || "";
+  if (phone && !PHONE.test(phone)) return null;
+  const normalizedPhone = phone.startsWith("0") ? `+60${phone.slice(1)}` : phone;
   const cartValid = body.cartItems.every((item) => item && /^\d+$/.test(String(item.variantId)) &&
     Number(item.variantId) > 0 && Number.isInteger(item.quantity) && item.quantity >= 1 && item.quantity <= 20);
-  return cartValid ? body as CheckoutBody : null;
+  return cartValid ? { ...body, contact: { ...body.contact, phone: normalizedPhone || undefined } } as CheckoutBody : null;
 }
 
 export function shippingFor(state: string) {
