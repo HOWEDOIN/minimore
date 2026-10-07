@@ -14,23 +14,15 @@ export interface SitewideSettings {
   social_telegram?: string;
 }
 
-let _cached: { data: SitewideSettings; fetchedAt: number } | null = null;
-const CACHE_TTL_MS = 60_000; // 1 minute cache
-
 export async function getSitewideSettings(): Promise<SitewideSettings> {
-  const now = Date.now();
-  if (_cached && now - _cached.fetchedAt < CACHE_TTL_MS) {
-    return _cached.data;
-  }
-
   try {
     const res = await fetch(`${WP_URL}/wp-json/minimore/v1/sitewide`, {
       next: { revalidate: 60 },
     });
     if (res.ok) {
-      const data = await res.json();
-      const settings: SitewideSettings = {
-        hide_prices: true, // Boolean(data.hide_prices), // Temporarily hide all prices
+      const data = await res.json() as Partial<SitewideSettings>;
+      return {
+        hide_prices: typeof data.hide_prices === "boolean" ? data.hide_prices : true,
         disable_checkout: typeof data.disable_checkout !== "undefined"
           ? Boolean(data.disable_checkout)
           : process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== "false",
@@ -40,10 +32,8 @@ export async function getSitewideSettings(): Promise<SitewideSettings> {
         social_tiktok: data.social_tiktok,
         social_telegram: data.social_telegram,
       };
-      _cached = { data: settings, fetchedAt: now };
-      return settings;
     }
-  } catch (e) {
+  } catch {
     // Silently fall through to defaults on network error
   }
 

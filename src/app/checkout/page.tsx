@@ -2,25 +2,19 @@
 
 import React, { useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
+import { MALAYSIAN_STATES, shippingFor } from '@/lib/checkoutValidation';
 import './checkout.css';
 
-const MALAYSIAN_STATES = [
-  'Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang',
-  'Perak', 'Perlis', 'Pulau Pinang', 'Sabah', 'Sarawak', 'Selangor',
-  'Terengganu', 'Kuala Lumpur', 'Labuan', 'Putrajaya',
-];
-
 export default function CheckoutPage() {
-  const { cart, isLoading: cartLoading } = useCartStore();
-  const router = useRouter();
+  const { cart } = useCartStore();
 
   const [step, setStep] = useState<'info' | 'submitting'>('info');
   const [error, setError] = useState<string | null>(null);
   const [sameBilling, setSameBilling] = useState(true);
   const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(
-    process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== 'false'
+    process.env.NODE_ENV === 'development' ? false : process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== 'false'
   );
   const [hidePrices, setHidePrices] = useState(true);
 
@@ -29,10 +23,10 @@ export default function CheckoutPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data && typeof data.disable_checkout !== 'undefined') {
-          setIsCheckoutDisabled(Boolean(data.disable_checkout));
+          setIsCheckoutDisabled(process.env.NODE_ENV === 'development' ? false : Boolean(data.disable_checkout));
         }
-        if (data && typeof data.hide_prices !== 'undefined') {
-          setHidePrices(Boolean(data.hide_prices) || true);
+        if (data && typeof data.hide_prices === 'boolean') {
+          setHidePrices(data.hide_prices);
         }
       })
       .catch(() => {});
@@ -43,9 +37,8 @@ export default function CheckoutPage() {
     firstName: '', lastName: '', address1: '', address2: '',
     city: '', state: 'Selangor', postcode: '', country: 'MY',
   });
-  const [paymentMethod, setPaymentMethod] = useState('billplz');
-
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shippingTotal = shippingFor(shipping.state);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +57,7 @@ export default function CheckoutPage() {
           contact,
           shipping,
           billing: sameBilling ? null : shipping,
-          paymentMethod,
+          paymentMethod: 'billplz',
           cartItems: cart.map(i => ({ variantId: i.variantId, quantity: i.quantity })),
         }),
       });
@@ -75,17 +68,17 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Something went wrong.');
       }
 
-      if (paymentMethod === 'billplz' && data.paymentUrl) {
-        // For Billplz: don't clear cart yet — user might cancel on the payment page.
-        // Cart will be cleared when they return via the /api/order-callback route.
-        window.location.href = data.paymentUrl;
-      } else {
-        // For COD: clear cart immediately and go to our confirmation page
-        useCartStore.setState({ cart: [], isCartOpen: false });
-        router.push(data.confirmUrl || `/order-confirmation/${data.orderId}?number=${data.orderNumber}&total=${data.total}&method=cod`);
+      if (data.testMode) {
+        setError(`Local test passed. Shipping is RM ${data.shippingTotal}. No order or Billplz bill was created.`);
+        setStep('info');
+        return;
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred.');
+
+      if (!data.paymentUrl || !data.orderId || !data.orderKey) throw new Error('Payment setup failed.');
+      sessionStorage.setItem(`minimore-order-${data.orderId}`, data.orderKey);
+      window.location.href = data.paymentUrl;
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
       setStep('info');
     }
   };
@@ -96,8 +89,8 @@ export default function CheckoutPage() {
       <div className="checkout-left">
         <div className="checkout-left-inner">
           <header className="checkout-header">
-            <a href="/" className="checkout-logo">Minimore</a>
-            <a href="/" className="checkout-back">← Back to Store</a>
+            <Link href="/" className="checkout-logo">Minimore</Link>
+            <Link href="/" className="checkout-back">← Back to Store</Link>
           </header>
 
           <form onSubmit={handleSubmit} className="checkout-form">
@@ -106,17 +99,17 @@ export default function CheckoutPage() {
             <h2 className="checkout-section-title">Contact</h2>
             <div className="checkout-field-row">
               <div className="checkout-field">
-                <label>Email address</label>
+                <label htmlFor="checkout-email">Email address</label>
                 <input
-                  type="email" required placeholder="you@example.com"
+                  id="checkout-email" name="email" type="email" autoComplete="email" required placeholder="you@example.com"
                   value={contact.email}
                   onChange={e => setContact(p => ({ ...p, email: e.target.value }))}
                 />
               </div>
               <div className="checkout-field">
-                <label>Phone (optional)</label>
+                <label htmlFor="checkout-phone">Phone (optional)</label>
                 <input
-                  type="tel" placeholder="+60 12 345 6789"
+                  id="checkout-phone" name="phone" type="tel" autoComplete="tel" placeholder="+60 12 345 6789"
                   value={contact.phone}
                   onChange={e => setContact(p => ({ ...p, phone: e.target.value }))}
                 />
@@ -129,47 +122,47 @@ export default function CheckoutPage() {
             <h2 className="checkout-section-title">Shipping address</h2>
             <div className="checkout-field-row">
               <div className="checkout-field">
-                <label>First name</label>
-                <input required value={shipping.firstName}
+                <label htmlFor="shipping-first-name">First name</label>
+                <input id="shipping-first-name" name="given-name" autoComplete="shipping given-name" required value={shipping.firstName}
                   onChange={e => setShipping(p => ({ ...p, firstName: e.target.value }))} />
               </div>
               <div className="checkout-field">
-                <label>Last name</label>
-                <input required value={shipping.lastName}
+                <label htmlFor="shipping-last-name">Last name</label>
+                <input id="shipping-last-name" name="family-name" autoComplete="shipping family-name" required value={shipping.lastName}
                   onChange={e => setShipping(p => ({ ...p, lastName: e.target.value }))} />
               </div>
             </div>
             <div className="checkout-field">
-              <label>Address</label>
-              <input required placeholder="Street address" value={shipping.address1}
+              <label htmlFor="shipping-address">Address</label>
+              <input id="shipping-address" name="address-line1" autoComplete="shipping address-line1" required placeholder="Street address" value={shipping.address1}
                 onChange={e => setShipping(p => ({ ...p, address1: e.target.value }))} />
             </div>
             <div className="checkout-field">
-              <label>Apartment, suite, etc. (optional)</label>
-              <input placeholder="Apt, suite, unit, etc." value={shipping.address2}
+              <label htmlFor="shipping-address-2">Apartment, suite, etc. (optional)</label>
+              <input id="shipping-address-2" name="address-line2" autoComplete="shipping address-line2" placeholder="Apt, suite, unit, etc." value={shipping.address2}
                 onChange={e => setShipping(p => ({ ...p, address2: e.target.value }))} />
             </div>
             <div className="checkout-field-row">
               <div className="checkout-field">
-                <label>City</label>
-                <input required value={shipping.city}
+                <label htmlFor="shipping-city">City</label>
+                <input id="shipping-city" name="address-level2" autoComplete="shipping address-level2" required value={shipping.city}
                   onChange={e => setShipping(p => ({ ...p, city: e.target.value }))} />
               </div>
               <div className="checkout-field">
-                <label>State</label>
-                <select value={shipping.state}
+                <label htmlFor="shipping-state">State</label>
+                <select id="shipping-state" name="address-level1" autoComplete="shipping address-level1" value={shipping.state}
                   onChange={e => setShipping(p => ({ ...p, state: e.target.value }))}>
                   {MALAYSIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
               <div className="checkout-field">
-                <label>Postcode</label>
-                <input required maxLength={5} value={shipping.postcode}
+                <label htmlFor="shipping-postcode">Postcode</label>
+                <input id="shipping-postcode" name="postal-code" autoComplete="shipping postal-code" inputMode="numeric" pattern="[0-9]{5}" required maxLength={5} value={shipping.postcode}
                   onChange={e => setShipping(p => ({ ...p, postcode: e.target.value }))} />
               </div>
             </div>
             <label className="checkout-checkbox-label">
-              <input type="checkbox" checked={sameBilling}
+              <input name="same-billing" type="checkbox" checked={sameBilling}
                 onChange={e => setSameBilling(e.target.checked)} />
               <span>Same billing address</span>
             </label>
@@ -179,39 +172,24 @@ export default function CheckoutPage() {
           <section className="checkout-section">
             <h2 className="checkout-section-title">Payment</h2>
             <div className="checkout-payment-options">
-              <label className={`checkout-payment-option ${paymentMethod === 'billplz' ? 'checkout-payment-selected' : ''}`}>
+              <label className="checkout-payment-option checkout-payment-selected">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <input 
                     type="radio" 
                     name="paymentMethod" 
                     value="billplz" 
-                    checked={paymentMethod === 'billplz'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    checked
+                    readOnly
                     style={{ margin: 0 }}
                   />
                   <span>💳 Billplz (Online Banking / FPX)</span>
                 </div>
-                {paymentMethod === 'billplz' && <span className="checkout-payment-badge">Selected</span>}
-              </label>
-              
-              <label className={`checkout-payment-option ${paymentMethod === 'cod' ? 'checkout-payment-selected' : ''}`} style={{ marginTop: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="cod" 
-                    checked={paymentMethod === 'cod'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    style={{ margin: 0 }}
-                  />
-                  <span>💵 Cash on Delivery</span>
-                </div>
-                {paymentMethod === 'cod' && <span className="checkout-payment-badge">Selected</span>}
+                <span className="checkout-payment-badge">Selected</span>
               </label>
             </div>
           </section>
 
-          {error && <div className="checkout-error">{error}</div>}
+          {error && <div className="checkout-error" role="alert">{error}</div>}
 
           <button
             type="submit"
@@ -223,7 +201,7 @@ export default function CheckoutPage() {
               opacity: 0.75
             } : {}}
           >
-            {isCheckoutDisabled ? 'Checkout Temporarily Disabled' : step === 'submitting' ? 'Placing Order…' : `Place Order · RM ${subtotal.toFixed(2)}`}
+            {isCheckoutDisabled ? 'Checkout Temporarily Disabled' : step === 'submitting' ? 'Placing Order…' : `Pay with Billplz · RM ${(subtotal + shippingTotal).toFixed(2)}`}
           </button>
         </form>
         </div>
@@ -251,10 +229,10 @@ export default function CheckoutPage() {
                 <span>Subtotal</span><span>RM {subtotal.toFixed(2)}</span>
               </div>
               <div className="checkout-summary-line">
-                <span>Shipping</span><span className="checkout-free">Free</span>
+                <span>{shippingTotal === 15 ? 'East' : 'West'} Malaysia shipping</span><span>RM {shippingTotal.toFixed(2)}</span>
               </div>
               <div className="checkout-summary-line checkout-summary-total">
-                <span>Total</span><span>RM {subtotal.toFixed(2)}</span>
+                <span>Total</span><span>RM {(subtotal + shippingTotal).toFixed(2)}</span>
               </div>
             </>
           )}

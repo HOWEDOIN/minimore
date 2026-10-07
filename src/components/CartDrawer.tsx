@@ -7,26 +7,25 @@ import { useCartStore } from "@/store/cartStore";
 import "./cart-drawer.css";
 
 export default function CartDrawer() {
-  const { isCartOpen, closeCart, cart, isLoading, removeFromCart, initCart } = useCartStore();
+  const { isCartOpen, closeCart, cart, removeFromCart } = useCartStore();
   const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(
-    process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== "false"
+    process.env.NODE_ENV === "development" ? false : process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== "false"
   );
   const [hidePrices, setHidePrices] = useState(true);
 
   useEffect(() => {
-    initCart();
     fetch("https://admin.minimore.my/wp-json/minimore/v1/sitewide")
       .then((res) => res.json())
       .then((data) => {
         if (data && typeof data.disable_checkout !== "undefined") {
-          setIsCheckoutDisabled(Boolean(data.disable_checkout));
+          setIsCheckoutDisabled(process.env.NODE_ENV === "development" ? false : Boolean(data.disable_checkout));
         }
-        if (data && typeof data.hide_prices !== "undefined") {
-          setHidePrices(Boolean(data.hide_prices) || true);
+        if (data && typeof data.hide_prices === "boolean") {
+          setHidePrices(data.hide_prices);
         }
       })
       .catch(() => {});
-  }, [initCart]);
+  }, []);
 
   if (!isCartOpen) return null;
 
@@ -70,7 +69,6 @@ export default function CartDrawer() {
                     <button 
                       className="remove-btn" 
                       onClick={() => removeFromCart(item.id)}
-                      disabled={isLoading}
                     >
                       Remove
                     </button>

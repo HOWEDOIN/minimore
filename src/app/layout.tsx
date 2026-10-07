@@ -58,8 +58,17 @@ const quincyCF = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://minimore.my"),
   title: "Minimore | Premium Miniature Cosmetics",
   description: "Authentic miniature perfumes and travel-sized luxury skincare.",
+  openGraph: {
+    title: "Minimore | Premium Miniature Cosmetics",
+    description: "Authentic miniature perfumes and travel-sized luxury skincare.",
+    url: "/",
+    siteName: "Minimore",
+    images: [{ url: "/logos/logo-primary.png", alt: "Minimore" }],
+    type: "website",
+  },
 };
 
 export default function RootLayout({

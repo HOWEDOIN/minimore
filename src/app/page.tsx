@@ -5,6 +5,9 @@ import HomePageClient from "./HomePageClient";
 import ComingSoonOverlay from "@/components/ComingSoonOverlay";
 import { getSitewideSettings } from "@/lib/sitewideSettings";
 import { hasRealImage } from "@/utils/imageHelper";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export const revalidate = 60; // Revalidate products from WooCommerce every 60 seconds
 

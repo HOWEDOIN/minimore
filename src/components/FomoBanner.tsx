@@ -15,7 +15,7 @@ export default function FomoBanner({ targetDate }: FomoBannerProps) {
     
     // If the date is invalid or already passed, don't show the banner at all
     if (isNaN(end) || end <= Date.now()) {
-      setTimeLeft("00 : 00 : 00 : 00");
+      queueMicrotask(() => setTimeLeft("00 : 00 : 00 : 00"));
       return;
     }
 

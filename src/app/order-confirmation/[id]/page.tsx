@@ -1,81 +1,62 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { useCartStore } from '@/store/cartStore';
-import './confirmation.css';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { useCartStore } from "@/store/cartStore";
+import "./confirmation.css";
 
-export default function OrderConfirmationPage({ params }: { params: { id: string } }) {
-  const searchParams = useSearchParams();
-  const orderNumber = searchParams.get('number') || params.id;
-  const total = searchParams.get('total') || '0.00';
-  const paid = searchParams.get('paid');
-  const paymentMethod = searchParams.get('method') || 'billplz';
+type Order = { number: string; total: string; paymentMethod: string; status: string; paid: boolean };
 
-  // Clear cart on arrival (handles Billplz return where cart wasn't cleared pre-redirect)
+export default function OrderConfirmationPage() {
+  const { id } = useParams<{ id: string }>();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    useCartStore.setState({ cart: [], isCartOpen: false });
-  }, []);
-
-  // Billplz sets paid=true when payment succeeds, false when cancelled/failed
-  const isPaid = paid === 'true' || paid === null; // null = COD flow (always confirmed)
-  const isBillplz = paymentMethod === 'billplz' || paid !== null;
+    const orderKey = sessionStorage.getItem(`minimore-order-${id}`);
+    if (!orderKey) {
+      queueMicrotask(() => setError("This order confirmation link cannot be verified."));
+      return;
+    }
+    fetch(`/api/order-confirmation/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderKey }),
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Unable to verify order");
+        return data as Order;
+      })
+      .then((verified) => {
+        setOrder(verified);
+        if (verified.paid) {
+          useCartStore.setState({ cart: [], isCartOpen: false });
+          sessionStorage.removeItem(`minimore-order-${id}`);
+        }
+      })
+      .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to verify order"));
+  }, [id]);
 
   return (
     <div className="confirm-root">
-      <header className="confirm-header">
-        <a href="/" className="confirm-logo">Minimore</a>
-      </header>
-
+      <header className="confirm-header"><Link href="/" className="confirm-logo">Minimore</Link></header>
       <main className="confirm-main">
         <div className="confirm-card">
-          {isPaid ? (
-            <>
-              <div className="confirm-icon">✓</div>
-              <h1 className="confirm-title">Order confirmed!</h1>
-              <p className="confirm-sub">
-                {isBillplz
-                  ? "Your payment was successful. We&apos;ve received your order and will begin processing it shortly."
-                  : "Thank you for your order. We&apos;ve received it and will begin processing it shortly."}
-              </p>
-            </>
+          {!order ? (
+            <><h1 className="confirm-title">{error ? "Order not verified" : "Verifying your order…"}</h1>{error && <p className="confirm-sub" role="alert">{error}</p>}</>
           ) : (
             <>
-              <div className="confirm-icon" style={{ background: 'var(--confirm-warn, #f59e0b)' }}>!</div>
-              <h1 className="confirm-title">Payment incomplete</h1>
-              <p className="confirm-sub">
-                It looks like your payment wasn&apos;t completed. Your order has been saved — you can try paying again or contact us if you need help.
-              </p>
+              <div className="confirm-icon" style={!order.paid ? { background: "var(--confirm-warn, #f59e0b)" } : undefined}>{order.paid ? "✓" : "!"}</div>
+              <h1 className="confirm-title">{order.paid ? "Order confirmed!" : "Payment incomplete"}</h1>
+              <p className="confirm-sub">{order.paid ? "Your payment was successful. We will begin processing your order shortly." : "Your order exists, but payment has not been confirmed."}</p>
+              <div className="confirm-detail-row"><span>Order number</span><strong>#{order.number}</strong></div>
+              <div className="confirm-detail-row"><span>{order.paid ? "Total paid" : "Order total"}</span><strong>RM {Number(order.total).toFixed(2)}</strong></div>
+              <div className="confirm-detail-row"><span>Payment method</span><strong>Billplz (Online Banking / FPX)</strong></div>
+              <div className="confirm-detail-row"><span>Status</span><strong>{order.status}</strong></div>
             </>
           )}
-
-          <div className="confirm-detail-row">
-            <span>Order number</span>
-            <strong>#{orderNumber}</strong>
-          </div>
-          <div className="confirm-detail-row">
-            <span>{isPaid ? 'Total paid' : 'Order total'}</span>
-            <strong>RM {parseFloat(total).toFixed(2)}</strong>
-          </div>
-          <div className="confirm-detail-row">
-            <span>Payment method</span>
-            <strong>{isBillplz ? 'Billplz (Online Banking / FPX)' : 'Cash on Delivery'}</strong>
-          </div>
-          <div className="confirm-detail-row">
-            <span>Status</span>
-            <strong style={{ color: isPaid ? 'var(--confirm-success, #22c55e)' : 'var(--confirm-warn, #f59e0b)' }}>
-              {isPaid ? 'Paid ✓' : 'Pending payment'}
-            </strong>
-          </div>
-
-          <p className="confirm-note">
-            {isPaid
-              ? <>A confirmation email will be sent to you shortly. If you have any questions, feel free to{' '}<a href="mailto:hello@minimore.my">contact us</a>.</>
-              : <>Need help? Feel free to{' '}<a href="mailto:hello@minimore.my">contact us</a> and we&apos;ll sort it out.</>
-            }
-          </p>
-
           <Link href="/" className="confirm-cta">Continue Shopping</Link>
         </div>
       </main>

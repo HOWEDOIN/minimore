@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import faqData from "@/data/faq.json";
 import "./page.css";
+
+type FaqItem = { q: string; a: string };
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   if (slug === 'faq') {
-    return { title: "FAQ - Minimore" };
+    return { title: "FAQ - Minimore", alternates: { canonical: "/faq/" } };
   }
 
   let pages = [];
@@ -19,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   if (!pages || pages.length === 0) return { title: "Page Not Found - Minimore" };
-  return { title: `${pages[0].title.rendered} - Minimore` };
+  return { title: `${pages[0].title.rendered} - Minimore`, alternates: { canonical: `/${slug}/` } };
 }
 
 export default async function StandardPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -80,17 +83,16 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
             {slug === 'faq' ? (
               <div className="faq-grid">
                 {(() => {
-                  const faqData = require('@/data/faq.json');
-                  const sectionA = faqData.filter((p: any) => p.q.startsWith('A'));
-                  const sectionB = faqData.filter((p: any) => p.q.startsWith('B'));
-                  const sectionC = faqData.filter((p: any) => p.q.startsWith('C'));
+                  const sectionA = (faqData as FaqItem[]).filter((p) => p.q.startsWith('A'));
+                  const sectionB = (faqData as FaqItem[]).filter((p) => p.q.startsWith('B'));
+                  const sectionC = (faqData as FaqItem[]).filter((p) => p.q.startsWith('C'));
                   
                   return (
                     <>
                       <details className="faq-details" open>
                         <summary className="faq-section-title">General Questions</summary>
                         <div className="faq-details-content">
-                          {sectionA.map((p: any, i: number) => (
+                          {sectionA.map((p, i) => (
                             <div className="faq-item" key={i}>
                               <p><strong>{p.q.replace(/^[A-C]\d+\.\s*/, '')}</strong>{p.a}</p>
                             </div>
@@ -100,7 +102,7 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
                       <details className="faq-details" open>
                         <summary className="faq-section-title">Shipping & Orders</summary>
                         <div className="faq-details-content">
-                          {sectionB.map((p: any, i: number) => (
+                          {sectionB.map((p, i) => (
                             <div className="faq-item" key={i}>
                               <p><strong>{p.q.replace(/^[A-C]\d+\.\s*/, '')}</strong>{p.a}</p>
                             </div>
@@ -110,7 +112,7 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
                       <details className="faq-details" open>
                         <summary className="faq-section-title">Support & Policies</summary>
                         <div className="faq-details-content">
-                          {sectionC.map((p: any, i: number) => (
+                          {sectionC.map((p, i) => (
                             <div className="faq-item" key={i}>
                               <p><strong>{p.q.replace(/^[A-C]\d+\.\s*/, '')}</strong>{p.a}</p>
                             </div>
@@ -133,4 +135,3 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
     </div>
   );
 }
-

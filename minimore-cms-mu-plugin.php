@@ -997,10 +997,7 @@ function minimore_api_login(WP_REST_Request $request) {
     if (is_wp_error($user)) {
         return new WP_Error('invalid_credentials', 'Invalid email or password.', array('status' => 401));
     }
-    $token = wp_generate_password(64, false);
-    update_user_meta($user->ID, 'minimore_headless_token', $token);
     return array(
-        'token'       => $token,
         'customer_id' => $user->ID,
         'first_name'  => $user->first_name,
         'last_name'   => $user->last_name,

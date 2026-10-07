@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import CartNavButton from './CartNavButton';
-import { useAuthStore } from '@/store/authStore';
 
 interface NavbarProps {
   isStatic?: boolean;
@@ -16,14 +15,6 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
   
-  // Safe hydration check for Zustand persist
-  const [mounted, setMounted] = useState(false);
-  const user = useAuthStore((state) => state.user);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   useEffect(() => {
     if (isStatic) return;
 
@@ -59,7 +50,7 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
               <div className="logo-wrapper">
                 <img 
                   src="/logos/logo-primary.png?v=2" 
-                  alt="minimore primary" 
+                  alt="Minimore home"
                   style={{ 
                     position: 'absolute',
                     height: '100%', 
@@ -72,7 +63,8 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
                 />
                 <img 
                   src="/logos/logo-white.png" 
-                  alt="minimore white" 
+                  alt=""
+                  aria-hidden="true"
                   style={{ 
                     position: 'absolute',
                     height: '100%', 
@@ -98,14 +90,18 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
           </div>
           
           <div className="nav-actions">
-            <form className="nav-search-form" onSubmit={(e) => {
+            <form className="nav-search-form" role="search" onSubmit={(e) => {
               e.preventDefault();
               if (searchQuery.trim()) {
                 router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
               }
             }}>
               <input 
-                type="text" 
+                id="desktop-product-search"
+                name="search"
+                type="search"
+                aria-label="Search products"
+                autoComplete="off"
                 placeholder="Search..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -119,6 +115,8 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
               className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle Menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               <span></span>
               <span></span>
@@ -128,14 +126,14 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
         </div>
       </nav>
 
-      <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`}>
+      <div id="mobile-menu" className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`} aria-hidden={!isMobileMenuOpen}>
         <div className="mobile-menu-content">
           <div className="mobile-menu-header">
             <img src="/images/logo.png" alt="minimore" style={{ height: '40px', mixBlendMode: 'multiply' }} />
-            <button className="close-menu" onClick={closeMobileMenu}>✕</button>
+            <button className="close-menu" onClick={closeMobileMenu} aria-label="Close menu">✕</button>
           </div>
           
-          <form className="mobile-search-form" onSubmit={(e) => {
+          <form className="mobile-search-form" role="search" onSubmit={(e) => {
             e.preventDefault();
             if (searchQuery.trim()) {
               router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
@@ -143,7 +141,11 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
             }
           }}>
             <input 
-              type="text" 
+              id="mobile-product-search"
+              name="search"
+              type="search"
+              aria-label="Search products"
+              autoComplete="off"
               placeholder="Search products..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -156,11 +158,6 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
             <Link href="/products?category=skincare" onClick={closeMobileMenu}>Skincare</Link>
             <Link href="/products?category=make-up" onClick={closeMobileMenu}>Make Up</Link>
             <Link href="/faq" onClick={closeMobileMenu}>FAQ</Link>
-            {/* mounted && (
-              <Link href={user ? "/account" : "/login"} onClick={closeMobileMenu}>
-                {user ? "My Account" : "Sign In"}
-              </Link>
-            ) */}
           </div>
         </div>
       </div>

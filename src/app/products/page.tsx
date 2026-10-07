@@ -7,6 +7,9 @@ import { getProductImage, hasRealImage } from "@/utils/imageHelper";
 import { getDisplayCategory } from "@/lib/categoryUtils";
 import ProductSortSelect from "@/components/ProductSortSelect";
 import { getSitewideSettings } from "@/lib/sitewideSettings";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Shop Miniatures - Minimore", alternates: { canonical: "/products/" } };
 
 export default async function ProductsPage({
   searchParams,
@@ -23,7 +26,7 @@ export default async function ProductsPage({
   const hidePrices = sitewide.hide_prices;
 
   // 2. Determine params
-  const query: any = { per_page: 50, stock_status: "instock" };
+  const query: any = { per_page: 50, status: "publish", stock_status: "instock" };
   let selectedCategory: any = null;
 
   if (search) {

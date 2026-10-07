@@ -49,7 +49,7 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
   const sectionMap: Record<string, React.ReactNode> = {
     hero: (
       <header className="hero" ref={heroRef}>
-        <img src="/images/logo.png" alt="" className="hero-bg-logo" />
+        <img src="/images/logo.png" alt="" aria-hidden="true" className="hero-bg-logo" />
 
         <motion.div
           className="hero-content container"
@@ -380,7 +380,7 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
             return (
               <motion.div key={i} variants={itemVariants} className="testimonial-card">
                 <div className="stars">{"★".repeat(Math.min(5, stars))}{"☆".repeat(Math.max(0, 5 - stars))}</div>
-                <p className="quote">"{quote}"</p>
+                <p className="quote">&ldquo;{quote}&rdquo;</p>
                 <p className="author">— {name}</p>
               </motion.div>
             );

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyBillplzSignature } from '@/lib/billplz';
 
 const WP_URL = process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my';
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://minimore.my';
@@ -15,50 +16,14 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
 
-    const orderId = searchParams.get('order');
-    // Billplz encodes brackets as %5B%5D — URLSearchParams decodes them automatically
-    const paid =
-      searchParams.get('billplz[paid]') ??
-      searchParams.get('paid') ??
-      'false';
-    const billplzId = searchParams.get('billplz[id]');
-
-    // If payment was successful, mark WooCommerce order as processing
-    if (paid === 'true' && orderId) {
-      try {
-        await fetch(`${WP_URL}/wp-json/wc/v3/orders/${orderId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', Authorization: wcAuth() },
-          body: JSON.stringify({ status: 'processing', set_paid: true, transaction_id: billplzId }),
-        });
-      } catch {
-        // Non-fatal — still redirect the user
-      }
+    if (!verifyBillplzSignature(searchParams)) {
+      return NextResponse.redirect(new URL('/?payment=invalid', SITE_URL));
     }
-
-    if (orderId) {
-      // Fetch order details from WooCommerce to get order number and total
-      let number = orderId;
-      let total = '0.00';
-      try {
-        const orderRes = await fetch(
-          `${WP_URL}/wp-json/wc/v3/orders/${orderId}`,
-          { headers: { Authorization: wcAuth() } }
-        );
-        if (orderRes.ok) {
-          const order = await orderRes.json();
-          number = order.number ?? orderId;
-          total = order.total ?? '0.00';
-        }
-      } catch {
-        // Non-fatal — use fallback values
-      }
-
-      const confirmUrl = new URL(
-        `/order-confirmation/${orderId}?number=${encodeURIComponent(number)}&total=${encodeURIComponent(total)}&method=billplz&paid=${paid}`,
-        SITE_URL
-      );
-      return NextResponse.redirect(confirmUrl);
+    const billplzId = searchParams.get('billplz[id]');
+    if (billplzId) {
+      const orderRes = await fetch(`${WP_URL}/wp-json/wc/v3/orders?transaction_id=${encodeURIComponent(billplzId)}&per_page=1`, { headers: { Authorization: wcAuth() }, cache: 'no-store' });
+      const order = orderRes.ok ? (await orderRes.json())[0] : null;
+      if (order) return NextResponse.redirect(new URL(`/order-confirmation/${order.id}`, SITE_URL));
     }
 
     // Fallback — no order ID found, go home
@@ -75,6 +40,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
+    if (!verifyBillplzSignature(new URLSearchParams(body))) {
+      return new NextResponse('invalid signature', { status: 401 });
+    }
     const { search } = new URL(req.url);
 
     const wpRes = await fetch(

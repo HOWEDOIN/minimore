@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { getProductImage } from "@/utils/imageHelper";
 import AddToCartButton from "@/components/AddToCartButton";
-import QuantitySelector from "@/components/QuantitySelector";
 import FomoBanner from "@/components/FomoBanner";
 import "./product-detail.css";
 import { wooApi } from "@/lib/woocommerce";
@@ -132,15 +131,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
             {countdownDate && <FomoBanner targetDate={countdownDate} />}
 
-            <div className="actions-group">
-              <QuantitySelector />
-              <div className="dual-cta">
-                <AddToCartButton product={product} />
-                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary whatsapp-btn" style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.8rem', border: '1px solid #c9a473', color: '#c9a473', borderRadius: '4px', textDecoration: 'none' }}>
-                  Order via WhatsApp
-                </a>
-              </div>
-            </div>
+            <AddToCartButton product={product} whatsappUrl={whatsappUrl} />
 
             <div className="trust-badges">
               <div className="trust-badge">
