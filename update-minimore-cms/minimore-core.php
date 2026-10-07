@@ -35,6 +35,7 @@ function minimore_register_settings() {
     register_setting('minimore_settings_group', 'minimore_is_coming_soon');
     register_setting('minimore_settings_group', 'minimore_hide_prices');
     register_setting('minimore_settings_group', 'minimore_disable_checkout');
+    register_setting('minimore_settings_group', 'minimore_free_shipping');
 
     // Announcement Bar
     register_setting('minimore_settings_group', 'minimore_announcement_active');
@@ -252,6 +253,8 @@ function minimore_render_settings_page() {
             <input type="checkbox" name="minimore_hide_prices" id="ff-hide_prices" value="1" <?php checked(1, get_option('minimore_hide_prices',0)); ?> style="display:none" />
             <input type="hidden" name="minimore_disable_checkout" value="0" />
             <input type="checkbox" name="minimore_disable_checkout" id="ff-disable_checkout" value="1" <?php checked(1, get_option('minimore_disable_checkout',0)); ?> style="display:none" />
+            <input type="hidden" name="minimore_free_shipping" value="0" />
+            <input type="checkbox" name="minimore_free_shipping" id="ff-free_shipping" value="1" <?php checked(1, get_option('minimore_free_shipping',0)); ?> style="display:none" />
             <input type="hidden" name="minimore_is_coming_soon" value="0" />
             <input type="checkbox" name="minimore_is_coming_soon" id="ff-is_coming_soon" value="1" <?php checked(1, get_option('minimore_is_coming_soon',0)); ?> style="display:none" />
             <input type="text" name="minimore_footer_company"   id="ff-footer_company"   value="<?php echo esc_attr(get_option('minimore_footer_company','Minimore Sdn Bhd (1673311-U)')); ?>" style="display:none" />
@@ -380,6 +383,14 @@ function minimore_render_settings_page() {
                         <span class="mm-toggle-label">Disable Checkout Button</span>
                     </div>
                     <p style="color:#9ca3af;font-size:.85rem;margin:8px 0 0;">When enabled, purchases are temporarily disabled and the "Go to Checkout" button is greyed out across the store.</p>
+                    <div class="mm-toggle-row" style="margin-top:18px;">
+                        <label class="mm-toggle">
+                            <input type="checkbox" id="ui-free_shipping" <?php checked(1, get_option('minimore_free_shipping',0)); ?> />
+                            <span class="mm-toggle-slider"></span>
+                        </label>
+                        <span class="mm-toggle-label">Free Shipping</span>
+                    </div>
+                    <p style="color:#9ca3af;font-size:.85rem;margin:8px 0 0;">Temporarily sets shipping to RM0 for every Malaysian state.</p>
                 </div>
 
                 <div class="mm-settings-card">
@@ -557,6 +568,7 @@ function minimore_render_settings_page() {
             'ui-is_coming_soon':       'ff-is_coming_soon',
             'ui-hide_prices':          'ff-hide_prices',
             'ui-disable_checkout':     'ff-disable_checkout',
+            'ui-free_shipping':        'ff-free_shipping',
             'ui-image_text_reverse':   'ff-image_text_reverse'
         };
 
@@ -727,7 +739,7 @@ function minimore_render_settings_page() {
         });
 
         // Mirror global settings inputs → hidden fields
-        ['ui-is_coming_soon','ui-hide_prices','ui-disable_checkout','ui-announcement_active'].forEach(function(uid) {
+        ['ui-is_coming_soon','ui-hide_prices','ui-disable_checkout','ui-free_shipping','ui-announcement_active'].forEach(function(uid) {
             var uiEl = el(uid);
             if (uiEl) uiEl.addEventListener('change', function() {
                 var ffEl = el(toggleMap[uid]);
@@ -913,6 +925,7 @@ function minimore_get_sitewide_data() {
     return array(
         'hide_prices'      => (bool) get_option('minimore_hide_prices', 0),
         'disable_checkout' => (bool) get_option('minimore_disable_checkout', 0),
+        'free_shipping'     => (bool) get_option('minimore_free_shipping', 0),
         'announcement' => array(
             'is_active' => (bool) get_option('minimore_announcement_active', 0),
             'text'      => get_option('minimore_announcement_text', ''),

@@ -7,6 +7,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import TabbedProducts from "@/components/TabbedProducts";
 
 export default function HomePageClient({ products, homepageContent, sectionOrder, collectionTabs, hidePrices = true }: { products: any, homepageContent: any, sectionOrder: string[], collectionTabs: string[], hidePrices?: boolean }) {
+  const [pricesHidden, setPricesHidden] = useState(hidePrices);
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroImageY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
@@ -26,6 +27,15 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
     const interval = setInterval(nextImage, 5000);
     return () => clearInterval(interval);
   }, [nextImage, heroImages.length]);
+
+  useEffect(() => {
+    fetch('https://admin.minimore.my/wp-json/minimore/v1/sitewide')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data.hide_prices === 'boolean') setPricesHidden(data.hide_prices);
+      })
+      .catch(() => {});
+  }, []);
 
   // Animation Variants
   const containerVariants: Variants = {
@@ -163,7 +173,7 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
 
     trending: (
       <section className="featured container" id="shop">
-        <TabbedProducts products={products} collectionTabs={collectionTabs} hidePrices={hidePrices} />
+        <TabbedProducts products={products} collectionTabs={collectionTabs} hidePrices={pricesHidden} />
       </section>
     ),
     contact_locate: (

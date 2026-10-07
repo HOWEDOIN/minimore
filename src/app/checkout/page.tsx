@@ -17,6 +17,7 @@ export default function CheckoutPage() {
     process.env.NODE_ENV === 'development' ? false : process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== 'false'
   );
   const [hidePrices, setHidePrices] = useState(true);
+  const [freeShipping, setFreeShipping] = useState(false);
 
   React.useEffect(() => {
     fetch('https://admin.minimore.my/wp-json/minimore/v1/sitewide')
@@ -28,6 +29,7 @@ export default function CheckoutPage() {
         if (data && typeof data.hide_prices === 'boolean') {
           setHidePrices(data.hide_prices);
         }
+        setFreeShipping(Boolean(data?.free_shipping));
       })
       .catch(() => {});
   }, []);
@@ -38,7 +40,7 @@ export default function CheckoutPage() {
     city: '', state: 'Selangor', postcode: '', country: 'MY',
   });
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingTotal = shippingFor(shipping.state);
+  const shippingTotal = shippingFor(shipping.state, freeShipping);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -231,7 +233,7 @@ export default function CheckoutPage() {
                 <span>Subtotal</span><span>RM {subtotal.toFixed(2)}</span>
               </div>
               <div className="checkout-summary-line">
-                <span>{shippingTotal === 15 ? 'East' : 'West'} Malaysia shipping</span><span>RM {shippingTotal.toFixed(2)}</span>
+                <span>{freeShipping ? 'Free shipping' : `${shippingTotal === 15 ? 'East' : 'West'} Malaysia shipping`}</span><span>RM {shippingTotal.toFixed(2)}</span>
               </div>
               <div className="checkout-summary-line checkout-summary-total">
                 <span>Total</span><span>RM {(subtotal + shippingTotal).toFixed(2)}</span>

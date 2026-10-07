@@ -35,6 +35,6 @@ export function validateCheckoutBody(value: unknown): CheckoutBody | null {
   return cartValid ? { ...body, contact: { ...body.contact, phone: normalizedPhone || undefined } } as CheckoutBody : null;
 }
 
-export function shippingFor(state: string) {
-  return EAST_MALAYSIA.has(state) ? 15 : 10;
+export function shippingFor(state: string, freeShipping = false) {
+  return freeShipping ? 0 : EAST_MALAYSIA.has(state) ? 15 : 10;
 }

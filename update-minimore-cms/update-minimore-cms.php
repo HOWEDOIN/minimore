@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Update Minimore CMS (1-Click Updater)
  * Description: Installs/Updates the Minimore CMS Must-Use plugin (mu-plugins/minimore-core.php).
- * Version: 2.3
+ * Version: 2.4
  * Author: Minimore AI
  */
 

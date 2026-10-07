@@ -12,6 +12,7 @@ test("checkout accepts Malaysia only and selects regional shipping", () => {
   assert.ok(validateCheckoutBody(valid));
   assert.equal(shippingFor("Selangor"), 10);
   assert.equal(shippingFor("Sabah"), 15);
+  assert.equal(shippingFor("Sabah", true), 0);
   assert.equal(validateCheckoutBody({ ...valid, shipping: { ...valid.shipping, country: "SG" } }), null);
   assert.equal(validateCheckoutBody({ ...valid, paymentMethod: "cod" }), null);
   assert.equal(validateCheckoutBody({ ...valid, contact: { email: "buyer@example.com", phone: "asdf" } }), null);
