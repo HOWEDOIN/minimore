@@ -31,9 +31,10 @@ function minimore_register_settings() {
     // Layout settings — stored as a single JSON array
     register_setting('minimore_settings_group', 'minimore_layout_order');
 
-    // Coming Soon
+    // Coming Soon, Pricing, & Checkout
     register_setting('minimore_settings_group', 'minimore_is_coming_soon');
     register_setting('minimore_settings_group', 'minimore_hide_prices');
+    register_setting('minimore_settings_group', 'minimore_disable_checkout');
 
     // Announcement Bar
     register_setting('minimore_settings_group', 'minimore_announcement_active');
@@ -249,6 +250,8 @@ function minimore_render_settings_page() {
             <input type="text" name="minimore_announcement_link" id="ff-announcement_link" value="<?php echo esc_attr(get_option('minimore_announcement_link','')); ?>" style="display:none" />
             <input type="hidden" name="minimore_hide_prices" value="0" />
             <input type="checkbox" name="minimore_hide_prices" id="ff-hide_prices" value="1" <?php checked(1, get_option('minimore_hide_prices',0)); ?> style="display:none" />
+            <input type="hidden" name="minimore_disable_checkout" value="0" />
+            <input type="checkbox" name="minimore_disable_checkout" id="ff-disable_checkout" value="1" <?php checked(1, get_option('minimore_disable_checkout',0)); ?> style="display:none" />
             <input type="hidden" name="minimore_is_coming_soon" value="0" />
             <input type="checkbox" name="minimore_is_coming_soon" id="ff-is_coming_soon" value="1" <?php checked(1, get_option('minimore_is_coming_soon',0)); ?> style="display:none" />
             <input type="text" name="minimore_footer_company"   id="ff-footer_company"   value="<?php echo esc_attr(get_option('minimore_footer_company','Minimore Sdn Bhd (1673311-U)')); ?>" style="display:none" />
@@ -365,6 +368,18 @@ function minimore_render_settings_page() {
                         <span class="mm-toggle-label">Hide All Product Prices</span>
                     </div>
                     <p style="color:#9ca3af;font-size:.85rem;margin:8px 0 0;">When enabled, prices are hidden across the entire storefront (homepage cards, shop page, product detail pages, and related products).</p>
+                </div>
+
+                <div class="mm-settings-card">
+                    <h3>&#128722; Store Checkout</h3>
+                    <div class="mm-toggle-row">
+                        <label class="mm-toggle">
+                            <input type="checkbox" id="ui-disable_checkout" <?php checked(1, get_option('minimore_disable_checkout',0)); ?> />
+                            <span class="mm-toggle-slider"></span>
+                        </label>
+                        <span class="mm-toggle-label">Disable Checkout Button</span>
+                    </div>
+                    <p style="color:#9ca3af;font-size:.85rem;margin:8px 0 0;">When enabled, purchases are temporarily disabled and the "Go to Checkout" button is greyed out across the store.</p>
                 </div>
 
                 <div class="mm-settings-card">
@@ -541,6 +556,7 @@ function minimore_render_settings_page() {
             'ui-announcement_active':  'ff-announcement_active',
             'ui-is_coming_soon':       'ff-is_coming_soon',
             'ui-hide_prices':          'ff-hide_prices',
+            'ui-disable_checkout':     'ff-disable_checkout',
             'ui-image_text_reverse':   'ff-image_text_reverse'
         };
 
@@ -711,7 +727,7 @@ function minimore_render_settings_page() {
         });
 
         // Mirror global settings inputs → hidden fields
-        ['ui-is_coming_soon','ui-hide_prices','ui-announcement_active'].forEach(function(uid) {
+        ['ui-is_coming_soon','ui-hide_prices','ui-disable_checkout','ui-announcement_active'].forEach(function(uid) {
             var uiEl = el(uid);
             if (uiEl) uiEl.addEventListener('change', function() {
                 var ffEl = el(toggleMap[uid]);
@@ -895,7 +911,8 @@ function minimore_get_homepage_data() {
 // Sitewide global settings (footer, announcement)
 function minimore_get_sitewide_data() {
     return array(
-        'hide_prices'  => (bool) get_option('minimore_hide_prices', 0),
+        'hide_prices'      => (bool) get_option('minimore_hide_prices', 0),
+        'disable_checkout' => (bool) get_option('minimore_disable_checkout', 0),
         'announcement' => array(
             'is_active' => (bool) get_option('minimore_announcement_active', 0),
             'text'      => get_option('minimore_announcement_text', ''),

@@ -31,7 +31,9 @@ export async function getSitewideSettings(): Promise<SitewideSettings> {
       const data = await res.json();
       const settings: SitewideSettings = {
         hide_prices: true, // Boolean(data.hide_prices), // Temporarily hide all prices
-        disable_checkout: Boolean(data.disable_checkout),
+        disable_checkout: typeof data.disable_checkout !== "undefined"
+          ? Boolean(data.disable_checkout)
+          : process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== "false",
         announcement: data.announcement,
         social_instagram: data.social_instagram,
         social_facebook: data.social_facebook,
@@ -45,6 +47,9 @@ export async function getSitewideSettings(): Promise<SitewideSettings> {
     // Silently fall through to defaults on network error
   }
 
-  // Default: hide prices temporarily, disable checkout (safe defaults)
-  return { hide_prices: true, disable_checkout: true };
+  // Fallback defaults
+  return {
+    hide_prices: true,
+    disable_checkout: process.env.NEXT_PUBLIC_DISABLE_CHECKOUT !== "false",
+  };
 }
