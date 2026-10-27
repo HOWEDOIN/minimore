@@ -26,7 +26,7 @@ export default async function ProductsPage({
   const hidePrices = sitewide.hide_prices;
 
   // 2. Determine params
-  const query: any = { per_page: 50, status: "publish", stock_status: "instock" };
+  const query: any = { per_page: 100, status: "publish", stock_status: "instock" };
   let selectedCategory: any = null;
 
   if (search) {

@@ -18,6 +18,9 @@ export default function CheckoutPage() {
   );
   const [hidePrices, setHidePrices] = useState(true);
   const [freeShipping, setFreeShipping] = useState(false);
+  const [promoCodeInput, setPromoCodeInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState('');
+  const [promoError, setPromoError] = useState<string | null>(null);
 
   React.useEffect(() => {
     fetch('https://admin.minimore.my/wp-json/minimore/v1/sitewide')
@@ -39,8 +42,26 @@ export default function CheckoutPage() {
     firstName: '', lastName: '', address1: '', address2: '',
     city: '', state: 'Selangor', postcode: '', country: 'MY',
   });
+  const isFreeShipping = freeShipping || appliedPromo.toLowerCase() === 'freeshippingforjack';
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingTotal = shippingFor(shipping.state, freeShipping);
+  const shippingTotal = shippingFor(shipping.state, isFreeShipping);
+
+  const handleApplyPromo = () => {
+    const code = promoCodeInput.trim().toLowerCase();
+    if (!code) return;
+    if (code === 'freeshippingforjack') {
+      setAppliedPromo(promoCodeInput.trim());
+      setPromoError(null);
+    } else {
+      setPromoError('Invalid promo code');
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo('');
+    setPromoCodeInput('');
+    setPromoError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +82,7 @@ export default function CheckoutPage() {
           billing: sameBilling ? null : shipping,
           paymentMethod: 'billplz',
           cartItems: cart.map(i => ({ variantId: i.variantId, quantity: i.quantity })),
+          promoCode: appliedPromo || undefined,
         }),
       });
 
@@ -227,13 +249,63 @@ export default function CheckoutPage() {
               </div>
             ))}
           </div>
+
+          {/* Promo Code */}
+          <div className="checkout-promo-wrap">
+            <div className="checkout-promo-row">
+              <input
+                type="text"
+                placeholder="Promo code"
+                value={promoCodeInput}
+                onChange={(e) => {
+                  setPromoCodeInput(e.target.value);
+                  if (promoError) setPromoError(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleApplyPromo();
+                  }
+                }}
+                disabled={Boolean(appliedPromo)}
+                className="checkout-promo-input"
+              />
+              {appliedPromo ? (
+                <button
+                  type="button"
+                  onClick={handleRemovePromo}
+                  className="checkout-promo-btn checkout-promo-remove-btn"
+                >
+                  Remove
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleApplyPromo}
+                  className="checkout-promo-btn"
+                >
+                  Apply
+                </button>
+              )}
+            </div>
+            {promoError && <p className="checkout-promo-error">{promoError}</p>}
+            {appliedPromo && (
+              <div className="checkout-promo-applied">
+                <span>✓ Code <strong>{appliedPromo}</strong> applied (Free Shipping)</span>
+              </div>
+            )}
+          </div>
+
           {!hidePrices && (
             <>
               <div className="checkout-summary-line">
                 <span>Subtotal</span><span>RM {subtotal.toFixed(2)}</span>
               </div>
               <div className="checkout-summary-line">
-                <span>{freeShipping ? 'Free shipping' : `${shippingTotal === 15 ? 'East' : 'West'} Malaysia shipping`}</span><span>RM {shippingTotal.toFixed(2)}</span>
+                <span>{isFreeShipping ? 'Free shipping' : `${shippingTotal === 15 ? 'East' : 'West'} Malaysia shipping`}</span>
+                <span className={isFreeShipping ? 'checkout-free' : ''}>
+                  {isFreeShipping ? 'RM 0.00' : `RM ${shippingTotal.toFixed(2)}`}
+                </span>
               </div>
               <div className="checkout-summary-line checkout-summary-total">
                 <span>Total</span><span>RM {(subtotal + shippingTotal).toFixed(2)}</span>

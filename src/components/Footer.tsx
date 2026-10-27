@@ -45,7 +45,7 @@ export default async function Footer() {
                 {sitewide.contact_email || 'marketingminimore@gmail.com'}
               </a>
               <a href={`https://wa.me/${sitewide.contact_whatsapp || '60174222999'}`}>
-                {sitewide.contact_whatsapp_display || '+60 12-345 6789 (Placeholder)'}
+                {sitewide.contact_whatsapp_display || '+60 17-422 2999'}
               </a>
             </div>
           </div>

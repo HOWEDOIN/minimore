@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
     });
     if (!available) return NextResponse.json({ error: "One or more products are unavailable in the requested quantity." }, { status: 409 });
 
-    const shippingTotal = shippingFor(body.shipping.state, Boolean(settings?.free_shipping)).toFixed(2);
+    const isFreeShipping = Boolean(settings?.free_shipping) || body.promoCode?.toLowerCase() === "freeshippingforjack";
+    const shippingTotal = shippingFor(body.shipping.state, isFreeShipping).toFixed(2);
     if (localTest) return NextResponse.json({ testMode: true, shippingTotal });
     if (!BILLPLZ_API_KEY || !BILLPLZ_COLLECTION_ID) return NextResponse.json({ error: "Payment is not configured." }, { status: 503 });
 
@@ -49,7 +50,8 @@ export async function POST(req: NextRequest) {
       billing: { first_name: billing.firstName, last_name: billing.lastName, address_1: billing.address1, address_2: billing.address2 || "", city: billing.city, state: billing.state, postcode: billing.postcode, country: "MY", email: body.contact.email, phone: body.contact.phone || "" },
       shipping: { first_name: body.shipping.firstName, last_name: body.shipping.lastName, address_1: body.shipping.address1, address_2: body.shipping.address2 || "", city: body.shipping.city, state: body.shipping.state, postcode: body.shipping.postcode, country: "MY" },
       line_items: body.cartItems.map((item) => ({ product_id: Number(item.variantId), quantity: item.quantity })),
-      shipping_lines: [{ method_id: "flat_rate", method_title: Number(shippingTotal) === 0 ? "Free Shipping" : `${east ? "East" : "West"} Malaysia Shipping`, total: shippingTotal }],
+      shipping_lines: [{ method_id: "flat_rate", method_title: Number(shippingTotal) === 0 ? (body.promoCode?.toLowerCase() === "freeshippingforjack" ? "Free Shipping (freeshippingforjack)" : "Free Shipping") : `${east ? "East" : "West"} Malaysia Shipping`, total: shippingTotal }],
+      meta_data: body.promoCode ? [{ key: "promo_code", value: body.promoCode }] : [],
     };
 
     const wcRes = await fetch(`${WP_URL}/wp-json/wc/v3/orders`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: authHeader }, body: JSON.stringify(orderPayload) });
