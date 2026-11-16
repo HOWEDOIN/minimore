@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
 import { isValidFreeShippingPromo, shippingFor, validateCheckoutBody } from "@/lib/checkoutValidation";
+import { rekeyStockHold, releaseStockHold, StockProduct, tryReserveStock } from "@/lib/stockHold";
 
 const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://admin.minimore.my";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://minimore.my";
@@ -16,6 +17,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  let activeHoldKey: string | null = null;
   try {
     const localTest = process.env.NODE_ENV === "development";
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
@@ -34,19 +36,23 @@ export async function POST(req: NextRequest) {
     const ids = [...new Set(body.cartItems.map((item) => Number(item.variantId)))];
     const productsRes = await fetch(`${WP_URL}/wp-json/wc/v3/products?include=${ids.join(",")}&per_page=50`, { headers: { Authorization: authHeader }, cache: "no-store" });
     if (!productsRes.ok) return NextResponse.json({ error: "Unable to validate cart." }, { status: 502 });
-    type StockProduct = { id: number; stock_status: string; manage_stock: boolean; stock_quantity: number | null };
     const products = await productsRes.json() as StockProduct[];
-    const productMap = new Map<number, StockProduct>(products.map((product) => [product.id, product]));
-    const available = body.cartItems.every((item) => {
-      const product = productMap.get(Number(item.variantId));
-      return product?.stock_status === "instock" && (!product.manage_stock || (product.stock_quantity ?? 0) >= item.quantity);
-    });
-    if (!available) return NextResponse.json({ error: "One or more products are unavailable in the requested quantity." }, { status: 409 });
+    const holdKey = crypto.randomUUID();
+    if (!tryReserveStock(holdKey, body.cartItems, products)) {
+      return NextResponse.json({ error: "One or more products are unavailable in the requested quantity." }, { status: 409 });
+    }
+    activeHoldKey = holdKey;
 
     const isFreeShipping = Boolean(settings?.free_shipping) || isValidFreeShippingPromo(body.promoCode);
     const shippingTotal = shippingFor(body.shipping.state, isFreeShipping).toFixed(2);
-    if (localTest) return NextResponse.json({ testMode: true, shippingTotal });
-    if (!BILLPLZ_API_KEY || !BILLPLZ_COLLECTION_ID) return NextResponse.json({ error: "Payment is not configured." }, { status: 503 });
+    if (localTest) {
+      releaseStockHold(activeHoldKey);
+      return NextResponse.json({ testMode: true, shippingTotal });
+    }
+    if (!BILLPLZ_API_KEY || !BILLPLZ_COLLECTION_ID) {
+      releaseStockHold(activeHoldKey);
+      return NextResponse.json({ error: "Payment is not configured." }, { status: 503 });
+    }
 
     const billing = body.billing || body.shipping;
     const east = ["Sabah", "Sarawak", "Labuan"].includes(body.shipping.state);
@@ -61,6 +67,7 @@ export async function POST(req: NextRequest) {
 
     const wcRes = await fetch(`${WP_URL}/wp-json/wc/v3/orders`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: authHeader }, body: JSON.stringify(orderPayload) });
     if (!wcRes.ok) {
+      releaseStockHold(activeHoldKey);
       console.error("WooCommerce order creation failed:", await wcRes.text());
       return NextResponse.json({ error: "Failed to create order. Please try again." }, { status: 502 });
     }
@@ -70,16 +77,23 @@ export async function POST(req: NextRequest) {
     if (body.contact.phone) billParams.set("mobile", body.contact.phone);
     const billRes = await fetch("https://www.billplz.com/api/v3/bills", { method: "POST", headers: { Authorization: `Basic ${Buffer.from(`${BILLPLZ_API_KEY}:`).toString("base64")}`, "Content-Type": "application/x-www-form-urlencoded" }, body: billParams.toString() });
     if (!billRes.ok) {
+      releaseStockHold(activeHoldKey);
       console.error("Billplz bill creation failed:", await billRes.text());
       await fetch(`${WP_URL}/wp-json/wc/v3/orders/${order.id}`, { method: "PUT", headers: { "Content-Type": "application/json", Authorization: authHeader }, body: JSON.stringify({ status: "cancelled" }) });
       return NextResponse.json({ error: "Failed to create payment bill. Please try again." }, { status: 502 });
     }
     const bill = await billRes.json();
+    rekeyStockHold(activeHoldKey, String(bill.id));
+    activeHoldKey = String(bill.id);
     const update = await fetch(`${WP_URL}/wp-json/wc/v3/orders/${order.id}`, { method: "PUT", headers: { "Content-Type": "application/json", Authorization: authHeader }, body: JSON.stringify({ transaction_id: bill.id }) });
-    if (!update.ok) return NextResponse.json({ error: "Payment setup failed. Please contact support." }, { status: 502 });
+    if (!update.ok) {
+      releaseStockHold(activeHoldKey);
+      return NextResponse.json({ error: "Payment setup failed. Please contact support." }, { status: 502 });
+    }
 
     return NextResponse.json({ orderId: order.id, orderKey: order.order_key, paymentUrl: bill.url });
   } catch (error) {
+    if (activeHoldKey) releaseStockHold(activeHoldKey);
     console.error("Checkout API error:", error);
     return NextResponse.json({ error: "Invalid checkout request." }, { status: 400 });
   }

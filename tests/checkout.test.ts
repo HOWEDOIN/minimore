@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { isValidFreeShippingPromo, shippingFor, validateCheckoutBody } from "../src/lib/checkoutValidation.ts";
+import { clearAllStockHolds, getHeldQuantity, rekeyStockHold, releaseStockHold, tryReserveStock } from "../src/lib/stockHold.ts";
 
 const valid = {
   contact: { email: "buyer@example.com" }, paymentMethod: "billplz",
@@ -32,4 +33,24 @@ test("checkout accepts Malaysia only and selects regional shipping", () => {
     validateCheckoutBody({ ...valid, cartItems: [{ variantId: "12", quantity: 15 }, { variantId: "12", quantity: 6 }] }),
     null,
   );
+});
+
+test("stock hold prevents concurrent overselling and expires after TTL", () => {
+  clearAllStockHolds();
+  const products = [{ id: 12, stock_status: "instock", manage_stock: true, stock_quantity: 1 }];
+  const cart = [{ variantId: "12", quantity: 1 }];
+  const t0 = 1_000_000;
+
+  assert.equal(tryReserveStock("hold-a", cart, products, 10 * 60_000, t0), true);
+  assert.equal(getHeldQuantity(12, t0), 1);
+  assert.equal(tryReserveStock("hold-b", cart, products, 10 * 60_000, t0), false);
+
+  rekeyStockHold("hold-a", "bill-1");
+  releaseStockHold("bill-1");
+  assert.equal(getHeldQuantity(12, t0), 0);
+
+  assert.equal(tryReserveStock("hold-b", cart, products, 10 * 60_000, t0), true);
+  assert.equal(tryReserveStock("hold-c", cart, products, 10 * 60_000, t0 + 10 * 60_000 - 1), false);
+  assert.equal(tryReserveStock("hold-c", cart, products, 10 * 60_000, t0 + 10 * 60_000), true);
+  clearAllStockHolds();
 });

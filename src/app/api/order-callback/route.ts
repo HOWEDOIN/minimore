@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyBillplzSignature } from "@/lib/billplz";
+import { releaseStockHold } from "@/lib/stockHold";
 
 const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://admin.minimore.my";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://minimore.my";
@@ -45,6 +46,7 @@ export async function POST(req: NextRequest) {
     if (!order) return NextResponse.json({ ok: false }, { status: 404 });
     if (!await billIsPaid(billId, order.total)) return NextResponse.json({ ok: false }, { status: 400 });
     const updated = await markPaid(order, billId);
+    if (updated.ok) releaseStockHold(billId);
     return NextResponse.json({ ok: updated.ok }, { status: updated.ok ? 200 : 502 });
   } catch (error) {
     console.error("Billplz webhook error:", error);
@@ -64,6 +66,7 @@ export async function GET(req: NextRequest) {
       if (!await billIsPaid(billId, order.total)) return NextResponse.redirect(new URL("/?payment=invalid", SITE_URL));
       if (!(await markPaid(order, billId)).ok) return NextResponse.redirect(new URL("/?payment=error", SITE_URL));
     }
+    releaseStockHold(billId);
     return NextResponse.redirect(new URL(`/order-confirmation/${order.id}`, SITE_URL));
   } catch (error) {
     console.error("Billplz redirect error:", error);
