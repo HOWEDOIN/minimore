@@ -79,7 +79,7 @@ export default async function Home() {
   homepageContent.hero_subtitle = `<div class="hero-subtitle-main">Authentic Mini Luxury</div><div class="hero-subtitle-categories"><span>Cosmetic</span><span>Beauty</span><span>Skincare</span><span>Perfume</span></div>`;
 
   const sectionOrder: string[] = homepageContent.section_order?.map((s: string) => s === 'why' ? 'contact_locate' : s) || ['hero', 'trending', 'contact_locate'];
-  const collectionTabs: string[] = ['Cosmetic', 'Skin Care', 'Perfume', 'Gift Set', 'Limited Edition'];
+  const collectionTabs: string[] = ['Miniature', 'Vials', 'Make Up & Cosmetics', 'Gift Sets', 'Limited Editions'];
 
   return (
     <div className="page-wrapper">

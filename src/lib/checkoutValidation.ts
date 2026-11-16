@@ -37,10 +37,23 @@ export function validateCheckoutBody(value: unknown): CheckoutBody | null {
   const phone = body.contact.phone?.replace(/[\s()-]/g, "") || "";
   if (phone && !PHONE.test(phone)) return null;
   const normalizedPhone = phone.startsWith("0") ? `+60${phone.slice(1)}` : phone;
-  const cartValid = body.cartItems.every((item) => item && /^\d+$/.test(String(item.variantId)) &&
-    Number(item.variantId) > 0 && Number.isInteger(item.quantity) && item.quantity >= 1 && item.quantity <= 20);
+  const merged = new Map<string, number>();
+  for (const item of body.cartItems) {
+    if (
+      !item || !/^\d+$/.test(String(item.variantId)) ||
+      Number(item.variantId) <= 0 || !Number.isInteger(item.quantity) ||
+      item.quantity < 1 || item.quantity > 20
+    ) {
+      return null;
+    }
+    const id = String(Number(item.variantId));
+    const nextQty = (merged.get(id) ?? 0) + item.quantity;
+    if (nextQty > 20) return null;
+    merged.set(id, nextQty);
+  }
+  const cartItems = Array.from(merged.entries(), ([variantId, quantity]) => ({ variantId, quantity }));
   const promoCode = typeof body.promoCode === "string" ? body.promoCode.trim() : undefined;
-  return cartValid ? { ...body, contact: { ...body.contact, phone: normalizedPhone || undefined }, promoCode: promoCode || undefined } as CheckoutBody : null;
+  return { ...body, contact: { ...body.contact, phone: normalizedPhone || undefined }, cartItems, promoCode: promoCode || undefined } as CheckoutBody;
 }
 
 export function shippingFor(state: string, freeShipping = false) {

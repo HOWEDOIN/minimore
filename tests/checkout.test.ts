@@ -24,4 +24,12 @@ test("checkout accepts Malaysia only and selects regional shipping", () => {
   assert.equal(validateCheckoutBody({ ...valid, paymentMethod: "cod" }), null);
   assert.equal(validateCheckoutBody({ ...valid, contact: { email: "buyer@example.com", phone: "asdf" } }), null);
   assert.equal(validateCheckoutBody({ ...valid, contact: { email: "buyer@example.com", phone: "012-345 6789" } })?.contact.phone, "+60123456789");
+  assert.deepEqual(
+    validateCheckoutBody({ ...valid, cartItems: [{ variantId: "12", quantity: 2 }, { variantId: "12", quantity: 3 }] })?.cartItems,
+    [{ variantId: "12", quantity: 5 }],
+  );
+  assert.equal(
+    validateCheckoutBody({ ...valid, cartItems: [{ variantId: "12", quantity: 15 }, { variantId: "12", quantity: 6 }] }),
+    null,
+  );
 });

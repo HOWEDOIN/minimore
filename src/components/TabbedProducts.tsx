@@ -8,24 +8,52 @@ import "./TabbedProducts.css";
 import { getProductImage } from "@/utils/imageHelper";
 import { getDisplayCategory } from "@/lib/categoryUtils";
 
-const DEFAULT_TABS = ["Cosmetic", "Skin Care", "Perfume", "Gift Set", "Limited Edition"];
+export default function TabbedProducts({ products, hidePrices = true }: { products: any[], collectionTabs?: string[], hidePrices?: boolean }) {
+  const [row1Tab, setRow1Tab] = useState("Cosmetic");
+  const [row2Tab, setRow2Tab] = useState("Gift Set");
+  
+  const slider1Ref = useRef<HTMLDivElement>(null);
+  const slider2Ref = useRef<HTMLDivElement>(null);
 
-export default function TabbedProducts({ products, collectionTabs = DEFAULT_TABS, hidePrices = true }: { products: any[], collectionTabs?: string[], hidePrices?: boolean }) {
-  const tabs = collectionTabs.length > 0 ? collectionTabs : DEFAULT_TABS;
-  const [activeTab, setActiveTab] = useState(tabs[0]);
-  const sliderRef = useRef<HTMLDivElement>(null);
-
-  const scrollByFraction = (direction: -1 | 1) => {
-    if (sliderRef.current) {
-      const scrollAmount = sliderRef.current.clientWidth * 0.75 * direction;
-      sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  const scrollLeft1 = () => {
+    if (slider1Ref.current) {
+      const scrollAmount = slider1Ref.current.clientWidth * 0.75;
+      slider1Ref.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     }
   };
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    if (sliderRef.current) {
-      sliderRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+  const scrollRight1 = () => {
+    if (slider1Ref.current) {
+      const scrollAmount = slider1Ref.current.clientWidth * 0.75;
+      slider1Ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const scrollLeft2 = () => {
+    if (slider2Ref.current) {
+      const scrollAmount = slider2Ref.current.clientWidth * 0.75;
+      slider2Ref.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight2 = () => {
+    if (slider2Ref.current) {
+      const scrollAmount = slider2Ref.current.clientWidth * 0.75;
+      slider2Ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const handleRow1TabChange = (tab: string) => {
+    setRow1Tab(tab);
+    if (slider1Ref.current) {
+      slider1Ref.current.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleRow2TabChange = (tab: string) => {
+    setRow2Tab(tab);
+    if (slider2Ref.current) {
+      slider2Ref.current.scrollTo({ left: 0, behavior: 'smooth' });
     }
   };
 
@@ -147,16 +175,18 @@ export default function TabbedProducts({ products, collectionTabs = DEFAULT_TABS
     return products.slice(0, 16);
   };
 
-  const visibleProducts = getProductsForTab(activeTab);
+  const row1Products = getProductsForTab(row1Tab);
+  const row2Products = getProductsForTab(row2Tab);
 
-  const renderProductCard = (product: any) => {
+  const renderProductCard = (product: any, keyPrefix: string) => {
     const price = product.price || product.regular_price || 0;
     const isOnSale = product.on_sale || (product.regular_price && product.price && product.regular_price !== product.price);
     const savings = isOnSale ? (parseFloat(product.regular_price) - parseFloat(product.price)).toFixed(2) : 0;
-
+    const activeTab = keyPrefix === "row1" ? row1Tab : keyPrefix === "row2" ? row2Tab : undefined;
+    
     return (
-      <motion.div
-        key={`tab-${product.id}`}
+      <motion.div 
+        key={`${keyPrefix}-${product.id}`}
         layout
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -205,14 +235,15 @@ export default function TabbedProducts({ products, collectionTabs = DEFAULT_TABS
 
   return (
     <div className="tabbed-products-container">
-      <div className="carousel-section">
+      {/* ── ROW 1: Cosmetic, Skin Care, Perfume ── */}
+      <div className="carousel-section" style={{ marginBottom: "3.5rem" }}>
         <div className="tabs-scroll-wrapper">
           <ul className="collection-tabs">
-            {tabs.map((tab) => (
+            {["Cosmetic", "Skin Care", "Perfume"].map((tab) => (
               <li key={tab}>
                 <button
-                  className={`tab-btn ${activeTab === tab ? "active" : ""}`}
-                  onClick={() => handleTabChange(tab)}
+                  className={`tab-btn ${row1Tab === tab ? "active" : ""}`}
+                  onClick={() => handleRow1TabChange(tab)}
                   type="button"
                 >
                   {tab}
@@ -223,19 +254,19 @@ export default function TabbedProducts({ products, collectionTabs = DEFAULT_TABS
         </div>
 
         <div className="slider-container-wrapper">
-          {visibleProducts.length > 4 && (
+          {row1Products.length > 4 && (
             <>
-              <button
-                className="slider-nav-btn slider-nav-prev"
-                onClick={() => scrollByFraction(-1)}
+              <button 
+                className="slider-nav-btn slider-nav-prev" 
+                onClick={scrollLeft1}
                 aria-label="Previous products"
                 type="button"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
               </button>
-              <button
-                className="slider-nav-btn slider-nav-next"
-                onClick={() => scrollByFraction(1)}
+              <button 
+                className="slider-nav-btn slider-nav-next" 
+                onClick={scrollRight1}
                 aria-label="Next products"
                 type="button"
               >
@@ -244,22 +275,70 @@ export default function TabbedProducts({ products, collectionTabs = DEFAULT_TABS
             </>
           )}
 
-          <div ref={sliderRef} className="product-horizontal-slider">
+          <div ref={slider1Ref} className="product-horizontal-slider">
             <AnimatePresence mode="popLayout">
-              {visibleProducts.map((product: any) => renderProductCard(product))}
+              {row1Products.map((product: any) => renderProductCard(product, "row1"))}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+
+      {/* ── ROW 2: Gift Set, Limited Edition ── */}
+      <div className="carousel-section">
+        <div className="tabs-scroll-wrapper">
+          <ul className="collection-tabs">
+            {["Gift Set", "Limited Edition"].map((tab) => (
+              <li key={tab}>
+                <button
+                  className={`tab-btn ${row2Tab === tab ? "active" : ""}`}
+                  onClick={() => handleRow2TabChange(tab)}
+                  type="button"
+                >
+                  {tab}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="slider-container-wrapper">
+          {row2Products.length > 4 && (
+            <>
+              <button 
+                className="slider-nav-btn slider-nav-prev" 
+                onClick={scrollLeft2}
+                aria-label="Previous products"
+                type="button"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <button 
+                className="slider-nav-btn slider-nav-next" 
+                onClick={scrollRight2}
+                aria-label="Next products"
+                type="button"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </>
+          )}
+
+          <div ref={slider2Ref} className="product-horizontal-slider">
+            <AnimatePresence mode="popLayout">
+              {row2Products.map((product: any) => renderProductCard(product, "row2"))}
             </AnimatePresence>
           </div>
         </div>
       </div>
 
       {/* ── BOTTOM CTA BUTTON: Shop All ── */}
-      <motion.div
+      <motion.div 
         className="section-shop-btn-container"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Link
+        <Link 
           href="/products"
           className="btn-primary hero-btn section-shop-btn"
         >

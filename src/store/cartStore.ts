@@ -16,7 +16,7 @@ type CartState = {
   
   openCart: () => void
   closeCart: () => void
-  addToCart: (variantId: string, quantity: number, productData?: { name?: string; price?: string; regular_price?: string; images?: Array<{ src?: string }> }) => void
+  addToCart: (variantId: string, quantity: number, productData?: { name?: string; price?: string; regular_price?: string; manage_stock?: boolean; stock_quantity?: number | null; images?: Array<{ src?: string }> }) => void
   removeFromCart: (lineItemId: string) => void
   checkout: () => void
 }
@@ -32,23 +32,26 @@ export const useCartStore = create<CartState>()(
 
       addToCart: (variantId, quantity, productData) => {
         const currentCart = get().cart;
+        const maxQty = productData?.manage_stock && typeof productData.stock_quantity === "number"
+          ? Math.max(1, productData.stock_quantity)
+          : 99;
         const existingItem = currentCart.find(item => item.variantId === variantId);
-          
-          if (existingItem) {
-            const updatedCart = currentCart.map(item => 
-              item.variantId === variantId 
-                ? { ...item, quantity: item.quantity + quantity }
-                : item
-            );
+
+        if (existingItem) {
+          const updatedCart = currentCart.map(item =>
+            item.variantId === variantId
+              ? { ...item, quantity: Math.min(maxQty, item.quantity + quantity) }
+              : item
+          );
           set({ cart: updatedCart, isCartOpen: true });
         } else {
           const newItem: CartItem = {
-              id: crypto.randomUUID(),
-              variantId,
-              title: productData?.name || "Product",
-              price: parseFloat(productData?.price || productData?.regular_price || "0"),
-              quantity,
-              thumbnail: productData?.images?.[0]?.src || "/images/skincare.png"
+            id: crypto.randomUUID(),
+            variantId,
+            title: productData?.name || "Product",
+            price: parseFloat(productData?.price || productData?.regular_price || "0"),
+            quantity: Math.min(maxQty, Math.max(1, quantity)),
+            thumbnail: productData?.images?.[0]?.src || "/images/skincare.png"
           };
           set({ cart: [...currentCart, newItem], isCartOpen: true });
         }
