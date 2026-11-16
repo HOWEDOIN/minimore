@@ -46,3 +46,10 @@ export function validateCheckoutBody(value: unknown): CheckoutBody | null {
 export function shippingFor(state: string, freeShipping = false) {
   return freeShipping ? 0 : EAST_MALAYSIA.has(state) ? 15 : 10;
 }
+
+export function isValidFreeShippingPromo(
+  code?: string | null,
+  expected = process.env.FREE_SHIPPING_PROMO_CODE || "freeshippingforjack"
+): boolean {
+  return Boolean(code && expected && code.trim().toLowerCase() === expected.trim().toLowerCase());
+}

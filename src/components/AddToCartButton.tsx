@@ -57,8 +57,8 @@ export default function AddToCartButton({ product, whatsappUrl }: { product: Pro
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-secondary whatsapp-btn"
-          style={{ display: "block", textAlign: "center", width: "100%", padding: "0.8rem", border: "1px solid #c9a473", color: "#c9a473", borderRadius: "4px", textDecoration: "none" }}
+          className="whatsapp-link"
+          style={{ display: "block", textAlign: "center", width: "100%", padding: "0.5rem", fontSize: "0.875rem", color: "#9b7a4b", opacity: 0.85, border: "none", textDecoration: "underline" }}
         >
           Order via WhatsApp
         </a>

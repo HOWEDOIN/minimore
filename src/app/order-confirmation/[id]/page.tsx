@@ -14,7 +14,8 @@ export default function OrderConfirmationPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const orderKey = sessionStorage.getItem(`minimore-order-${id}`);
+    const storageKey = `minimore-order-${id}`;
+    const orderKey = sessionStorage.getItem(storageKey) || localStorage.getItem(storageKey);
     if (!orderKey) {
       queueMicrotask(() => setError("This order confirmation link cannot be verified."));
       return;
@@ -33,7 +34,8 @@ export default function OrderConfirmationPage() {
         setOrder(verified);
         if (verified.paid) {
           useCartStore.setState({ cart: [], isCartOpen: false });
-          sessionStorage.removeItem(`minimore-order-${id}`);
+          sessionStorage.removeItem(storageKey);
+          localStorage.removeItem(storageKey);
         }
       })
       .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to verify order"));

@@ -26,7 +26,13 @@ export default async function ProductsPage({
   const hidePrices = sitewide.hide_prices;
 
   // 2. Determine params
-  const query: any = { per_page: 100, status: "publish", stock_status: "instock" };
+  const CATEGORY_SYNONYMS: Record<string, string[]> = {
+    cosmetics: ["cosmetics", "cosmetic", "make up", "makeup"],
+    skincare: ["skincare", "skin care"],
+    perfumes: ["perfumes", "perfume", "fragrance", "fragrances"],
+    "gift sets": ["gift sets", "gift set"],
+  };
+  const query: any = { status: "publish", stock_status: "instock" };
   let selectedCategory: any = null;
 
   if (search) {
@@ -36,12 +42,14 @@ export default async function ProductsPage({
       const target = category.toLowerCase().replace(/-/g, ' ').replace(/&/g, 'and').trim();
       const catSlug = (c.slug || '').toLowerCase().replace(/-/g, ' ').replace(/&/g, 'and').trim();
       const catName = (c.name || '').toLowerCase().replace(/-/g, ' ').replace(/&/g, 'and').trim();
+      const aliases = CATEGORY_SYNONYMS[target] || [target];
       return (
         (c.slug || '').toLowerCase() === category.toLowerCase() ||
-        catSlug === target ||
-        catName === target ||
-        catName.includes(target) ||
-        target.includes(catName)
+        aliases.some((alias) =>
+          catSlug === alias ||
+          catName === alias ||
+          (catName.length > 0 && (catName.includes(alias) || alias.includes(catName)))
+        )
       );
     });
     if (selectedCategory) {
@@ -50,7 +58,7 @@ export default async function ProductsPage({
   }
 
   // Fetch real products from WooCommerce
-  const { data: rawProducts } = await wooApi.get("products", query).catch((err: any) => {
+  const { data: rawProducts } = await wooApi.getAll("products", query).catch((err: any) => {
     console.error("Failed to fetch products", err);
     return { data: [] };
   });

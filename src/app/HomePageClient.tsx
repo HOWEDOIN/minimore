@@ -6,6 +6,8 @@ import { motion, Variants, useScroll, useTransform, AnimatePresence } from "fram
 import { useRef, useState, useEffect, useCallback } from "react";
 import TabbedProducts from "@/components/TabbedProducts";
 
+const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://admin.minimore.my";
+
 export default function HomePageClient({ products, homepageContent, sectionOrder, collectionTabs, hidePrices = true }: { products: any, homepageContent: any, sectionOrder: string[], collectionTabs: string[], hidePrices?: boolean }) {
   const [pricesHidden, setPricesHidden] = useState(hidePrices);
   const heroRef = useRef<HTMLElement>(null);
@@ -29,7 +31,7 @@ export default function HomePageClient({ products, homepageContent, sectionOrder
   }, [nextImage, heroImages.length]);
 
   useEffect(() => {
-    fetch('https://admin.minimore.my/wp-json/minimore/v1/sitewide')
+    fetch(`${WP_URL}/wp-json/minimore/v1/sitewide`)
       .then((res) => res.json())
       .then((data) => {
         if (typeof data.hide_prices === 'boolean') setPricesHidden(data.hide_prices);

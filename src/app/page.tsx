@@ -13,7 +13,7 @@ export const revalidate = 60; // Revalidate products from WooCommerce every 60 s
 
 export default async function Home() {
   const [{ data: rawProducts }, sitewide] = await Promise.all([
-    wooApi.get("products", { per_page: 100, status: "publish", stock_status: "instock" }).catch(() => ({ data: [] })),
+    wooApi.getAll("products", { status: "publish", stock_status: "instock" }).catch(() => ({ data: [] })),
     getSitewideSettings(),
   ]);
   const hidePrices = sitewide.hide_prices;
@@ -79,7 +79,7 @@ export default async function Home() {
   homepageContent.hero_subtitle = `<div class="hero-subtitle-main">Authentic Mini Luxury</div><div class="hero-subtitle-categories"><span>Cosmetic</span><span>Beauty</span><span>Skincare</span><span>Perfume</span></div>`;
 
   const sectionOrder: string[] = homepageContent.section_order?.map((s: string) => s === 'why' ? 'contact_locate' : s) || ['hero', 'trending', 'contact_locate'];
-  const collectionTabs: string[] = ['Miniature', 'Vials', 'Make Up & Cosmetics', 'Gift Sets', 'Limited Editions'];
+  const collectionTabs: string[] = ['Cosmetic', 'Skin Care', 'Perfume', 'Gift Set', 'Limited Edition'];
 
   return (
     <div className="page-wrapper">

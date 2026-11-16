@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { MALAYSIAN_STATES, shippingFor } from '@/lib/checkoutValidation';
 import './checkout.css';
 
+const WP_URL = process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my';
+
 export default function CheckoutPage() {
   const { cart } = useCartStore();
 
@@ -23,7 +25,7 @@ export default function CheckoutPage() {
   const [promoError, setPromoError] = useState<string | null>(null);
 
   React.useEffect(() => {
-    fetch('https://admin.minimore.my/wp-json/minimore/v1/sitewide')
+    fetch(`${WP_URL}/wp-json/minimore/v1/sitewide`)
       .then((res) => res.json())
       .then((data) => {
         if (data && typeof data.disable_checkout !== 'undefined') {
@@ -42,18 +44,24 @@ export default function CheckoutPage() {
     firstName: '', lastName: '', address1: '', address2: '',
     city: '', state: 'Selangor', postcode: '', country: 'MY',
   });
-  const isFreeShipping = freeShipping || appliedPromo.toLowerCase() === 'freeshippingforjack';
+  const isFreeShipping = freeShipping || Boolean(appliedPromo);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingTotal = shippingFor(shipping.state, isFreeShipping);
 
-  const handleApplyPromo = () => {
-    const code = promoCodeInput.trim().toLowerCase();
+  const handleApplyPromo = async () => {
+    const code = promoCodeInput.trim();
     if (!code) return;
-    if (code === 'freeshippingforjack') {
-      setAppliedPromo(promoCodeInput.trim());
-      setPromoError(null);
-    } else {
-      setPromoError('Invalid promo code');
+    try {
+      const res = await fetch(`/api/checkout?promo=${encodeURIComponent(code)}`);
+      const data = await res.json();
+      if (res.ok && data.valid) {
+        setAppliedPromo(code);
+        setPromoError(null);
+      } else {
+        setPromoError('Invalid promo code');
+      }
+    } catch {
+      setPromoError('Unable to verify promo code');
     }
   };
 
@@ -100,6 +108,7 @@ export default function CheckoutPage() {
 
       if (!data.paymentUrl || !data.orderId || !data.orderKey) throw new Error('Payment setup failed.');
       sessionStorage.setItem(`minimore-order-${data.orderId}`, data.orderKey);
+      localStorage.setItem(`minimore-order-${data.orderId}`, data.orderKey);
       window.location.href = data.paymentUrl;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred.');

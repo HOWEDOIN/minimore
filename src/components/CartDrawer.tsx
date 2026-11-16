@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useCartStore } from "@/store/cartStore";
 import "./cart-drawer.css";
 
+const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://admin.minimore.my";
+
 export default function CartDrawer() {
   const { isCartOpen, closeCart, cart, removeFromCart } = useCartStore();
   const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(
@@ -14,7 +16,7 @@ export default function CartDrawer() {
   const [hidePrices, setHidePrices] = useState(true);
 
   useEffect(() => {
-    fetch("https://admin.minimore.my/wp-json/minimore/v1/sitewide")
+    fetch(`${WP_URL}/wp-json/minimore/v1/sitewide`)
       .then((res) => res.json())
       .then((data) => {
         if (data && typeof data.disable_checkout !== "undefined") {

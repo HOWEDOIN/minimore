@@ -85,7 +85,8 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
             <Link href="/products">Shop All</Link>
             <Link href="/products?category=cosmetics">Cosmetics</Link>
             <Link href="/products?category=skincare">Skincare</Link>
-            <Link href="/products?category=make-up">Make Up</Link>
+            <Link href="/products?category=perfumes">Perfumes</Link>
+            <Link href="/products?category=gift-sets">Gift Sets</Link>
             <Link href="/faq">FAQ</Link>
           </div>
           
@@ -156,7 +157,8 @@ export default function Navbar({ isStatic = false }: NavbarProps) {
             <Link href="/products" onClick={closeMobileMenu}>Shop All</Link>
             <Link href="/products?category=cosmetics" onClick={closeMobileMenu}>Cosmetics</Link>
             <Link href="/products?category=skincare" onClick={closeMobileMenu}>Skincare</Link>
-            <Link href="/products?category=make-up" onClick={closeMobileMenu}>Make Up</Link>
+            <Link href="/products?category=perfumes" onClick={closeMobileMenu}>Perfumes</Link>
+            <Link href="/products?category=gift-sets" onClick={closeMobileMenu}>Gift Sets</Link>
             <Link href="/faq" onClick={closeMobileMenu}>FAQ</Link>
           </div>
         </div>
