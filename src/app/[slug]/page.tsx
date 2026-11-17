@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   let pages = [];
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${slug}&_fields=title`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${encodeURIComponent(slug)}&_fields=title`);
     if (res.ok) {
       pages = await res.json();
     }
@@ -36,7 +36,7 @@ export default async function StandardPage({ params }: { params: Promise<{ slug:
     }];
   } else {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${slug}&_fields=title,content`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my'}/wp-json/wp/v2/pages?slug=${encodeURIComponent(slug)}&_fields=title,content`, {
         next: { revalidate: 60 }
       });
       if (res.ok) {

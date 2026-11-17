@@ -43,10 +43,8 @@ export async function POST(req: NextRequest) {
     if (!verifyBillplzSignature(new URLSearchParams(body))) {
       return new NextResponse('invalid signature', { status: 401 });
     }
-    const { search } = new URL(req.url);
-
     const wpRes = await fetch(
-      `${WP_URL}/wc-api/WC_Billplz_Gateway/${search}`,
+      `${WP_URL}/wc-api/WC_Billplz_Gateway/`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

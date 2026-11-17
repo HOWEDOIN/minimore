@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { isValidFreeShippingPromo, shippingFor, validateCheckoutBody } from "../src/lib/checkoutValidation.ts";
 import { clearAllStockHolds, getHeldQuantity, rekeyStockHold, releaseStockHold, tryReserveStock } from "../src/lib/stockHold.ts";
+import { clientIpFromForwardedFor, rateLimit } from "../src/lib/rateLimit.ts";
 
 const valid = {
   contact: { email: "buyer@example.com" }, paymentMethod: "billplz",
@@ -53,4 +54,18 @@ test("stock hold prevents concurrent overselling and expires after TTL", () => {
   assert.equal(tryReserveStock("hold-c", cart, products, 10 * 60_000, t0 + 10 * 60_000 - 1), false);
   assert.equal(tryReserveStock("hold-c", cart, products, 10 * 60_000, t0 + 10 * 60_000), true);
   clearAllStockHolds();
+});
+
+test("rate limit uses rightmost forwarded IP and blocks spoofed prefix bypass", () => {
+  assert.equal(clientIpFromForwardedFor("1.2.3.4, 203.0.113.9"), "203.0.113.9");
+  assert.equal(clientIpFromForwardedFor("203.0.113.9"), "203.0.113.9");
+  assert.equal(clientIpFromForwardedFor(""), "unknown");
+  assert.equal(clientIpFromForwardedFor(null), "unknown");
+
+  for (let i = 1; i <= 5; i++) {
+    const ip = clientIpFromForwardedFor(`10.0.0.${i}, 203.0.113.9`);
+    assert.equal(rateLimit(`test-checkout:${ip}`, 5, 60_000), true);
+  }
+  const sixthIp = clientIpFromForwardedFor("10.0.0.99, 203.0.113.9");
+  assert.equal(rateLimit(`test-checkout:${sixthIp}`, 5, 60_000), false);
 });

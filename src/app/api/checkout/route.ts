@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { rateLimit } from "@/lib/rateLimit";
+import { clientIpFromForwardedFor, rateLimit } from "@/lib/rateLimit";
 import { isValidFreeShippingPromo, shippingFor, validateCheckoutBody } from "@/lib/checkoutValidation";
 import { rekeyStockHold, releaseStockHold, StockProduct, tryReserveStock } from "@/lib/stockHold";
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   let activeHoldKey: string | null = null;
   try {
     const localTest = process.env.NODE_ENV === "development";
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+    const ip = clientIpFromForwardedFor(req.headers.get("x-forwarded-for"));
     if (!localTest && !rateLimit(`checkout:${ip}`, 5, 15 * 60_000)) return NextResponse.json({ error: "Too many checkout attempts. Please try again later." }, { status: 429 });
     if (Number(req.headers.get("content-length") || 0) > 20_000) return NextResponse.json({ error: "Request is too large." }, { status: 413 });
 
