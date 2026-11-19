@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Update Minimore CMS (1-Click Updater)
  * Description: Installs/Updates the Minimore CMS Must-Use plugin (mu-plugins/minimore-core.php).
- * Version: 2.6
+ * Version: 2.7
  * Author: Minimore AI
  */
 
@@ -28,11 +28,14 @@ function minimore_cms_updater_notice() {
                 require_once ABSPATH . 'wp-admin/includes/plugin.php';
             }
             if (function_exists('deactivate_plugins')) {
-                deactivate_plugins(plugin_basename(__FILE__), true);
+                deactivate_plugins(array(
+                    plugin_basename(__FILE__),
+                    'minimore-carousel/minimore-carousel.php',
+                ), true);
             }
             echo '<div class="notice notice-success is-dismissible" style="border-left-color: #d4a853; padding: 12px 16px;">';
             echo '<p style="font-size: 15px; margin: 0 0 6px;"><strong>⚡ Minimore CMS Updated Successfully!</strong></p>';
-            echo '<p style="margin: 0;">The Minimore CMS plugin has been installed (Storefront Settings, WooCommerce Mobile App discovery, and Order status dropdowns). This updater has been deactivated automatically; you may delete it anytime.</p>';
+            echo '<p style="margin: 0;">The unified <b>Minimore</b> General Settings page, WooCommerce Mobile App discovery, and Order status dropdowns are now installed. This updater and the separate Hero Carousel plugin have been deactivated automatically.</p>';
             echo '</div>';
         } else {
             echo '<div class="notice notice-error"><p><strong>❌ Minimore CMS Update Failed:</strong> Could not write to <code>' . esc_html($target) . '</code>. Please check folder permissions.</p></div>';

@@ -31,10 +31,52 @@ function minimore_hide_unneeded_admin_menus() {
     remove_menu_page('edit.php');          // Posts (unused in headless storefront)
     remove_menu_page('edit-comments.php'); // Comments (unused)
     remove_menu_page('themes.php');        // Appearance (headless frontend)
+    remove_submenu_page('minimore-settings', 'minimore-carousel');
+}
+
+// Disable WooCommerce marketplace extension suggestions & broken marketing KB card on Coupons
+add_filter('woocommerce_allow_marketplace_suggestions', '__return_false');
+add_action('admin_footer', 'minimore_hide_woo_marketing_noise');
+function minimore_hide_woo_marketing_noise() {
+    if (isset($_GET['post_type']) && sanitize_key($_GET['post_type']) === 'shop_coupon') {
+        ?>
+        <style>
+        .woocommerce-marketing-knowledgebase-card,
+        .woocommerce-marketing-coupons,
+        .woocommerce-marketing-recommended-extensions-card,
+        .woocommerce-marketplace-suggestions,
+        .woocommerce-layout .components-snackbar-list { display: none !important; }
+        </style>
+        <script>
+        (function() {
+            function hideNoise() {
+                document.querySelectorAll('.components-card, .woocommerce-card').forEach(function(el) {
+                    if (/WooCommerce knowledge base|posts aren.?t loading/i.test(el.textContent || '')) {
+                        el.style.display = 'none';
+                    }
+                });
+                document.querySelectorAll('.components-snackbar').forEach(function(el) {
+                    if (/recommended extensions/i.test(el.textContent || '')) {
+                        el.style.display = 'none';
+                    }
+                });
+            }
+            hideNoise();
+            if (window.MutationObserver) {
+                new MutationObserver(hideNoise).observe(document.body, { childList: true, subtree: true });
+            }
+        })();
+        </script>
+        <?php
+    }
 }
 
 add_action('admin_init', 'minimore_register_settings');
 function minimore_register_settings() {
+    // Front Banner / Hero Carousel
+    register_setting('minimore_settings_group', 'minimore_hero_images');
+    register_setting('minimore_settings_group', 'minimore_hero_links');
+
     // Coming Soon, Pricing, & Checkout
     register_setting('minimore_settings_group', 'minimore_is_coming_soon');
     register_setting('minimore_settings_group', 'minimore_hide_prices');
@@ -53,6 +95,7 @@ function minimore_register_settings() {
 }
 
 function minimore_render_settings_page() {
+    wp_enqueue_media();
     ?>
     <style>
     .mm-wrap{max-width:820px;margin:20px auto;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -71,18 +114,36 @@ function minimore_render_settings_page() {
     .mm-field{margin-bottom:16px}
     .mm-field:last-child{margin-bottom:0}
     .mm-field label{display:block;font-weight:600;font-size:.85rem;color:#374151;margin-bottom:6px}
-    .mm-settings-card .mm-field input[type=text]{width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.9rem;color:#1a1a2e;box-sizing:border-box;transition:border-color .2s;font-family:inherit}
-    .mm-settings-card .mm-field input[type=text]:focus{border-color:#d4a853;outline:none;box-shadow:0 0 0 3px rgba(212,168,83,.15)}
+    .mm-settings-card .mm-field input[type=text],
+    .mm-settings-card .mm-field textarea{width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.9rem;color:#1a1a2e;box-sizing:border-box;transition:border-color .2s;font-family:inherit}
+    .mm-settings-card .mm-field textarea{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.82rem;line-height:1.5}
+    .mm-settings-card .mm-field input[type=text]:focus,
+    .mm-settings-card .mm-field textarea:focus{border-color:#d4a853;outline:none;box-shadow:0 0 0 3px rgba(212,168,83,.15)}
     .mm-save-bar{position:sticky;bottom:0;background:#f0f0f1;border-top:1px solid #dcdcde;padding:12px 0;margin-top:8px;text-align:right}
     </style>
 
     <div class="mm-wrap">
-        <h1>&#9889; Minimore Storefront Settings</h1>
-        <p class="mm-subtitle">Control live storefront visibility, checkout, shipping, announcement banner, and footer text.</p>
+        <h1>&#9889; Minimore General Settings</h1>
+        <p class="mm-subtitle">Manage your front banner slides, deep links, pricing visibility, checkout, shipping, promo codes, announcement bar, and footer in one place.</p>
         <?php settings_errors(); ?>
 
         <form method="post" action="options.php" id="mm-main-form">
             <?php settings_fields('minimore_settings_group'); ?>
+
+            <div class="mm-settings-card">
+                <h3>&#128444; Homepage Front Banner &amp; Deep Links</h3>
+                <div class="mm-field">
+                    <label for="mm_hero_images">Carousel Images (URLs)</label>
+                    <textarea id="mm_hero_images" name="minimore_hero_images" rows="4"><?php echo esc_textarea(get_option('minimore_hero_images', '')); ?></textarea>
+                    <p style="color:#9ca3af;font-size:.82rem;margin:6px 0 10px;">Square banner image URLs separated by commas. Click below to upload or select images from your Media Library.</p>
+                    <button type="button" class="button button-secondary" id="mm_carousel_upload_btn">Open Media Library to Copy URLs</button>
+                </div>
+                <div class="mm-field">
+                    <label for="mm_hero_links">Image Deep Links (URLs)</label>
+                    <textarea id="mm_hero_links" name="minimore_hero_links" rows="3"><?php echo esc_textarea(get_option('minimore_hero_links', '')); ?></textarea>
+                    <p style="color:#9ca3af;font-size:.82rem;margin:6px 0 0;">Destination URLs separated by commas in the <strong>exact same order</strong> as the images above (e.g. <code>/products/</code>, <code>/products/?category=perfumes</code>, <code>/products/your-product-slug/</code>, or <code>#</code> for no link).</p>
+                </div>
+            </div>
 
             <div class="mm-settings-card">
                 <h3>&#128640; Coming Soon Overlay</h3>
@@ -174,6 +235,27 @@ function minimore_render_settings_page() {
             </div>
         </form>
     </div>
+    <script>
+    jQuery(document).ready(function($){
+        $('#mm_carousel_upload_btn').on('click', function(e) {
+            e.preventDefault();
+            var image = wp.media({
+                title: 'Upload / Select Carousel Images',
+                multiple: true
+            }).open().on('select', function() {
+                var urls = [];
+                image.state().get('selection').each(function(img) {
+                    urls.push(img.toJSON().url);
+                });
+                var current = $('#mm_hero_images').val() || '';
+                if (current.trim() !== '' && !current.trim().endsWith(',')) {
+                    current = current.trim() + ', ';
+                }
+                $('#mm_hero_images').val(current + urls.join(', '));
+            });
+        });
+    });
+    </script>
     <?php
 }
 
@@ -285,7 +367,29 @@ add_action('rest_api_init', function () {
         'callback'            => 'minimore_get_sitewide_data',
         'permission_callback' => '__return_true'
     ));
+    register_rest_route('minimore/v1', '/carousel', array(
+        'methods'             => 'GET',
+        'callback'            => 'minimore_core_carousel_api',
+        'permission_callback' => '__return_true'
+    ));
 });
+
+function minimore_core_carousel_api() {
+    $hero_images_raw = get_option('minimore_hero_images', '');
+    $hero_images = array();
+    if (!empty($hero_images_raw)) {
+        $hero_images = array_values(array_filter(array_map('trim', explode(',', $hero_images_raw))));
+    }
+    $hero_links_raw = get_option('minimore_hero_links', '');
+    $hero_links = array();
+    if (!empty($hero_links_raw)) {
+        $hero_links = array_values(array_map('trim', explode(',', $hero_links_raw)));
+    }
+    return new WP_REST_Response(array(
+        'hero_images' => $hero_images,
+        'hero_links'  => $hero_links,
+    ), 200);
+}
 
 // Ensure WordPress advertises admin.minimore.my (siteurl) as its API host for mobile apps
 add_filter('option_home', function ($value) {
