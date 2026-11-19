@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Update Minimore CMS (1-Click Updater)
  * Description: Installs/Updates the Minimore CMS Must-Use plugin (mu-plugins/minimore-core.php).
- * Version: 2.5
+ * Version: 2.6
  * Author: Minimore AI
  */
 
@@ -24,9 +24,15 @@ function minimore_cms_updater_notice() {
     if (file_exists($source)) {
         $copied = @copy($source, $target);
         if ($copied) {
+            if (!function_exists('deactivate_plugins')) {
+                require_once ABSPATH . 'wp-admin/includes/plugin.php';
+            }
+            if (function_exists('deactivate_plugins')) {
+                deactivate_plugins(plugin_basename(__FILE__), true);
+            }
             echo '<div class="notice notice-success is-dismissible" style="border-left-color: #d4a853; padding: 12px 16px;">';
             echo '<p style="font-size: 15px; margin: 0 0 6px;"><strong>⚡ Minimore CMS Updated Successfully!</strong></p>';
-            echo '<p style="margin: 0;">The Minimore CMS plugin has been installed with simplified Storefront Settings and WooCommerce Mobile App discovery support; storefront REST APIs and media remain available. <i>You may now deactivate and delete this updater.</i></p>';
+            echo '<p style="margin: 0;">The Minimore CMS plugin has been installed (Storefront Settings, WooCommerce Mobile App discovery, and Order status dropdowns). This updater has been deactivated automatically; you may delete it anytime.</p>';
             echo '</div>';
         } else {
             echo '<div class="notice notice-error"><p><strong>❌ Minimore CMS Update Failed:</strong> Could not write to <code>' . esc_html($target) . '</code>. Please check folder permissions.</p></div>';

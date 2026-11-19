@@ -333,3 +333,227 @@ add_action('template_redirect', function () {
         exit;
     }
 });
+
+// ---------------------------------------------------------
+// 3. WooCommerce Orders Admin: Processing -> Completed -> Pending Payment
+//    Collapsible dropdown groups, status filter dropdown, and reordered tabs.
+// ---------------------------------------------------------
+add_action('admin_footer', 'minimore_orders_admin_enhancements');
+function minimore_orders_admin_enhancements() {
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    $page = isset($_GET['page']) ? sanitize_key($_GET['page']) : '';
+    $post_type = isset($_GET['post_type']) ? sanitize_key($_GET['post_type']) : '';
+    $is_orders = ($page === 'wc-orders')
+        || ($post_type === 'shop_order')
+        || ($screen && in_array($screen->id, array('woocommerce_page_wc-orders', 'edit-shop_order'), true));
+
+    if (!$is_orders || isset($_GET['id']) || (isset($_GET['action']) && $_GET['action'] === 'edit')) {
+        return;
+    }
+    ?>
+    <style>
+    .mm-orders-select{margin-right:6px !important;vertical-align:middle}
+    .mm-status-group-row td{padding:0 !important;background:#f8fafc !important;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0}
+    .mm-group-toggle{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;background:none;border:none;cursor:pointer;text-align:left;font-size:13px;font-weight:600;color:#1e293b}
+    .mm-group-toggle:hover{background:#f1f5f9}
+    .mm-group-arrow{display:inline-block;width:14px;font-size:11px;color:#64748b;transition:transform .15s}
+    .mm-group-pill{display:inline-block;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;line-height:1.4}
+    .mm-pill-processing{background:#c6e1c6;color:#5b841b}
+    .mm-pill-completed{background:#c8d7e1;color:#2e4453}
+    .mm-pill-pending{background:#e5e5e5;color:#777}
+    .mm-pill-other{background:#f1f5f9;color:#475569}
+    .mm-group-count{color:#64748b;font-weight:500;font-size:12px}
+    .mm-row-hidden{display:none !important}
+    .mm-group-empty td{padding:10px 16px 10px 38px !important;color:#64748b;font-style:italic;background:#fff !important}
+    </style>
+    <script>
+    (function() {
+        var url = new URL(window.location.href);
+        var isHpos = url.searchParams.get('page') === 'wc-orders';
+        var statusParam = isHpos ? 'status' : 'post_status';
+        var activeStatus = url.searchParams.get(statusParam) || '';
+
+        // 1. Reorder top status links: All | Processing | Completed | Pending payment | ...
+        var subList = document.querySelector('.subsubsub');
+        var statusUrls = { all: '', 'wc-processing': '', 'wc-completed': '', 'wc-pending': '' };
+        var statusLabels = { 'wc-processing': 'Processing', 'wc-completed': 'Completed', 'wc-pending': 'Pending payment' };
+        if (subList) {
+            var items = Array.from(subList.querySelectorAll('li'));
+            var priority = ['all', 'wc-processing', 'wc-completed', 'wc-pending'];
+            items.forEach(function(li) {
+                var a = li.querySelector('a');
+                if (!a) return;
+                Array.from(li.classList).forEach(function(cls) {
+                    if (statusUrls.hasOwnProperty(cls)) {
+                        statusUrls[cls] = a.href;
+                        if (cls !== 'all') statusLabels[cls] = a.textContent.replace(/\s+/g, ' ').trim();
+                    }
+                });
+            });
+            items.sort(function(a, b) {
+                function rank(li) {
+                    for (var i = 0; i < priority.length; i++) {
+                        if (li.classList.contains(priority[i])) return i;
+                    }
+                    return priority.length;
+                }
+                return rank(a) - rank(b);
+            });
+            subList.innerHTML = '';
+            items.forEach(function(li, idx) {
+                Array.from(li.childNodes).forEach(function(n) {
+                    if (n.nodeType === 3) n.remove();
+                });
+                if (idx < items.length - 1) {
+                    li.appendChild(document.createTextNode(' | '));
+                }
+                subList.appendChild(li);
+            });
+        }
+
+        function buildStatusUrl(targetStatus) {
+            if (!targetStatus && statusUrls.all) return statusUrls.all;
+            if (targetStatus && statusUrls[targetStatus]) return statusUrls[targetStatus];
+            var next = new URL(window.location.href);
+            next.searchParams.delete('paged');
+            if (!targetStatus) next.searchParams.delete(statusParam);
+            else next.searchParams.set(statusParam, targetStatus);
+            return next.toString();
+        }
+
+        // 2. Add status filter dropdown in the filter bar
+        var filterBar = document.querySelector('.tablenav.top .alignleft.actions');
+        if (filterBar && !document.getElementById('mm-order-status-filter')) {
+            var select = document.createElement('select');
+            select.id = 'mm-order-status-filter';
+            select.className = 'mm-orders-select';
+            select.setAttribute('aria-label', 'Filter by order status');
+
+            var options = [
+                { val: '', label: 'All statuses (Processing first)' },
+                { val: 'wc-processing', label: statusLabels['wc-processing'] },
+                { val: 'wc-completed', label: statusLabels['wc-completed'] },
+                { val: 'wc-pending', label: statusLabels['wc-pending'] }
+            ];
+            options.forEach(function(opt) {
+                var o = document.createElement('option');
+                o.value = opt.val;
+                o.textContent = opt.label;
+                if (activeStatus === opt.val || ((!activeStatus || activeStatus === 'all') && opt.val === '')) o.selected = true;
+                select.appendChild(o);
+            });
+            select.addEventListener('change', function() {
+                window.location.href = buildStatusUrl(select.value);
+            });
+
+            var filterBtn = filterBar.querySelector('#post-query-submit, #order-query-submit, input[type="submit"]');
+            if (filterBtn) filterBar.insertBefore(select, filterBtn);
+            else filterBar.appendChild(select);
+        }
+
+        // 3. On the main "All" view (without explicit column sort), group into collapsible dropdown sections
+        if ((activeStatus && activeStatus !== 'all') || url.searchParams.get('orderby')) {
+            return;
+        }
+        var tbody = document.getElementById('the-list');
+        if (!tbody) return;
+        var rows = Array.from(tbody.querySelectorAll('tr')).filter(function(tr) {
+            return !tr.classList.contains('no-items');
+        });
+        if (!rows.length) return;
+
+        var table = tbody.closest('table');
+        var colCount = table ? table.querySelectorAll('thead tr:first-child > th, thead tr:first-child > td').length : 7;
+        if (!colCount) colCount = 7;
+
+        function detectGroup(tr) {
+            var cls = tr.className || '';
+            if (/\bstatus-(?:wc-)?processing\b/.test(cls)) return 'processing';
+            if (/\bstatus-(?:wc-)?completed\b/.test(cls)) return 'completed';
+            if (/\bstatus-(?:wc-)?pending\b/.test(cls)) return 'pending';
+            var badge = tr.querySelector('.order-status');
+            var text = badge ? badge.textContent.toLowerCase().trim() : '';
+            if (text.indexOf('processing') !== -1) return 'processing';
+            if (text.indexOf('completed') !== -1) return 'completed';
+            if (text.indexOf('pending') !== -1) return 'pending';
+            return 'other';
+        }
+
+        var groups = { processing: [], completed: [], pending: [], other: [] };
+        rows.forEach(function(tr) {
+            groups[detectGroup(tr)].push(tr);
+        });
+
+        var defs = [
+            { key: 'processing', label: 'Processing', pill: 'mm-pill-processing', defaultOpen: true },
+            { key: 'completed',  label: 'Completed',  pill: 'mm-pill-completed',  defaultOpen: true },
+            { key: 'pending',    label: 'Pending payment', pill: 'mm-pill-pending', defaultOpen: groups.pending.length > 0 }
+        ];
+        if (groups.other.length > 0) {
+            defs.push({ key: 'other', label: 'Other statuses', pill: 'mm-pill-other', defaultOpen: true });
+        }
+
+        tbody.innerHTML = '';
+        defs.forEach(function(def) {
+            var groupRows = groups[def.key];
+            var isOpen = def.defaultOpen;
+
+            var headerRow = document.createElement('tr');
+            headerRow.className = 'mm-status-group-row';
+            var td = document.createElement('td');
+            td.colSpan = colCount;
+
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'mm-group-toggle';
+            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+            var arrow = document.createElement('span');
+            arrow.className = 'mm-group-arrow';
+            arrow.textContent = isOpen ? '▼' : '▶';
+
+            var pill = document.createElement('span');
+            pill.className = 'mm-group-pill ' + def.pill;
+            pill.textContent = def.label;
+
+            var count = document.createElement('span');
+            count.className = 'mm-group-count';
+            count.textContent = '(' + groupRows.length + ')';
+
+            btn.appendChild(arrow);
+            btn.appendChild(pill);
+            btn.appendChild(count);
+            td.appendChild(btn);
+            headerRow.appendChild(td);
+            tbody.appendChild(headerRow);
+
+            var targetRows = groupRows.slice();
+            if (targetRows.length === 0) {
+                var emptyRow = document.createElement('tr');
+                emptyRow.className = 'mm-group-empty';
+                var emptyTd = document.createElement('td');
+                emptyTd.colSpan = colCount;
+                emptyTd.textContent = 'No ' + def.label.toLowerCase() + ' orders.';
+                emptyRow.appendChild(emptyTd);
+                targetRows.push(emptyRow);
+            }
+
+            targetRows.forEach(function(r) {
+                if (!isOpen) r.classList.add('mm-row-hidden');
+                tbody.appendChild(r);
+            });
+
+            btn.addEventListener('click', function() {
+                isOpen = !isOpen;
+                btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                arrow.textContent = isOpen ? '▼' : '▶';
+                targetRows.forEach(function(r) {
+                    if (isOpen) r.classList.remove('mm-row-hidden');
+                    else r.classList.add('mm-row-hidden');
+                });
+            });
+        });
+    })();
+    </script>
+    <?php
+}
