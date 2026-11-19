@@ -287,12 +287,49 @@ add_action('rest_api_init', function () {
     ));
 });
 
-// Keep WordPress as the private CMS: public pages go to the protected admin area.
-// REST endpoints and uploaded media remain available to the storefront.
+// Ensure WordPress advertises admin.minimore.my (siteurl) as its API host for mobile apps
+add_filter('option_home', function ($value) {
+    $siteurl = get_option('siteurl');
+    return $siteurl ? $siteurl : $value;
+}, 99);
+
+add_filter('rest_url', function ($url) {
+    $home_host = parse_url(home_url('/'), PHP_URL_HOST);
+    $site_host = parse_url(site_url('/'), PHP_URL_HOST);
+    if ($home_host && $site_host && $home_host !== $site_host) {
+        $url = str_replace('://' . $home_host, '://' . $site_host, $url);
+    }
+    return $url;
+}, 99);
+
+// Keep WordPress as the private CMS while returning 200 OK + REST/RSD discovery tags
+// so the WooCommerce Mobile App does not hit a 302 redirect during login discovery.
 add_action('template_redirect', function () {
     if (!(defined('REST_REQUEST') && REST_REQUEST) && !wp_doing_ajax()) {
+        $rest_href  = rest_url();
+        $rsd_href   = site_url('xmlrpc.php?rsd', 'rpc');
+        $admin_href = admin_url();
+
+        status_header(200);
         nocache_headers();
-        wp_safe_redirect(admin_url(), 302);
+        header('Content-Type: text/html; charset=utf-8');
+        header('Link: <' . esc_url_raw($rest_href) . '>; rel="https://api.w.org/"');
+        ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Minimore Admin</title>
+  <link rel="https://api.w.org/" href="<?php echo esc_url($rest_href); ?>" />
+  <link rel="EditURI" type="application/rsd+xml" title="RSD" href="<?php echo esc_url($rsd_href); ?>" />
+  <script>window.location.replace(<?php echo wp_json_encode($admin_href); ?>);</script>
+</head>
+<body>
+  <noscript><p><a href="<?php echo esc_url($admin_href); ?>">Go to Minimore Admin</a></p></noscript>
+</body>
+</html>
+        <?php
         exit;
     }
 });
