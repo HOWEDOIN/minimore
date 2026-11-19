@@ -1,6 +1,13 @@
 type HoldItem = { variantId: number; quantity: number };
 type HoldEntry = { items: HoldItem[]; expiresAt: number };
-export type StockProduct = { id: number; stock_status: string; manage_stock: boolean; stock_quantity: number | null };
+export type StockProduct = {
+  id: number;
+  stock_status: string;
+  manage_stock: boolean;
+  stock_quantity: number | null;
+  price?: string | number;
+  regular_price?: string | number;
+};
 
 const DEFAULT_HOLD_MS = 10 * 60_000;
 const holds = new Map<string, HoldEntry>();

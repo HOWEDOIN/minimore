@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MALAYSIAN_STATES, shippingFor } from '@/lib/checkoutValidation';
+import { FREE_SHIPPING_THRESHOLD, MALAYSIAN_STATES, shippingFor } from '@/lib/checkoutValidation';
 import './checkout.css';
 
 const WP_URL = process.env.NEXT_PUBLIC_WP_URL || 'https://admin.minimore.my';
@@ -44,9 +44,9 @@ export default function CheckoutPage() {
     firstName: '', lastName: '', address1: '', address2: '',
     city: '', state: 'Selangor', postcode: '', country: 'MY',
   });
-  const isFreeShipping = freeShipping || Boolean(appliedPromo);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingTotal = shippingFor(shipping.state, isFreeShipping);
+  const isFreeShipping = freeShipping || Boolean(appliedPromo) || subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingTotal = shippingFor(shipping.state, isFreeShipping, subtotal);
 
   const handleApplyPromo = async () => {
     const code = promoCodeInput.trim();

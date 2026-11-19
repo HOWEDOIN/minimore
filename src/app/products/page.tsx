@@ -19,10 +19,15 @@ export default async function ProductsPage({
   const { category, search, sort } = await searchParams;
 
   // 1. Fetch categories and sitewide settings in parallel
-  const [{ data: product_categories }, sitewide] = await Promise.all([
-    wooApi.get("products/categories", { hide_empty: true }).catch(() => ({ data: [] })),
+  const [{ data: rawCategories }, sitewide] = await Promise.all([
+    wooApi.get("products/categories", { hide_empty: false, per_page: 100 }).catch(() => ({ data: [] })),
     getSitewideSettings(),
   ]);
+  const product_categories = Array.isArray(rawCategories)
+    ? rawCategories.filter(
+        (c: any) => c.slug !== "uncategorized" && (Number(c.count) > 0 || c.slug === "gift-sets")
+      )
+    : [];
   const hidePrices = sitewide.hide_prices;
 
   // 2. Determine params

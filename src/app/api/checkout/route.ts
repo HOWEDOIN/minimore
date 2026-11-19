@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { clientIpFromForwardedFor, rateLimit } from "@/lib/rateLimit";
-import { isValidFreeShippingPromo, shippingFor, validateCheckoutBody } from "@/lib/checkoutValidation";
+import { FREE_SHIPPING_THRESHOLD, isValidFreeShippingPromo, shippingFor, validateCheckoutBody } from "@/lib/checkoutValidation";
 import { rekeyStockHold, releaseStockHold, StockProduct, tryReserveStock } from "@/lib/stockHold";
 
 const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://admin.minimore.my";
@@ -11,9 +11,62 @@ const BILLPLZ_API_KEY = process.env.BILLPLZ_API_KEY;
 const BILLPLZ_COLLECTION_ID = process.env.BILLPLZ_COLLECTION_ID;
 const authHeader = `Basic ${Buffer.from(`${CONSUMER_KEY}:${CONSUMER_SECRET}`).toString("base64")}`;
 
+type SitewideConfig = {
+  disable_checkout?: boolean;
+  free_shipping?: boolean;
+  promo_codes?: string;
+};
+
+type WooCoupon = {
+  code?: string;
+  status?: string;
+  free_shipping?: boolean;
+  date_expires_gmt?: string | null;
+  usage_limit?: number | null;
+  usage_count?: number;
+};
+
+async function fetchSitewideConfig(): Promise<SitewideConfig | null> {
+  try {
+    const res = await fetch(`${WP_URL}/wp-json/minimore/v1/sitewide`, { cache: "no-store" });
+    return res.ok ? await res.json() as SitewideConfig : null;
+  } catch {
+    return null;
+  }
+}
+
+async function isPromoAccepted(code: string | null | undefined, settings: SitewideConfig | null): Promise<boolean> {
+  const trimmed = code?.trim();
+  if (!trimmed) return false;
+  const wpPromoList = typeof settings?.promo_codes === "string" ? settings.promo_codes : undefined;
+  if (isValidFreeShippingPromo(trimmed, wpPromoList)) return true;
+
+  try {
+    const couponRes = await fetch(`${WP_URL}/wp-json/wc/v3/coupons?code=${encodeURIComponent(trimmed)}`, {
+      headers: { Authorization: authHeader },
+      cache: "no-store",
+    });
+    if (!couponRes.ok) return false;
+    const coupons = await couponRes.json() as WooCoupon[];
+    if (!Array.isArray(coupons)) return false;
+    const now = Date.now();
+    return coupons.some((c) => {
+      if ((c.code || "").trim().toLowerCase() !== trimmed.toLowerCase()) return false;
+      if (c.status && c.status !== "publish") return false;
+      if (!c.free_shipping) return false;
+      if (c.date_expires_gmt && new Date(`${c.date_expires_gmt}Z`).getTime() <= now) return false;
+      if (typeof c.usage_limit === "number" && (c.usage_count ?? 0) >= c.usage_limit) return false;
+      return true;
+    });
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("promo");
-  return NextResponse.json({ valid: isValidFreeShippingPromo(code) });
+  const settings = await fetchSitewideConfig();
+  return NextResponse.json({ valid: await isPromoAccepted(code, settings) });
 }
 
 export async function POST(req: NextRequest) {
@@ -24,8 +77,7 @@ export async function POST(req: NextRequest) {
     if (!localTest && !rateLimit(`checkout:${ip}`, 5, 15 * 60_000)) return NextResponse.json({ error: "Too many checkout attempts. Please try again later." }, { status: 429 });
     if (Number(req.headers.get("content-length") || 0) > 20_000) return NextResponse.json({ error: "Request is too large." }, { status: 413 });
 
-    const sitewide = await fetch(`${WP_URL}/wp-json/minimore/v1/sitewide`, { cache: "no-store" });
-    const settings = sitewide.ok ? await sitewide.json() : null;
+    const settings = await fetchSitewideConfig();
     if (!localTest && (!settings || settings.disable_checkout !== false)) return NextResponse.json({ error: "Checkout is temporarily disabled." }, { status: 503 });
 
     const raw = await req.text();
@@ -43,8 +95,16 @@ export async function POST(req: NextRequest) {
     }
     activeHoldKey = holdKey;
 
-    const isFreeShipping = Boolean(settings?.free_shipping) || isValidFreeShippingPromo(body.promoCode);
-    const shippingTotal = shippingFor(body.shipping.state, isFreeShipping).toFixed(2);
+    const productPriceMap = new Map<number, number>(
+      products.map((p) => [p.id, parseFloat(String(p.price || p.regular_price || "0")) || 0])
+    );
+    const subtotal = body.cartItems.reduce(
+      (sum, item) => sum + (productPriceMap.get(Number(item.variantId)) ?? 0) * item.quantity,
+      0
+    );
+    const promoValid = await isPromoAccepted(body.promoCode, settings);
+    const isFreeShipping = Boolean(settings?.free_shipping) || promoValid || subtotal >= FREE_SHIPPING_THRESHOLD;
+    const shippingTotal = shippingFor(body.shipping.state, isFreeShipping, subtotal).toFixed(2);
     if (localTest) {
       releaseStockHold(activeHoldKey);
       return NextResponse.json({ testMode: true, shippingTotal });
@@ -61,8 +121,8 @@ export async function POST(req: NextRequest) {
       billing: { first_name: billing.firstName, last_name: billing.lastName, address_1: billing.address1, address_2: billing.address2 || "", city: billing.city, state: billing.state, postcode: billing.postcode, country: "MY", email: body.contact.email, phone: body.contact.phone || "" },
       shipping: { first_name: body.shipping.firstName, last_name: body.shipping.lastName, address_1: body.shipping.address1, address_2: body.shipping.address2 || "", city: body.shipping.city, state: body.shipping.state, postcode: body.shipping.postcode, country: "MY" },
       line_items: body.cartItems.map((item) => ({ product_id: Number(item.variantId), quantity: item.quantity })),
-      shipping_lines: [{ method_id: "flat_rate", method_title: Number(shippingTotal) === 0 ? (isValidFreeShippingPromo(body.promoCode) ? `Free Shipping (${body.promoCode})` : "Free Shipping") : `${east ? "East" : "West"} Malaysia Shipping`, total: shippingTotal }],
-      meta_data: body.promoCode ? [{ key: "promo_code", value: body.promoCode }] : [],
+      shipping_lines: [{ method_id: "flat_rate", method_title: Number(shippingTotal) === 0 ? (promoValid ? `Free Shipping (${body.promoCode})` : subtotal >= FREE_SHIPPING_THRESHOLD ? `Free Shipping (Orders RM${FREE_SHIPPING_THRESHOLD}+)` : "Free Shipping") : `${east ? "East" : "West"} Malaysia Shipping`, total: shippingTotal }],
+      meta_data: promoValid && body.promoCode ? [{ key: "promo_code", value: body.promoCode }] : [],
     };
 
     const wcRes = await fetch(`${WP_URL}/wp-json/wc/v3/orders`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: authHeader }, body: JSON.stringify(orderPayload) });

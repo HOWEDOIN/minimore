@@ -15,11 +15,17 @@ test("checkout accepts Malaysia only and selects regional shipping", () => {
   assert.equal(shippingFor("Selangor"), 10);
   assert.equal(shippingFor("Sabah"), 15);
   assert.equal(shippingFor("Sabah", true), 0);
+  assert.equal(shippingFor("Selangor", false, 299.99), 10);
+  assert.equal(shippingFor("Sabah", false, 299.99), 15);
+  assert.equal(shippingFor("Selangor", false, 300), 0);
+  assert.equal(shippingFor("Sabah", false, 350), 0);
   assert.equal(shippingFor("Selangor", isValidFreeShippingPromo("freeshippingforjack")), 0);
   assert.equal(isValidFreeShippingPromo("  FREESHIPPINGFORJACK  "), true);
   assert.equal(isValidFreeShippingPromo("wrongcode"), false);
   assert.equal(isValidFreeShippingPromo(""), false);
   assert.equal(isValidFreeShippingPromo("vip", "VIP"), true);
+  assert.equal(isValidFreeShippingPromo("welcome10", "freeshippingforjack, WELCOME10"), true);
+  assert.equal(isValidFreeShippingPromo("freeshippingforjack", ""), false);
   assert.equal(validateCheckoutBody({ ...valid, promoCode: "freeshippingforjack" })?.promoCode, "freeshippingforjack");
   assert.equal(validateCheckoutBody({ ...valid, promoCode: "  FREESHIPPINGFORJACK  " })?.promoCode, "FREESHIPPINGFORJACK");
   assert.equal(validateCheckoutBody({ ...valid, shipping: { ...valid.shipping, country: "SG" } }), null);

@@ -56,13 +56,22 @@ export function validateCheckoutBody(value: unknown): CheckoutBody | null {
   return { ...body, contact: { ...body.contact, phone: normalizedPhone || undefined }, cartItems, promoCode: promoCode || undefined } as CheckoutBody;
 }
 
-export function shippingFor(state: string, freeShipping = false) {
-  return freeShipping ? 0 : EAST_MALAYSIA.has(state) ? 15 : 10;
+export const FREE_SHIPPING_THRESHOLD = 300;
+
+export function shippingFor(state: string, freeShipping = false, subtotal = 0) {
+  return freeShipping || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : EAST_MALAYSIA.has(state) ? 15 : 10;
 }
 
 export function isValidFreeShippingPromo(
   code?: string | null,
   expected = process.env.FREE_SHIPPING_PROMO_CODE || "freeshippingforjack"
 ): boolean {
-  return Boolean(code && expected && code.trim().toLowerCase() === expected.trim().toLowerCase());
+  if (!code || !expected) return false;
+  const normalized = code.trim().toLowerCase();
+  if (!normalized) return false;
+  return expected
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean)
+    .includes(normalized);
 }
