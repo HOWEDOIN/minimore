@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Update Minimore CMS (1-Click Updater)
  * Description: Installs/Updates the Minimore CMS Must-Use plugin (mu-plugins/minimore-core.php).
- * Version: 2.7
+ * Version: 2.8
  * Author: Minimore AI
  */
 
@@ -15,7 +15,9 @@ function minimore_cms_updater_notice() {
     // Determine target mu-plugins directory
     $mu_dir = defined('WPMU_PLUGIN_DIR') ? trailingslashit(WPMU_PLUGIN_DIR) : trailingslashit(WP_CONTENT_DIR . '/mu-plugins');
     $target = $mu_dir . 'minimore-core.php';
-    $source = __DIR__ . '/minimore-core.php';
+    $payload = __DIR__ . '/minimore-core.payload';
+    $legacy_source = __DIR__ . '/minimore-core.php';
+    $source = file_exists($payload) ? $payload : $legacy_source;
 
     if (!file_exists($mu_dir)) {
         @mkdir($mu_dir, 0755, true);
@@ -23,6 +25,9 @@ function minimore_cms_updater_notice() {
 
     if (file_exists($source)) {
         $copied = @copy($source, $target);
+        if (file_exists($legacy_source) && file_exists($payload)) {
+            @unlink($legacy_source);
+        }
         if ($copied) {
             if (!function_exists('deactivate_plugins')) {
                 require_once ABSPATH . 'wp-admin/includes/plugin.php';

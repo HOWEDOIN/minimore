@@ -2,13 +2,18 @@
 /**
  * Plugin Name: Minimore Core Functions
  * Description: Custom Headless API endpoints and Storefront Settings for the Minimore Next.js app.
- * Version: 1.1.0
+ * Version: 2.8.0
  * Author: Antigravity
  */
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
+
+if (defined('MINIMORE_CORE_LOADED')) {
+    return;
+}
+define('MINIMORE_CORE_LOADED', true);
 
 // ---------------------------------------------------------
 // 1. Register Settings Page & Hide Unneeded Admin Menus
